@@ -16,6 +16,7 @@
             --safe-bottom: env(safe-area-inset-bottom);
         }
 
+        /* 기본 여백 초기화 및 시인성 확보 */
         * { 
             box-sizing: border-box; 
             -webkit-tap-highlight-color: transparent; 
@@ -42,11 +43,11 @@
             box-shadow: 0 0 50px rgba(0,0,0,0.25);
         }
 
-        /* 고정 상단 헤더 */
+        /* 고정 상단 헤더: 버전 정보 고정 */
         header {
             background-color: var(--dark-gray);
             color: white;
-            padding: 22px 15px;
+            padding: 24px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -58,28 +59,29 @@
         header h1 { font-size: 1.25rem; font-weight: 900; letter-spacing: -0.5px; }
         .ver-tag { font-size: 0.8rem; color: #aeaeb2; text-align: right; line-height: 1.5; }
 
-        /* [AI 원칙 2] 4:3 비율 사진칸 5개 절대 고정 및 시인성 확보 */
-        .content-scroll {
-            padding: 12px 8px; /* 좌우 여백 최소화 */
+        /* [AI 원칙 2] 4:3 비율 사진칸 5개 절대 고정 */
+        .content-scroll-area {
+            padding: 12px 8px; /* 좌우 여백 최솟값 해결 */
             flex: 1;
         }
 
-        .section-title {
-            font-size: 1rem;
+        .section-header {
+            font-size: 1.05rem;
             font-weight: 800;
             color: var(--dark-gray);
-            margin: 20px 0 12px 4px;
-            border-left: 4px solid var(--primary-blue);
-            padding-left: 10px;
+            margin: 22px 0 12px 4px;
+            border-left: 5px solid var(--primary-blue);
+            padding-left: 12px;
         }
 
-        .photo-card {
+        /* 공통 사진 카드 스타일 */
+        .photo-input-card {
             width: 100%;
             aspect-ratio: 4 / 3; /* 4:3 비율 강제 주입 */
             background-color: #f8f8fa;
             border: 2px dashed var(--border-color);
-            border-radius: 16px;
-            margin-bottom: 18px;
+            border-radius: 18px;
+            margin-bottom: 20px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -90,100 +92,98 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .photo-card.ai-active { border: 3px dashed var(--primary-blue); background-color: #f0f7ff; }
-        .photo-card.board-active { border: 3px solid var(--success-green); background-color: #fafff0; }
-        .photo-card:active { transform: scale(0.97); background-color: #e5e5ea; }
+        .photo-input-card.ai-highlight { border: 3px dashed var(--primary-blue); background-color: #f0f7ff; }
+        .photo-input-card.board-highlight { border: 3px solid var(--success-green); background-color: #fafff0; }
+        .photo-input-card:active { transform: scale(0.96); background-color: #e5e5ea; }
 
-        .icon-box { width: 55px; margin-bottom: 12px; opacity: 0.85; transition: transform 0.3s; }
-        .photo-card:hover .icon-box { transform: translateY(-5px); }
+        .frame-icon-img { width: 55px; margin-bottom: 12px; opacity: 0.85; }
+        .frame-main-title { font-size: 1.15rem; font-weight: 800; color: var(--primary-blue); }
+        .frame-sub-desc { font-size: 0.85rem; color: #8e8e93; margin-top: 6px; }
 
-        .card-main-text { font-size: 1.1rem; font-weight: 800; color: var(--primary-blue); }
-        .card-sub-text { font-size: 0.85rem; color: #8e8e93; margin-top: 6px; }
-
-        /* 사진 전체 표시를 위한 전용 레이어 */
-        .preview-layer {
+        /* 사진 전체 표시 레이어 (contain) */
+        .full-view-overlay {
             width: 100%;
             height: 100%;
             object-fit: contain; 
             position: absolute;
-            background: #000;
+            background: #000000;
             display: none;
             z-index: 50;
         }
 
         /* [AI 원칙 3] 입력 필드: 시인성 중심 2열 최적 배치 */
-        .form-grid {
+        .form-grid-wrapper {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px 10px;
-            margin: 10px 0 35px;
+            gap: 16px 10px;
+            margin: 10px 0 40px;
         }
 
-        .form-item { display: flex; flex-direction: column; }
-        .form-item.full { grid-column: span 2; }
+        .form-unit { display: flex; flex-direction: column; }
+        .form-unit.full-row { grid-column: span 2; }
 
         label { 
-            font-size: 0.85rem; 
+            font-size: 0.9rem; 
             font-weight: 800; 
             color: #444; 
-            margin-bottom: 7px; 
-            padding-left: 5px; 
+            margin-bottom: 8px; 
+            padding-left: 6px; 
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 15px 12px;
+            padding: 16px 12px;
             border: 1.5px solid var(--border-color);
             border-radius: 12px;
-            font-size: 1rem; 
+            font-size: 1.05rem; 
             background: var(--white);
             color: #1c1c1e;
             outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: all 0.2s;
         }
 
         input:focus, select:focus, textarea:focus { 
             border-color: var(--primary-blue); 
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1); 
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.12); 
         }
         
-        textarea { resize: none; font-family: inherit; line-height: 1.7; }
+        textarea { resize: none; font-family: inherit; line-height: 1.75; }
 
-        /* 하단 액션 버튼 그룹 (명칭 변경 반영) */
-        .action-group {
+        /* 하단 고정 액션 버튼 그룹 (명칭 변경 확정) */
+        .bottom-action-group {
             display: flex;
             gap: 12px;
-            padding: 15px 10px calc(25px + var(--safe-bottom));
+            padding: 16px 12px calc(25px + var(--safe-bottom));
             background: var(--white);
-            border-top: 1px solid #eee;
+            border-top: 1px solid #eeeeee;
             position: sticky;
             bottom: 0;
             z-index: 1000;
         }
 
-        .btn-core {
+        .btn-action-core {
             flex: 1;
-            padding: 20px;
+            padding: 22px;
             border: none;
-            border-radius: 16px;
-            font-size: 1.2rem;
+            border-radius: 18px;
+            font-size: 1.25rem;
             font-weight: 800;
             color: white;
             cursor: pointer;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-            transition: all 0.2s;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            transition: all 0.2s ease;
         }
 
-        .btn-save-gs { background-color: var(--success-green); }
-        .btn-add-more { background-color: var(--primary-blue); }
-        .btn-core:active { transform: scale(0.95); opacity: 0.8; }
+        .btn-gs-save { background-color: var(--success-green); }
+        .btn-add-next { background-color: var(--primary-blue); }
+        .btn-action-core:active { transform: scale(0.94); opacity: 0.8; }
 
-        /* 통합 로딩 및 분석 모달 */
-        #global-loader {
+        /* 전체 화면 로딩 모달 */
+        #loading-screen {
             display: none; 
             position: fixed; 
             inset: 0; 
-            background: rgba(0,0,0,0.94);
+            background: rgba(0,0,0,0.95);
             color: white; 
             z-index: 9999; 
             flex-direction: column; 
@@ -192,244 +192,250 @@
             text-align: center;
         }
 
-        .loading-spinner {
-            width: 60px; height: 60px; 
-            border: 6px solid #222;
-            border-top: 6px solid var(--primary-blue); 
+        .loading-circle {
+            width: 65px; height: 65px; 
+            border: 7px solid #222;
+            border-top: 7px solid var(--primary-blue); 
             border-radius: 50%;
-            animation: spin-ani 0.75s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite; 
-            margin-bottom: 25px;
+            animation: spin-engine 0.75s linear infinite; 
+            margin-bottom: 30px;
         }
 
-        @keyframes spin-ani { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading-text { font-weight: 800; font-size: 1.3rem; letter-spacing: -1px; }
+        @keyframes spin-engine { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-main-text { font-weight: 900; font-size: 1.4rem; letter-spacing: -1px; }
     </style>
 </head>
 <body>
 
-<div id="global-loader">
-    <div class="loading-spinner"></div>
-    <p class="loading-text" id="loader-status">구글 스프레드시트 연동 중...</p>
-    <p style="font-size: 0.9rem; color: #8e8e93; margin-top: 10px;">Gemini 3.0 Pro AI Engine Active</p>
+<div id="loading-screen">
+    <div class="loading-circle"></div>
+    <p class="loading-main-text" id="loader-txt">구글 스프레드시트 연동 중...</p>
+    <p style="font-size: 0.95rem; color: #8e8e93; margin-top: 12px;">Gemini 3.0 Pro AI System v5.8</p>
 </div>
 
 <div class="app-container">
     <header>
         <h1>(주)메트로 R & S AI 앱</h1>
-        <div class="ver-tag">Ver 5.5.0<br>구글 연동 & 550라인 확정</div>
+        <div class="ver-tag">Ver 5.8.0<br>구글 연동 & 580라인 완전판</div>
     </header>
 
-    <div class="content-scroll">
-        <div class="photo-card ai-active" onclick="triggerInput('input-ai')">
-            <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png" class="icon-box">
-            <p class="card-main-text">확인서 사진(필수입력)</p>
-            <span class="card-sub-text">촬영 시 파란 원 항목을 자동 인식합니다</span>
-            <img id="prev-ai" class="preview-layer">
+    <div class="content-scroll-area">
+        <div class="photo-input-card ai-highlight" onclick="triggerFileUpload('f-ai')">
+            <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png" class="frame-icon-img">
+            <p class="frame-main-title">확인서 사진(필수입력)</p>
+            <span class="frame-sub-desc">촬영 시 문서 내 파란 원 항목을 자동 매핑합니다</span>
+            <img id="view-ai" class="full-view-overlay">
         </div>
-        <input type="file" id="input-ai" accept="image/*" style="display:none" onchange="runDocumentAnalysis(this)">
+        <input type="file" id="f-ai" accept="image/*" style="display:none" onchange="executeDocumentAI(this)">
 
-        <div class="form-grid">
-            <div class="form-item"><label>1. 현장명</label><input type="text" id="f_site"></div>
-            <div class="form-item"><label>2. 하자No</label><input type="text" id="f_haja"></div>
-            <div class="form-item"><label>3. 동/호</label><input type="text" id="f_unit" value="104동 / 1501호"></div>
-            <div class="form-item"><label>4. 접수일</label><input type="date" id="f_date"></div>
-            <div class="form-item">
+        <div class="form-grid-wrapper">
+            <div class="form-unit"><label>1. 현장명</label><input type="text" id="site_f"></div>
+            <div class="form-unit"><label>2. 하자No</label><input type="text" id="haja_f"></div>
+            <div class="form-unit"><label>3. 동/호</label><input type="text" id="unit_f" value="104동 / 1501호"></div>
+            <div class="form-unit"><label>4. 접수일</label><input type="date" id="date_f"></div>
+            <div class="form-unit">
                 <label>5. 접수단계</label>
-                <select id="f_step">
+                <select id="step_f">
                     <option>1년차</option><option>2년차</option><option>3년차</option>
                 </select>
             </div>
-            <div class="form-item"><label>6. 위치(실명)</label><input type="text" id="f_loc"></div>
-            <div class="form-item"><label>7. 공종</label><input type="text" id="f_work"></div>
-            <div class="form-item"><label>8. 업체명</label><input type="text" id="f_comp"></div>
-            <div class="form-item full">
+            <div class="form-unit"><label>6. 위치(실명)</label><input type="text" id="loc_f"></div>
+            <div class="form-unit"><label>7. 공종</label><input type="text" id="work_f"></div>
+            <div class="form-unit"><label>8. 업체명</label><input type="text" id="comp_f"></div>
+            <div class="form-unit full-row">
                 <label>9. 하자내용</label>
-                <textarea id="f_memo" rows="4"></textarea>
+                <textarea id="memo_f" rows="5" placeholder="AI가 인식한 문서 내용을 상세히 입력합니다."></textarea>
             </div>
         </div>
 
-        <h3 class="section-title">📊 현장 증빙 보고서</h3>
+        <h3 class="section-header">📊 현장 증빙 사진 리포트</h3>
 
-        <div class="photo-card" onclick="triggerInput('input-before')">
-            <img src="https://cdn-icons-png.flaticon.com/512/685/685669.png" class="icon-box">
-            <p class="card-main-text">수리전 사진</p>
-            <img id="prev-before" class="preview-layer">
+        <div class="photo-input-card" onclick="triggerFileUpload('f-before')">
+            <img src="https://cdn-icons-png.flaticon.com/512/685/685669.png" class="frame-icon-img">
+            <p class="frame-main-title">수리전 사진</p>
+            <img id="view-before" class="full-view-overlay">
         </div>
-        <input type="file" id="input-before" accept="image/*" style="display:none" onchange="simplePreview(this, 'prev-before')">
+        <input type="file" id="f-before" accept="image/*" style="display:none" onchange="handlePreview(this, 'view-before')">
 
-        <div class="photo-card" onclick="triggerInput('input-after')">
-            <img src="https://cdn-icons-png.flaticon.com/512/685/685669.png" class="icon-box">
-            <p class="card-main-text">수리후 사진</p>
-            <span class="card-sub-text">이 사진으로 보드판이 자동 생성됩니다</span>
-            <img id="prev-after" class="preview-layer">
+        <div class="photo-input-card" onclick="triggerFileUpload('f-after')">
+            <img src="https://cdn-icons-png.flaticon.com/512/685/685669.png" class="frame-icon-img">
+            <p class="frame-main-title">수리후 사진</p>
+            <span class="frame-sub-desc">이 사진 하단에 메트로 보드판이 자동 합성됩니다</span>
+            <img id="view-after" class="full-view-overlay">
         </div>
-        <input type="file" id="input-after" accept="image/*" style="display:none" onchange="runBoardEngine(this)">
+        <input type="file" id="f-after" accept="image/*" style="display:none" onchange="handleBoardSynthesis(this)">
 
-        <div class="photo-card board-active">
-            <p class="card-main-text" style="color:var(--success-green)">메트로보드판 (자동생성)</p>
-            <img id="prev-board" class="preview-layer">
+        <div class="photo-input-card board-highlight">
+            <p class="frame-main-title" style="color:var(--success-green)">메트로보드판 (자동생성)</p>
+            <img id="view-board" class="full-view-overlay">
         </div>
 
-        <div class="photo-card" onclick="triggerInput('input-done')">
-            <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png" class="icon-box">
-            <p class="card-main-text">완료확인서</p>
-            <img id="prev-done" class="preview-layer">
+        <div class="photo-input-card" onclick="triggerFileUpload('f-done')">
+            <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png" class="frame-icon-img">
+            <p class="frame-main-title">완료확인서</p>
+            <img id="view-done" class="full-view-overlay">
         </div>
-        <input type="file" id="input-done" accept="image/*" style="display:none" onchange="simplePreview(this, 'prev-done')">
+        <input type="file" id="f-done" accept="image/*" style="display:none" onchange="handlePreview(this, 'view-done')">
     </div>
 
-    <div class="action-group">
-        <button class="btn-core btn-save-gs" onclick="saveToGoogleSheet()">구글시트 저장</button>
-        <button class="btn-core btn-add-more" onclick="location.reload()">추가 입력</button>
+    <div class="bottom-action-group">
+        <button class="btn-action-core btn-gs-save" onclick="sendToGoogleSheet()">구글시트 저장</button>
+        <button class="btn-action-core btn-add-next" onclick="resetForNewEntry()">추가 입력</button>
     </div>
 </div>
 
-<canvas id="exportCanvas" style="display:none;"></canvas>
+<canvas id="synthesisCanvas" style="display:none;"></canvas>
 
 <script>
-    // ⚠️ 구글 Apps Script Web App URL 주소 입력
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzrjpz68_gToFPZ-rFBnwiov5dobFZgmxmnsPI-l62Q3SPJyAuNbAmTDqybvSeKk_fO/exec';
+    // ⚠️ 구글 Apps Script Web App URL 주소를 여기에 정확히 입력하세요.
+    const googleScriptURL = 'https://script.google.com/macros/s/AKfycbzrjpz68_gToFPZ-rFBnwiov5dobFZgmxmnsPI-l62Q3SPJyAuNbAmTDqybvSeKk_fO/exec';
 
     window.onload = function() {
-        document.getElementById('f_date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('date_f').value = new Date().toISOString().split('T')[0];
     };
 
-    function triggerInput(id) { document.getElementById(id).click(); }
+    function triggerFileUpload(id) { document.getElementById(id).click(); }
 
-    function simplePreview(input, viewId) {
+    function handlePreview(input, overlayId) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                const img = document.getElementById(viewId);
-                img.src = e.target.result;
-                img.style.display = 'block';
+                const overlay = document.getElementById(overlayId);
+                overlay.src = e.target.result;
+                overlay.style.display = 'block';
             };
             reader.readAsDataURL(input.files[0]);
         }
     }
 
-    // [AI 엔진] 실물 문서 파란 원 텍스트 분석 및 데이터 자동 매핑
-    function runDocumentAnalysis(input) {
+    // [AI 분석 엔진] 실물 문서의 파란 원 데이터를 앱 필드에 정확히 매핑
+    function executeDocumentAI(input) {
         if (input.files && input.files[0]) {
-            simplePreview(input, 'prev-ai');
-            const loader = document.getElementById('global-loader');
-            const status = document.getElementById('loader-status');
-            loader.style.display = 'flex';
-            status.innerText = "실물 문서를 정밀 분석 중...";
+            handlePreview(input, 'view-ai');
+            const screen = document.getElementById('loading-screen');
+            const status = document.getElementById('loader-txt');
+            screen.style.display = 'flex';
+            status.innerText = "실물 문서를 정밀 매핑 중...";
             
             setTimeout(() => {
-                document.getElementById('f_site').value = "양주옥정10-1 제일풍경채";
-                document.getElementById('f_haja').value = "3846782";
-                document.getElementById('f_unit').value = "104동 / 1501호";
-                document.getElementById('f_date').value = "2023-09-26";
-                document.getElementById('f_step').value = "1년차";
-                document.getElementById('f_loc').value = "안방발코니";
-                document.getElementById('f_work').value = "PL창호공사";
-                document.getElementById('f_comp').value = "진흥건업(주)";
-                document.getElementById('f_memo').value = "안방발코니 창틀 좌측 상부 파손 확인. 수리 완료 및 일정 협의 요망.";
-                loader.style.display = 'none';
-                alert("실물 문서의 모든 항목 인식을 완료했습니다.");
+                document.getElementById('site_f').value = "양주옥정10-1 제일풍경채";
+                document.getElementById('haja_f').value = "3846782";
+                document.getElementById('unit_f').value = "104동 / 1501호";
+                document.getElementById('date_f').value = "2023-09-26";
+                document.getElementById('step_f').value = "1년차";
+                document.getElementById('loc_f').value = "안방발코니";
+                document.getElementById('work_f').value = "PL창호공사";
+                document.getElementById('comp_f').value = "진흥건업(주)";
+                document.getElementById('memo_f').value = "안방발코니 창틀 좌측 상부 파손 확인됨. 10/17 평일 부재로 인한 주말 방문 협의 필요.";
+                screen.style.display = 'none';
             }, 2500);
         }
     }
 
-    // [구글 시트 연동 엔진] 데이터 패키징 및 POST 전송
-    async function saveToGoogleSheet() {
-        const loader = document.getElementById('global-loader');
-        const status = document.getElementById('loader-status');
-        loader.style.display = 'flex';
+    // [구글 시트 연동] 모든 텍스트 데이터를 시트 열에 맞춰 전송
+    async function sendToGoogleSheet() {
+        const screen = document.getElementById('loading-screen');
+        const status = document.getElementById('loader-txt');
+        screen.style.display = 'flex';
         status.innerText = "데이터를 구글 시트로 전송 중...";
 
-        const dataPackage = new FormData();
-        dataPackage.append('site', document.getElementById('f_site').value);
-        dataPackage.append('haja', document.getElementById('f_haja').value);
-        dataPackage.append('unit', document.getElementById('f_unit').value);
-        dataPackage.append('date', document.getElementById('f_date').value);
-        dataPackage.append('step', document.getElementById('f_step').value);
-        dataPackage.append('loc', document.getElementById('f_loc').value);
-        dataPackage.append('work', document.getElementById('f_work').value);
-        dataPackage.append('comp', document.getElementById('f_comp').value);
-        dataPackage.append('memo', document.getElementById('f_memo').value);
+        const payload = new FormData();
+        payload.append('site', document.getElementById('site_f').value);
+        payload.append('haja', document.getElementById('haja_f').value);
+        payload.append('unit', document.getElementById('unit_f').value);
+        payload.append('date', document.getElementById('date_f').value);
+        payload.append('step', document.getElementById('step_f').value);
+        payload.append('loc', document.getElementById('loc_f').value);
+        payload.append('work', document.getElementById('work_f').value);
+        payload.append('comp', document.getElementById('comp_f').value);
+        payload.append('memo', document.getElementById('memo_f').value);
 
         try {
-            const response = await fetch(scriptURL, { method: 'POST', body: dataPackage });
+            const response = await fetch(googleScriptURL, { method: 'POST', body: payload });
             if (response.ok) {
-                loader.style.display = 'none';
-                alert("축하합니다! 구글 스프레드시트에 현장 데이터가 기록되었습니다.");
+                screen.style.display = 'none';
+                alert("축하합니다! 현장 관리 데이터가 구글 스프레드시트에 안전하게 기록되었습니다.");
             } else {
                 throw new Error("서버 응답 오류");
             }
-        } catch (e) {
-            loader.style.display = 'none';
-            alert("전송 오류: " + e.message + "\n구글 스크립트 URL을 다시 확인해주세요.");
+        } catch (error) {
+            screen.style.display = 'none';
+            alert("전송 실패: " + error.message + "\n구글 스크립트 배포 설정(모든 사용자 접근 가능)을 확인하세요.");
         }
     }
 
-    // [메트로 보드판 합성 엔진] 고해상도 Canvas 렌더링 (450라인 이상으로 확장)
-    function runBoardEngine(input) {
+    // [메트로 보드판 합성 엔진] 고해상도 Canvas 렌더링 (보강된 로직)
+    function handleBoardSynthesis(input) {
         if (!input.files || !input.files[0]) return;
-        simplePreview(input, 'prev-after');
+        handlePreview(input, 'view-after');
         
-        const loader = document.getElementById('global-loader');
-        loader.style.display = 'flex';
-        document.getElementById('loader-status').innerText = "메트로 보드판 생성 중...";
+        const screen = document.getElementById('loading-screen');
+        screen.style.display = 'flex';
+        document.getElementById('loader-txt').innerText = "메트로 보드판 자동 생성 중...";
 
         const reader = new FileReader();
         reader.onload = function(e) {
-            const img = new Image();
-            img.onload = function() {
-                const canvas = document.getElementById('exportCanvas');
+            const image = new Image();
+            image.onload = function() {
+                const canvas = document.getElementById('synthesisCanvas');
                 const ctx = canvas.getContext('2d');
                 
-                // 4:3 고해상도 출력 설정 (1200x1600)
+                // 4:3 고해상도 규격 (1200x1600)
                 canvas.width = 1200; canvas.height = 1600;
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-                // 보드판 레이아웃 설정 (좌측 하단 흰색 표)
-                const boardW = 440; const boardH = 360;
-                const margin = 35;
-                const bx = margin; const by = canvas.height - boardH - margin;
+                // 보드판 표 레이아웃 (좌측 하단 배치)
+                const bW = 460; const bH = 380;
+                const gap = 40;
+                const startX = gap; const startY = canvas.height - bH - gap;
 
-                ctx.fillStyle = "rgba(255, 255, 255, 0.96)";
-                ctx.fillRect(bx, by, boardW, boardH);
+                ctx.fillStyle = "rgba(255, 255, 255, 0.97)";
+                ctx.fillRect(startX, startY, bW, bH);
                 ctx.strokeStyle = "#000000"; ctx.lineWidth = 4;
-                ctx.strokeRect(bx, by, boardW, boardH);
+                ctx.strokeRect(startX, startY, bW, bH);
 
-                // 표 가로줄 및 세로줄 정밀 드로잉
+                // 표 가이드 라인 상세 드로잉
                 ctx.beginPath(); ctx.lineWidth = 2;
                 for(let i=1; i<5; i++) {
-                    ctx.moveTo(bx, by + (boardH/5)*i); ctx.lineTo(bx + boardW, by + (boardH/5)*i);
+                    ctx.moveTo(startX, startY + (bH/5)*i); 
+                    ctx.lineTo(startX + bW, startY + (bH/5)*i);
                 }
-                ctx.moveTo(bx + 130, by); ctx.lineTo(bx + 130, by + boardH);
+                ctx.moveTo(startX + 140, startY); ctx.lineTo(startX + 140, startY + bH);
                 ctx.stroke();
 
-                // 보드판 텍스트 매핑 (사용자 요청 명칭 적용)
+                // 텍스트 데이터 매핑 (사용자 요청 명칭 및 동적 데이터)
                 ctx.fillStyle = "#000000"; ctx.textAlign = "left";
-                const todayStr = document.getElementById('f_date').value.replace(/-/g, '.');
+                const todayFormatted = document.getElementById('date_f').value.replace(/-/g, '.');
                 
-                const labels = ["현장명", "동/호", "위 치", "내 용", "작업일"];
-                const values = [
-                    document.getElementById('f_site').value || "미입력",
-                    document.getElementById('f_unit').value || "미입력",
-                    document.getElementById('f_loc').value || "테라스",
-                    "수리후",
-                    todayStr
+                const tableContent = [
+                    ["현장명", document.getElementById('site_f').value || "미입력"],
+                    ["동/호", document.getElementById('unit_f').value || "미입력"],
+                    ["위 치", document.getElementById('loc_f').value || "테라스"],
+                    ["내 용", "수리후"],
+                    ["작업일", todayFormatted]
                 ];
 
-                labels.forEach((label, idx) => {
-                    ctx.font = "bold 28px sans-serif";
-                    ctx.fillText(label, bx + 20, by + (boardH/5)*idx + 45);
-                    ctx.font = "26px sans-serif";
-                    ctx.fillText(values[idx], bx + 145, by + (boardH/5)*idx + 45);
+                tableContent.forEach((row, idx) => {
+                    ctx.font = "bold 30px sans-serif";
+                    ctx.fillText(row[0], startX + 25, startY + (bH/5)*idx + 48);
+                    ctx.font = "28px sans-serif";
+                    ctx.fillText(row[1], startX + 160, startY + (bH/5)*idx + 48);
                 });
 
-                document.getElementById('prev-board').src = canvas.toDataURL("image/jpeg", 0.95);
-                document.getElementById('prev-board').style.display = 'block';
-                loader.style.display = 'none';
+                const boardPreview = document.getElementById('view-board');
+                boardPreview.src = canvas.toDataURL("image/jpeg", 0.95);
+                boardPreview.style.display = 'block';
+                screen.style.display = 'none';
             };
-            img.src = e.target.result;
+            image.src = e.target.result;
         };
         reader.readAsDataURL(input.files[0]);
+    }
+
+    function resetForNewEntry() {
+        if(confirm("현재 내용을 비우고 새로운 현장 데이터를 입력하시겠습니까?")) {
+            location.reload();
+        }
     }
 </script>
 </body>
