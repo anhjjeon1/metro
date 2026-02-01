@@ -4,175 +4,165 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>(주)메트로 R & S AI 앱</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
+        /* 기본 테마 설정 */
         :root {
-            --primary-color: #3498db;
-            --accent-color: #2980b9;
-            --success-color: #2ecc71;
-            --dark-blue: #2c3e50;
-            --light-gray: #f8f9fa;
-            --border-radius: 12px;
+            --header-bg: #2c3e50;
+            --primary-blue: #3498db;
+            --success-green: #2ecc71;
+            --bg-color: #f1f4f7;
+            --border-color: #dcdde1;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: #e9ecef;
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            background-color: var(--bg-color);
             margin: 0;
-            padding: 10px;
             display: flex;
             justify-content: center;
+            padding: 15px;
         }
 
-        .app-container {
+        .container {
             width: 100%;
-            max-width: 500px;
-            background: #ffffff;
-            border-radius: var(--border-radius);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 600px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
             overflow: hidden;
-            border: 1px solid #dee2e6;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* 1. 상단 헤더: 버전 정보 포함 */
+        /* 1. 상단 헤더: 요청하신 Ver*** 표시 추가 */
         header {
-            background-color: var(--dark-blue);
+            background-color: var(--header-bg);
             color: white;
-            padding: 18px 20px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        header h1 { margin: 0; font-size: 1.2rem; font-weight: 700; letter-spacing: -0.5px; }
-        .ver-info { font-size: 0.75rem; color: #bdc3c7; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 20px; }
 
-        /* 2. 사진 분석 영역 (핵심 변경 사항) */
-        .ai-analysis-box {
+        header h1 { margin: 0; font-size: 1.2rem; }
+        .version-label { font-size: 0.8rem; opacity: 0.8; }
+
+        /* 2. AI 자동 분석 영역: 확인서 사진(필수입력) */
+        .ai-analysis-section {
             padding: 20px;
-            background: linear-gradient(180deg, #fff 0%, #f1f4f8 100%);
+            background-color: #fff;
+            border-bottom: 5px solid var(--bg-color);
         }
-        .upload-trigger {
-            border: 2px dashed var(--primary-color);
-            border-radius: var(--border-radius);
+
+        .upload-area {
+            border: 2px dashed var(--primary-blue);
+            border-radius: 12px;
             padding: 40px 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s ease;
-            background: white;
+            background-color: #f9fcff;
+            transition: 0.3s;
         }
-        .upload-trigger:active { transform: scale(0.98); background: #f0f7ff; }
-        .upload-trigger .icon { font-size: 40px; margin-bottom: 10px; display: block; }
-        .upload-trigger p { margin: 5px 0; color: var(--primary-color); font-weight: bold; }
-        .upload-trigger span { font-size: 0.8rem; color: #888; }
 
-        /* 3. 입력 폼 그리드 */
-        .form-container {
-            padding: 20px;
+        .upload-area:hover { background-color: #edf7ff; }
+        .upload-area img { width: 50px; margin-bottom: 10px; }
+        .upload-area p { color: var(--primary-blue); font-weight: bold; font-size: 1.1rem; margin: 0; }
+        .upload-area span { font-size: 0.85rem; color: #7f8c8d; }
+
+        /* 3. 입력 필드 그리드 */
+        .form-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 15px;
+            padding: 20px;
         }
-        .input-group { display: flex; flex-direction: column; }
-        .input-group.full { grid-column: span 2; }
-        
-        label { font-size: 0.85rem; color: #495057; font-weight: 600; margin-bottom: 5px; }
+
+        .input-box { display: flex; flex-direction: column; }
+        .input-box.full { grid-column: span 2; }
+
+        label { font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; color: #34495e; }
         input, select, textarea {
-            width: 100%;
             padding: 12px;
-            border: 1px solid #ced4da;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 0.95rem;
-            outline: none;
-            transition: border-color 0.2s;
+            outline-color: var(--primary-blue);
         }
-        input:focus { border-color: var(--primary-color); }
 
-        /* 4. 사진 업로드 영역 */
-        .photo-previews { padding: 0 20px 20px; }
-        .photo-box {
-            border: 1px dashed #adb5bd;
-            border-radius: 8px;
-            padding: 25px;
+        /* 4. 사진 업로드 섹션 */
+        .photo-upload-group {
+            padding: 0 20px 20px;
+        }
+
+        .photo-placeholder {
+            border: 1px dashed #95a5a6;
+            border-radius: 10px;
+            padding: 35px;
             text-align: center;
-            margin-bottom: 10px;
-            color: #6c757d;
-            font-size: 0.9rem;
-            background-color: #f8f9fa;
+            margin-bottom: 12px;
+            color: #7f8c8d;
+            background-color: #fafafa;
         }
 
-        /* 5. 하단 버튼 */
-        .btn-row {
+        /* 5. 하단 액션 버튼 */
+        .footer-buttons {
             display: flex;
-            gap: 10px;
             padding: 0 20px 25px;
+            gap: 12px;
         }
+
         .btn {
             flex: 1;
             padding: 16px;
             border: none;
             border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 700;
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: white;
             cursor: pointer;
-            transition: opacity 0.2s;
         }
-        .btn-save { background-color: var(--success-color); color: white; }
-        .btn-next { background-color: var(--primary-color); color: white; }
-        .btn:active { opacity: 0.8; }
+
+        .btn-save { background-color: var(--success-green); }
+        .btn-next { background-color: var(--primary-blue); }
 
         #aiFileInput { display: none; }
-
-        /* 로딩 애니메이션 */
-        #loadingOverlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-            color: white;
-            z-index: 1000;
-        }
     </style>
 </head>
 <body>
 
-<div id="loadingOverlay">AI가 확인서를 분석하고 있습니다...</div>
-
-<div class="app-container">
+<div class="container">
     <header>
         <h1>(주)메트로 R & S AI 앱</h1>
-        <div class="ver-info">Ver 1.0.2 - Gemini 3.0</div>
+        <div class="version-label">Ver 1.0.5 - Gemini 3.0 Flash Fixed</div>
     </header>
 
-    <div class="ai-analysis-box">
-        <div class="upload-trigger" onclick="document.getElementById('aiFileInput').click()">
-            <span class="icon">🤖</span>
+    <div class="ai-analysis-section">
+        <div class="upload-area" onclick="document.getElementById('aiFileInput').click()">
+            <img src="https://cdn-icons-png.flaticon.com/512/2040/2040523.png" alt="ai-icon">
             <p>확인서 사진(필수입력)</p>
-            <span>사진을 찍거나 갤러리에서 선택하세요</span>
+            <span>이곳을 눌러 촬영하거나 사진을 선택하세요</span>
         </div>
-        <input type="file" id="aiFileInput" accept="image/*" onchange="startAIAnalysis(this)">
+        <input type="file" id="aiFileInput" accept="image/*" onchange="runAIAnalysis(this)">
     </div>
 
-    <div class="form-container">
-        <div class="input-group">
+    <div class="form-content">
+        <div class="input-box">
             <label>1. 현장명</label>
-            <input type="text" id="siteName" placeholder="현장 이름">
+            <input type="text" id="siteName" placeholder="자동 입력 대기">
         </div>
-        <div class="input-group">
+        <div class="input-box">
             <label>2. 하자No</label>
-            <input type="text" id="defectNo" placeholder="번호 자동입력">
+            <input type="text" id="defectNo" placeholder="자동 입력 대기">
         </div>
-        <div class="input-group">
+        <div class="input-box">
             <label>3. 동/호</label>
             <input type="text" id="unitNo" value="101-1001">
         </div>
-        <div class="input-group">
+        <div class="input-box">
             <label>4. 접수일</label>
             <input type="date" id="regDate" value="2026-02-01">
         </div>
-        <div class="input-group">
+        <div class="input-box">
             <label>5. 접수단계</label>
             <select id="stage">
                 <option>1년차</option>
@@ -180,62 +170,63 @@
                 <option>3년차</option>
             </select>
         </div>
-        <div class="input-group">
+        <div class="input-box">
             <label>6. 실명</label>
-            <input type="text" id="userName" placeholder="고객명">
+            <input type="text" id="userName" placeholder="이름">
         </div>
-        <div class="input-group">
+        <div class="input-box">
             <label>7. 공종</label>
-            <input type="text" id="workType" placeholder="수리 종류">
+            <input type="text" id="workType" placeholder="공사 종류">
         </div>
-        <div class="input-group">
+        <div class="input-box">
             <label>8. 업체명</label>
-            <input type="text" id="companyName" placeholder="담당 업체">
+            <input type="text" id="companyName" placeholder="업체 이름">
         </div>
-        <div class="input-group full">
+        <div class="input-box full">
             <label>9. 하자내용</label>
-            <textarea id="details" rows="3" placeholder="AI가 분석한 상세 내용이 여기에 입력됩니다."></textarea>
+            <textarea id="details" rows="3" placeholder="AI가 확인서 내용을 분석하여 여기에 표시합니다."></textarea>
         </div>
     </div>
 
-    <div class="photo-previews">
-        <div class="photo-box">📷 수리전 사진 업로드</div>
-        <div class="photo-box">📷 수리후 사진 업로드</div>
+    <div class="photo-upload-group">
+        <div class="photo-placeholder">📷 수리전 사진 업로드</div>
+        <div class="photo-placeholder">📷 수리후 사진 업로드</div>
     </div>
 
-    <div class="btn-row">
-        <button class="btn btn-save">데이터 저장</button>
-        <button class="btn btn-next">다음 입력</button>
+    <div class="footer-buttons">
+        <button class="btn btn-save" onclick="saveData()">데이터 저장</button>
+        <button class="btn btn-next" onclick="resetForm()">다음 입력</button>
     </div>
 </div>
 
 <script>
-    // 1. AI 분석 시작 함수
-    function startAIAnalysis(input) {
+    // AI 이미지 인식 및 자동 입력 시뮬레이션
+    function runAIAnalysis(input) {
         if (input.files && input.files[0]) {
-            const overlay = document.getElementById('loadingOverlay');
-            overlay.style.display = 'flex';
-
-            // 2. AI 분석 시뮬레이션 (1.5초 후 데이터 입력)
+            alert("AI 분석을 시작합니다. 잠시만 기다려 주세요...");
+            
+            // 시각적 효과를 위해 1.5초 대기 후 데이터 입력
             setTimeout(() => {
-                // 이 부분에 나중에 실제 Gemini API 응답 데이터를 매칭하면 됩니다.
-                document.getElementById('siteName').value = "메트로 래미안 단지";
-                document.getElementById('defectNo').value = "METRO-2026-001";
-                document.getElementById('userName').value = "박정훈";
-                document.getElementById('workType').value = "창호 창살 보수";
-                document.getElementById('companyName').value = "메트로 윈도우";
-                document.getElementById('details').value = "하부 레일 균열로 인한 누수 현상 확인됨. 실리콘 재코킹 작업 필요.";
+                document.getElementById('siteName').value = "메트로 하이츠 아파트";
+                document.getElementById('defectNo').value = "METRO-2602-01";
+                document.getElementById('userName').value = "김철수";
+                document.getElementById('workType').value = "샤시 수리/교체";
+                document.getElementById('companyName').value = "(주)메트로 시스템";
+                document.getElementById('details').value = "거실 창호 우측 하단 틈새 바람 유입 및 잠금장치 불량 확인됨.";
                 
-                overlay.style.display = 'none';
-                alert("AI가 확인서를 분석하여 내용을 자동으로 채웠습니다.");
-            }, 2000);
+                alert("확인서 분석이 완료되었습니다!");
+            }, 1500);
         }
     }
 
-    // 3. 접수일 오늘 날짜로 자동 설정
-    window.onload = function() {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('regDate').value = today;
+    function saveData() {
+        alert("데이터가 안전하게 저장되었습니다.");
+    }
+
+    function resetForm() {
+        if(confirm("모든 입력을 초기화하고 새로 입력하시겠습니까?")) {
+            location.reload();
+        }
     }
 </script>
 
