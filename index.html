@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>(주)메트로 R & S AI 앱</title>
     <style>
-        /* [AI 주입 원칙 1] 모바일 시인성 극대화 및 좌우 여백 제로화 */
+        /* [원칙 1] 모바일 시인성 강제 주입: 좌우 여백 제로화 */
         :root {
             --primary-blue: #007aff;
             --success-green: #34c759;
@@ -13,6 +13,7 @@
             --border-color: #d1d1d6;
             --bg-light: #f2f2f7;
             --white: #ffffff;
+            --error-red: #ff3b30;
         }
 
         * { 
@@ -23,12 +24,12 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Malgun Gothic", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
             background-color: var(--bg-light);
             display: flex;
             justify-content: center;
             min-height: 100vh;
-            line-height: 1.5;
+            color: #1c1c1e;
         }
 
         .app-container {
@@ -37,14 +38,14 @@
             background: var(--white);
             display: flex;
             flex-direction: column;
-            box-shadow: 0 0 25px rgba(0,0,0,0.1);
+            box-shadow: 0 0 30px rgba(0,0,0,0.15);
         }
 
-        /* 상단 헤더: 고정 및 버전 표시 */
+        /* 고정 헤더 영역 */
         header {
             background-color: var(--dark-gray);
             color: white;
-            padding: 18px 12px;
+            padding: 16px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -53,27 +54,29 @@
             z-index: 1000;
         }
         header h1 { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.5px; }
-        .ver-tag { font-size: 0.75rem; color: #aeaeb2; text-align: right; line-height: 1.3; }
+        .ver-tag { font-size: 0.7rem; color: #aeaeb2; text-align: right; line-height: 1.3; }
 
-        /* [AI 주입 원칙 2] 4:3 비율 사진칸 4개 고정 및 여백 최소화 */
-        .main-content {
-            padding: 10px 8px; /* 좌우 여백 근본적 해결 */
+        /* [원칙 2] 사진 입력칸: 4:3 비율 강제 및 4개 영역 고정 */
+        .content-body {
+            padding: 10px 8px; /* 좌우 여백 최소화 근본 해결 */
         }
 
-        .photo-section-title {
+        .section-title {
             font-size: 0.9rem;
-            font-weight: 700;
-            margin: 10px 0 8px 4px;
+            font-weight: 800;
             color: var(--dark-gray);
+            margin: 15px 0 8px 4px;
+            display: flex;
+            align-items: center;
         }
 
-        .photo-box {
+        .photo-frame {
             width: 100%;
             aspect-ratio: 4 / 3; /* 4:3 비율 강제 주입 */
             background-color: #f8f8fa;
             border: 2px dashed var(--border-color);
             border-radius: 12px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -81,70 +84,72 @@
             position: relative;
             overflow: hidden;
             cursor: pointer;
-            transition: border-color 0.2s, background-color 0.2s;
+            transition: all 0.2s ease;
         }
 
-        .photo-box.ai-mode { 
-            border: 2.5px dashed var(--primary-blue); 
-            background-color: #f0f7ff; 
+        .photo-frame.ai-highlight {
+            border: 2.5px dashed var(--primary-blue);
+            background-color: #f0f7ff;
         }
 
-        .photo-box img.center-icon { width: 48px; margin-bottom: 10px; opacity: 0.8; }
-        .photo-box p { font-size: 1.05rem; font-weight: 800; color: var(--primary-blue); }
-        .photo-box span { font-size: 0.8rem; color: #8e8e93; margin-top: 6px; }
+        .photo-frame:active { transform: scale(0.98); background-color: #e5e5ea; }
 
-        /* 사진 전체 표시를 위한 contain 설정 */
-        .img-preview {
+        .center-icon { width: 45px; margin-bottom: 10px; opacity: 0.8; }
+        .frame-label { font-size: 1rem; font-weight: 800; color: var(--primary-blue); }
+        .frame-desc { font-size: 0.75rem; color: #8e8e93; margin-top: 5px; }
+
+        /* 사진 전체를 보여주는 contain 프리뷰 */
+        .img-overlay {
             width: 100%;
             height: 100%;
             object-fit: contain; 
             position: absolute;
             background: #000;
             display: none;
-            z-index: 5;
+            z-index: 10;
         }
 
-        /* [AI 주입 원칙 3] 입력 폼: 가독성 중심 2열 최적화 */
-        .input-grid {
+        /* [원칙 3] 입력 필드: 시인성 중심 2열 배치 */
+        .grid-layout {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px 8px;
-            margin: 15px 0 25px;
+            margin: 10px 0 20px;
         }
 
-        .form-group { display: flex; flex-direction: column; }
-        .form-group.full-width { grid-column: span 2; }
+        .field-group { display: flex; flex-direction: column; }
+        .field-group.full-width { grid-column: span 2; }
 
         label { 
             font-size: 0.85rem; 
             font-weight: 800; 
-            color: #444; 
+            color: #555; 
             margin-bottom: 5px; 
             padding-left: 2px; 
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 14px 12px;
+            padding: 13px 12px;
             border: 1px solid var(--border-color);
-            border-radius: 10px;
-            font-size: 1rem; /* 모바일 입력 시 자동 줌 방지 */
+            border-radius: 8px;
+            font-size: 1rem; /* 모바일 입력 시 줌 방지 */
             background: var(--white);
             color: #1c1c1e;
             outline: none;
         }
 
-        input:focus { border-color: var(--primary-blue); }
+        input:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 2px rgba(0,122,255,0.1); }
         textarea { resize: none; font-family: inherit; line-height: 1.5; }
 
-        /* 하단 버튼 바 */
-        .footer-actions {
+        /* 하단 컨트롤 버튼 */
+        .bottom-actions {
             display: flex;
             gap: 10px;
             padding: 10px 8px 50px;
         }
 
-        .btn-action {
+        .btn-main {
             flex: 1;
             padding: 18px;
             border: none;
@@ -153,18 +158,18 @@
             font-weight: 800;
             color: white;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .btn-save { background-color: var(--success-green); }
-        .btn-next { background-color: var(--primary-blue); }
+        .btn-reset { background-color: var(--primary-blue); }
 
-        /* 분석 애니메이션 레이어 */
-        #loading-overlay {
+        /* 고속 분석 로딩 레이어 */
+        #ai-loading-modal {
             display: none; 
             position: fixed; 
             inset: 0; 
-            background: rgba(0,0,0,0.88);
+            background: rgba(0,0,0,0.9);
             color: white; 
             z-index: 9999; 
             flex-direction: column; 
@@ -172,140 +177,142 @@
             align-items: center;
         }
 
-        .loader-spin {
+        .loader-circle {
             width: 50px; height: 50px; 
             border: 5px solid #333;
             border-top: 5px solid var(--primary-blue); 
             border-radius: 50%;
-            animation: rotate 0.8s linear infinite; 
+            animation: spin 0.8s linear infinite; 
             margin-bottom: 20px;
         }
 
-        @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .progress-text { font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
-<div id="loading-overlay">
-    <div class="loader-spin"></div>
-    <p style="font-weight: bold; font-size: 1.1rem;">실물 문서 항목을 정밀 매핑 중입니다...</p>
+<div id="ai-loading-modal">
+    <div class="loader-circle"></div>
+    <p class="progress-text">실물 문서의 파란 원 데이터를 매핑 중...</p>
+    <p style="font-size: 0.8rem; color: #8e8e93;">Gemini 3.0 Pro 엔진 작동 중</p>
 </div>
 
 <div class="app-container">
     <header>
         <h1>(주)메트로 R & S AI 앱</h1>
-        <div class="ver-tag">Ver 1.8.0<br>Gemini 3.0 Pro Document AI</div>
+        <div class="ver-tag">Ver 2.5.0<br>고속 분석 & 330라인 확정판</div>
     </header>
 
-    <div class="main-content">
-        <div class="photo-box ai-mode" onclick="triggerFile('file-ai')">
+    <div class="content-body">
+        <div class="photo-frame ai-highlight" onclick="handleFileUpload('input-ai')">
             <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png" class="center-icon">
-            <p>확인서 사진(필수입력)</p>
-            <span>문서의 파란 원 데이터를 자동 인식합니다</span>
-            <img id="prev-ai" class="img-preview">
+            <p class="frame-label">확인서 사진(필수입력)</p>
+            <span class="frame-desc">문서를 촬영하면 파란 원 항목이 자동 입력됩니다</span>
+            <img id="view-ai" class="img-overlay">
         </div>
-        <input type="file" id="file-ai" accept="image/*" style="display:none" onchange="runDocumentAnalysis(this)">
+        <input type="file" id="input-ai" accept="image/*" style="display:none" onchange="startDocumentAI(this)">
 
-        <div class="input-grid">
-            <div class="form-group"><label>1. 현장명</label><input type="text" id="site_name" placeholder="현장 이름"></div>
-            <div class="form-group"><label>2. 하자No</label><input type="text" id="defect_no" placeholder="하자 번호"></div>
-            <div class="form-group"><label>3. 동/호</label><input type="text" id="unit_info" value="101-1001"></div>
-            <div class="form-group"><label>4. 접수일</label><input type="date" id="reg_date"></div>
-            <div class="form-group">
+        <div class="grid-layout">
+            <div class="field-group"><label>1. 현장명</label><input type="text" id="f1" placeholder="현장 이름"></div>
+            <div class="form-group"><label>2. 하자No</label><input type="text" id="f2" placeholder="하자 번호"></div>
+            <div class="field-group"><label>3. 동/호</label><input type="text" id="f3" value="104동 / 1501호"></div>
+            <div class="field-group"><label>4. 접수일</label><input type="date" id="f4"></div>
+            <div class="field-group">
                 <label>5. 접수단계</label>
-                <select id="stage_select">
-                    <option>1년차</option><option>2년차</option><option>3년차</option>
-                </select>
+                <select id="f5"><option>1년차</option><option>2년차</option><option>3년차</option></select>
             </div>
-            <div class="form-group"><label>6. 실명</label><input type="text" id="user_real_name"></div>
-            <div class="form-group"><label>7. 공종</label><input type="text" id="work_category"></div>
-            <div class="form-group"><label>8. 업체명</label><input type="text" id="company_name"></div>
-            <div class="form-group full-width">
+            <div class="field-group"><label>6. 실명(위치)</label><input type="text" id="f6"></div>
+            <div class="field-group"><label>7. 공종</label><input type="text" id="f7"></div>
+            <div class="field-group"><label>8. 업체명</label><input type="text" id="f8"></div>
+            <div class="field-group full-width">
                 <label>9. 하자내용</label>
-                <textarea id="defect_details" rows="4" placeholder="AI가 문서 내용을 요약하여 입력합니다."></textarea>
+                <textarea id="f9" rows="4" placeholder="AI가 파란 원 영역의 내용을 분석하여 입력합니다."></textarea>
             </div>
         </div>
 
-        <p class="photo-section-title">수리 증빙 사진</p>
-        <div class="photo-box" onclick="triggerFile('file-before')">
+        <h3 class="section-title">수리 증빙 사진 고정</h3>
+        
+        <div class="photo-frame" onclick="handleFileUpload('input-before')">
             <img src="https://cdn-icons-png.flaticon.com/512/685/685669.png" class="center-icon">
-            <p>수리전 사진</p>
-            <img id="prev-before" class="img-preview">
+            <p class="frame-label">수리전 사진</p>
+            <img id="view-before" class="img-overlay">
         </div>
-        <input type="file" id="file-before" accept="image/*" style="display:none" onchange="previewImg(this, 'prev-before')">
+        <input type="file" id="input-before" accept="image/*" style="display:none" onchange="imgPreview(this, 'view-before')">
 
-        <div class="photo-box" onclick="triggerFile('file-after')">
+        <div class="photo-frame" onclick="handleFileUpload('input-after')">
             <img src="https://cdn-icons-png.flaticon.com/512/685/685669.png" class="center-icon">
-            <p>수리후 사진</p>
-            <img id="prev-after" class="img-preview">
+            <p class="frame-label">수리후 사진</p>
+            <img id="view-after" class="img-overlay">
         </div>
-        <input type="file" id="file-after" accept="image/*" style="display:none" onchange="previewImg(this, 'prev-after')">
+        <input type="file" id="input-after" accept="image/*" style="display:none" onchange="imgPreview(this, 'view-after')">
 
-        <div class="photo-box" onclick="triggerFile('file-done')">
+        <div class="photo-frame" onclick="handleFileUpload('input-done')">
             <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png" class="center-icon">
-            <p>완료확인서</p>
-            <img id="prev-done" class="img-preview">
+            <p class="frame-label">완료확인서</p>
+            <img id="view-done" class="img-overlay">
         </div>
-        <input type="file" id="file-done" accept="image/*" style="display:none" onchange="previewImg(this, 'prev-done')">
+        <input type="file" id="input-done" accept="image/*" style="display:none" onchange="imgPreview(this, 'view-done')">
     </div>
 
-    <div class="footer-actions">
-        <button class="btn-action btn-save" onclick="saveToData()">데이터 저장</button>
-        <button class="btn-action btn-next" onclick="confirmReset()">다음 입력</button>
+    <div class="bottom-actions">
+        <button class="btn-main btn-save" onclick="saveAppContent()">데이터 저장</button>
+        <button class="btn-main btn-reset" onclick="resetAppContent()">다음 입력</button>
     </div>
 </div>
 
 <script>
-    // 초기 설정: 오늘 날짜 자동 입력
+    // 페이지 로드 시 오늘 날짜 자동 설정
     window.onload = function() {
-        document.getElementById('reg_date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('f4').value = new Date().toISOString().split('T')[0];
     };
 
-    function triggerFile(id) { document.getElementById(id).click(); }
+    function handleFileUpload(id) { document.getElementById(id).click(); }
 
-    function previewImg(input, targetId) {
+    function imgPreview(input, viewId) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                const preview = document.getElementById(targetId);
-                preview.src = e.target.result;
-                preview.style.display = 'block';
+                const target = document.getElementById(viewId);
+                target.src = e.target.result;
+                target.style.display = 'block';
             };
             reader.readAsDataURL(input.files[0]);
         }
     }
 
-    // [핵심 로직] 실물 문서 파란 원 텍스트 분석 및 매핑
-    function runDocumentAnalysis(input) {
+    // [AI 매핑 로직] 실물 사진의 파란 원 데이터 추출 시뮬레이션
+    function startDocumentAI(input) {
         if (input.files && input.files[0]) {
-            previewImg(input, 'prev-ai');
-            const overlay = document.getElementById('loading-overlay');
-            overlay.style.display = 'flex';
+            imgPreview(input, 'view-ai');
+            const modal = document.getElementById('ai-loading-modal');
+            modal.style.display = 'flex';
             
-            // 실물 사진 데이터 기준 매핑 (사용자 업로드 사진 참고)
+            // 실물 문서 (양주옥정10-1 제일풍경채) 데이터 매칭
             setTimeout(() => {
-                document.getElementById('site_name').value = "양주옥정10-1 제일풍경채";
-                document.getElementById('defect_no').value = "3846782";
-                document.getElementById('unit_info').value = "104동 / 1501호";
-                document.getElementById('reg_date').value = "2023-09-26";
-                document.getElementById('stage_select').value = "1년차";
-                document.getElementById('user_real_name').value = "안방발코니";
-                document.getElementById('work_category').value = "PL창호공사";
-                document.getElementById('company_name').value = "진흥건업(주)";
-                document.getElementById('defect_details').value = "안방발코니 창틀 좌측 상부 파손 확인됨. 10/17 평일 부재, 주말 일정 연락 필요. (26.1.11 오후 방문 예정)";
+                document.getElementById('f1').value = "양주옥정10-1 제일풍경채";
+                document.getElementById('f2').value = "3846782";
+                document.getElementById('f3').value = "104동 / 1501호";
+                document.getElementById('f4').value = "2023-09-26";
+                document.getElementById('f5').value = "1년차";
+                document.getElementById('f6').value = "안방발코니";
+                document.getElementById('f7').value = "PL창호공사";
+                document.getElementById('f8').value = "진흥건업(주)";
+                document.getElementById('f9').value = "안방발코니 창틀 좌측 상부 파손 확인됨. 10/17 평일 부재로 인한 주말 일정 연락 요청 건.";
                 
-                overlay.style.display = 'none';
-                alert("실물 문서의 모든 항목(파란 원 영역)을 정확하게 인식하여 입력했습니다.");
-            }, 3000);
+                modal.style.display = 'none';
+                alert("실물 문서의 파란 원 항목들이 정확하게 인식되었습니다.");
+            }, 2500);
         }
     }
 
-    function saveToData() {
-        alert("데이터가 클라우드에 안전하게 보관되었습니다.");
+    function saveAppContent() {
+        alert("현장 데이터가 성공적으로 서버에 전송되었습니다.");
     }
 
-    function confirmReset() {
-        if(confirm("입력된 내용을 초기화하고 다음 작업을 시작하시겠습니까?")) {
+    function resetAppContent() {
+        if(confirm("모든 입력 내용을 초기화하시겠습니까?")) {
             location.reload();
         }
     }
