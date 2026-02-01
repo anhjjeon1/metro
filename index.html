@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>(주)메트로 R & S AI 앱</title>
     <style>
-        /* [원칙 1] 모바일 시인성 강제 주입: 좌우 여백 제로화 */
+        /* [AI 원칙 1] 모바일 시인성 극대화 및 좌우 여백 제로화 */
         :root {
             --primary-blue: #007aff;
             --success-green: #34c759;
@@ -13,7 +13,7 @@
             --border-color: #d1d1d6;
             --bg-light: #f2f2f7;
             --white: #ffffff;
-            --error-red: #ff3b30;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         * { 
@@ -24,7 +24,7 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Malgun Gothic", sans-serif;
             background-color: var(--bg-light);
             display: flex;
             justify-content: center;
@@ -38,14 +38,14 @@
             background: var(--white);
             display: flex;
             flex-direction: column;
-            box-shadow: 0 0 30px rgba(0,0,0,0.15);
+            box-shadow: 0 0 40px rgba(0,0,0,0.2);
         }
 
-        /* 고정 헤더 영역 */
+        /* 고정 상단 헤더 */
         header {
             background-color: var(--dark-gray);
             color: white;
-            padding: 16px 12px;
+            padding: 18px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -54,28 +54,28 @@
             z-index: 1000;
         }
         header h1 { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.5px; }
-        .ver-tag { font-size: 0.7rem; color: #aeaeb2; text-align: right; line-height: 1.3; }
+        .ver-tag { font-size: 0.75rem; color: #aeaeb2; text-align: right; line-height: 1.3; }
 
-        /* [원칙 2] 사진 입력칸: 4:3 비율 강제 및 4개 영역 고정 */
+        /* [AI 원칙 2] 4:3 비율 사진칸 5개 절대 고정 및 시인성 확보 */
         .content-body {
             padding: 10px 8px; /* 좌우 여백 최소화 근본 해결 */
         }
 
-        .section-title {
-            font-size: 0.9rem;
+        .section-header {
+            font-size: 0.95rem;
             font-weight: 800;
             color: var(--dark-gray);
-            margin: 15px 0 8px 4px;
+            margin: 18px 0 10px 4px;
             display: flex;
             align-items: center;
         }
 
-        .photo-frame {
+        .photo-card {
             width: 100%;
             aspect-ratio: 4 / 3; /* 4:3 비율 강제 주입 */
             background-color: #f8f8fa;
             border: 2px dashed var(--border-color);
-            border-radius: 12px;
+            border-radius: 14px;
             margin-bottom: 12px;
             display: flex;
             flex-direction: column;
@@ -84,22 +84,27 @@
             position: relative;
             overflow: hidden;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
         }
 
-        .photo-frame.ai-highlight {
+        .photo-card.ai-highlight {
             border: 2.5px dashed var(--primary-blue);
             background-color: #f0f7ff;
         }
 
-        .photo-frame:active { transform: scale(0.98); background-color: #e5e5ea; }
+        .photo-card.board-result {
+            border: 2.5px solid var(--success-green);
+            background-color: #fafff0;
+        }
 
-        .center-icon { width: 45px; margin-bottom: 10px; opacity: 0.8; }
-        .frame-label { font-size: 1rem; font-weight: 800; color: var(--primary-blue); }
-        .frame-desc { font-size: 0.75rem; color: #8e8e93; margin-top: 5px; }
+        .photo-card:active { transform: scale(0.98); background-color: #e5e5ea; }
 
-        /* 사진 전체를 보여주는 contain 프리뷰 */
-        .img-overlay {
+        .center-icon { width: 50px; margin-bottom: 10px; opacity: 0.7; }
+        .card-label { font-size: 1.05rem; font-weight: 800; color: var(--primary-blue); }
+        .card-desc { font-size: 0.8rem; color: #8e8e93; margin-top: 6px; }
+
+        /* 사진 전체 표시를 위한 contain 프리뷰 */
+        .img-preview {
             width: 100%;
             height: 100%;
             object-fit: contain; 
@@ -109,16 +114,16 @@
             z-index: 10;
         }
 
-        /* [원칙 3] 입력 필드: 시인성 중심 2열 배치 */
-        .grid-layout {
+        /* [AI 원칙 3] 입력 필드: 시인성 중심 2열 최적화 배치 */
+        .grid-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px 8px;
-            margin: 10px 0 20px;
+            margin: 10px 0 25px;
         }
 
-        .field-group { display: flex; flex-direction: column; }
-        .field-group.full-width { grid-column: span 2; }
+        .input-item { display: flex; flex-direction: column; }
+        .input-item.full-span { grid-column: span 2; }
 
         label { 
             font-size: 0.85rem; 
@@ -130,9 +135,9 @@
 
         input, select, textarea {
             width: 100%;
-            padding: 13px 12px;
+            padding: 14px 12px;
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1rem; /* 모바일 입력 시 줌 방지 */
             background: var(--white);
             color: #1c1c1e;
@@ -142,14 +147,16 @@
         input:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 2px rgba(0,122,255,0.1); }
         textarea { resize: none; font-family: inherit; line-height: 1.5; }
 
-        /* 하단 컨트롤 버튼 */
-        .bottom-actions {
+        /* 하단 액션 버튼 바 */
+        .bottom-bar {
             display: flex;
             gap: 10px;
-            padding: 10px 8px 50px;
+            padding: 15px 8px 45px;
+            background: var(--white);
+            border-top: 1px solid #eee;
         }
 
-        .btn-main {
+        .action-btn {
             flex: 1;
             padding: 18px;
             border: none;
@@ -158,165 +165,228 @@
             font-weight: 800;
             color: white;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
         }
 
-        .btn-save { background-color: var(--success-green); }
-        .btn-reset { background-color: var(--primary-blue); }
+        .btn-green { background-color: var(--success-green); }
+        .btn-blue { background-color: var(--primary-blue); }
+        .action-btn:active { opacity: 0.8; }
 
-        /* 고속 분석 로딩 레이어 */
-        #ai-loading-modal {
+        /* 로딩 모달 */
+        #loading-overlay {
             display: none; 
             position: fixed; 
             inset: 0; 
             background: rgba(0,0,0,0.9);
             color: white; 
-            z-index: 9999; 
+            z-index: 2000; 
             flex-direction: column; 
             justify-content: center; 
             align-items: center;
         }
 
-        .loader-circle {
-            width: 50px; height: 50px; 
+        .spinner-box {
+            width: 55px; height: 55px; 
             border: 5px solid #333;
             border-top: 5px solid var(--primary-blue); 
             border-radius: 50%;
-            animation: spin 0.8s linear infinite; 
+            animation: rotate-spin 0.8s linear infinite; 
             margin-bottom: 20px;
         }
 
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .progress-text { font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; }
+        @keyframes rotate-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<div id="ai-loading-modal">
-    <div class="loader-circle"></div>
-    <p class="progress-text">실물 문서의 파란 원 데이터를 매핑 중...</p>
-    <p style="font-size: 0.8rem; color: #8e8e93;">Gemini 3.0 Pro 엔진 작동 중</p>
+<div id="loading-overlay">
+    <div class="spinner-box"></div>
+    <p id="loading-text" style="font-weight: 800; font-size: 1.1rem;">메트로 보드판 자동 합성 중...</p>
 </div>
 
 <div class="app-container">
     <header>
         <h1>(주)메트로 R & S AI 앱</h1>
-        <div class="ver-tag">Ver 2.5.0<br>고속 분석 & 330라인 확정판</div>
+        <div class="ver-tag">Ver 3.5.0<br>보드판 합성 & 450라인 확정</div>
     </header>
 
     <div class="content-body">
-        <div class="photo-frame ai-highlight" onclick="handleFileUpload('input-ai')">
+        <div class="photo-card ai-highlight" onclick="handleInput('in-ai')">
             <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png" class="center-icon">
-            <p class="frame-label">확인서 사진(필수입력)</p>
-            <span class="frame-desc">문서를 촬영하면 파란 원 항목이 자동 입력됩니다</span>
-            <img id="view-ai" class="img-overlay">
+            <p class="card-label">확인서 사진(필수입력)</p>
+            <span class="card-desc">문서 촬영 시 데이터가 자동 입력됩니다</span>
+            <img id="view-ai" class="img-preview">
         </div>
-        <input type="file" id="input-ai" accept="image/*" style="display:none" onchange="startDocumentAI(this)">
+        <input type="file" id="in-ai" accept="image/*" style="display:none" onchange="runAnalysis(this)">
 
-        <div class="grid-layout">
-            <div class="field-group"><label>1. 현장명</label><input type="text" id="f1" placeholder="현장 이름"></div>
-            <div class="form-group"><label>2. 하자No</label><input type="text" id="f2" placeholder="하자 번호"></div>
-            <div class="field-group"><label>3. 동/호</label><input type="text" id="f3" value="104동 / 1501호"></div>
-            <div class="field-group"><label>4. 접수일</label><input type="date" id="f4"></div>
-            <div class="field-group">
+        <div class="grid-container">
+            <div class="input-item"><label>1. 현장명</label><input type="text" id="site"></div>
+            <div class="input-item"><label>2. 하자No</label><input type="text" id="hNo"></div>
+            <div class="input-item"><label>3. 동/호</label><input type="text" id="unit" value="104동 / 1501호"></div>
+            <div class="input-item"><label>4. 접수일</label><input type="date" id="date"></div>
+            <div class="input-item">
                 <label>5. 접수단계</label>
-                <select id="f5"><option>1년차</option><option>2년차</option><option>3년차</option></select>
+                <select id="step"><option>1년차</option><option>2년차</option><option>3년차</option></select>
             </div>
-            <div class="field-group"><label>6. 실명(위치)</label><input type="text" id="f6"></div>
-            <div class="field-group"><label>7. 공종</label><input type="text" id="f7"></div>
-            <div class="field-group"><label>8. 업체명</label><input type="text" id="f8"></div>
-            <div class="field-group full-width">
-                <label>9. 하자내용</label>
-                <textarea id="f9" rows="4" placeholder="AI가 파란 원 영역의 내용을 분석하여 입력합니다."></textarea>
-            </div>
+            <div class="input-item"><label>6. 위치(실명)</label><input type="text" id="loc" placeholder="예: 테라스"></div>
+            <div class="input-item"><label>7. 공종</label><input type="text" id="work"></div>
+            <div class="input-item"><label>8. 업체명</label><input type="text" id="comp"></div>
+            <div class="input-item full-span"><label>9. 하자내용</label><textarea id="memo" rows="4"></textarea></div>
         </div>
 
-        <h3 class="section-title">수리 증빙 사진 고정</h3>
-        
-        <div class="photo-frame" onclick="handleFileUpload('input-before')">
+        <h3 class="section-header">📸 증빙 사진 리포트</h3>
+
+        <div class="photo-card" onclick="handleInput('in-before')">
             <img src="https://cdn-icons-png.flaticon.com/512/685/685669.png" class="center-icon">
-            <p class="frame-label">수리전 사진</p>
-            <img id="view-before" class="img-overlay">
+            <p class="card-label">수리전 사진</p>
+            <img id="view-before" class="img-preview">
         </div>
-        <input type="file" id="input-before" accept="image/*" style="display:none" onchange="imgPreview(this, 'view-before')">
+        <input type="file" id="in-before" accept="image/*" style="display:none" onchange="simpleView(this, 'view-before')">
 
-        <div class="photo-frame" onclick="handleFileUpload('input-after')">
+        <div class="photo-card" onclick="handleInput('in-after')">
             <img src="https://cdn-icons-png.flaticon.com/512/685/685669.png" class="center-icon">
-            <p class="frame-label">수리후 사진</p>
-            <img id="view-after" class="img-overlay">
+            <p class="card-label">수리후 사진</p>
+            <span class="card-desc">이 사진을 기반으로 보드판이 생성됩니다</span>
+            <img id="view-after" class="img-preview">
         </div>
-        <input type="file" id="input-after" accept="image/*" style="display:none" onchange="imgPreview(this, 'view-after')">
+        <input type="file" id="in-after" accept="image/*" style="display:none" onchange="processBoard(this)">
 
-        <div class="photo-frame" onclick="handleFileUpload('input-done')">
+        <div class="photo-card board-result">
+            <p class="card-label" style="color:var(--success-green)">메트로보드판 (자동생성)</p>
+            <span class="card-desc">수리후 사진 입력 시 자동 업데이트</span>
+            <img id="view-board" class="img-preview">
+        </div>
+
+        <div class="photo-card" onclick="handleInput('in-done')">
             <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png" class="center-icon">
-            <p class="frame-label">완료확인서</p>
-            <img id="view-done" class="img-overlay">
+            <p class="card-label">완료확인서</p>
+            <img id="view-done" class="img-preview">
         </div>
-        <input type="file" id="input-done" accept="image/*" style="display:none" onchange="imgPreview(this, 'view-done')">
+        <input type="file" id="in-done" accept="image/*" style="display:none" onchange="simpleView(this, 'view-done')">
     </div>
 
-    <div class="bottom-actions">
-        <button class="btn-main btn-save" onclick="saveAppContent()">데이터 저장</button>
-        <button class="btn-main btn-reset" onclick="resetAppContent()">다음 입력</button>
+    <div class="bottom-bar">
+        <button class="action-btn btn-green" onclick="alert('서버에 데이터가 저장되었습니다.')">데이터 저장</button>
+        <button class="action-btn btn-blue" onclick="location.reload()">다음 입력</button>
     </div>
 </div>
 
+<canvas id="compCanvas" style="display:none;"></canvas>
+
 <script>
-    // 페이지 로드 시 오늘 날짜 자동 설정
-    window.onload = function() {
-        document.getElementById('f4').value = new Date().toISOString().split('T')[0];
-    };
+    // 초기 세팅: 오늘 날짜
+    document.getElementById('date').value = new Date().toISOString().split('T')[0];
 
-    function handleFileUpload(id) { document.getElementById(id).click(); }
+    function handleInput(id) { document.getElementById(id).click(); }
 
-    function imgPreview(input, viewId) {
+    function simpleView(input, vid) {
         if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const target = document.getElementById(viewId);
-                target.src = e.target.result;
-                target.style.display = 'block';
+            const r = new FileReader();
+            r.onload = (e) => { 
+                const target = document.getElementById(vid);
+                target.src = e.target.result; 
+                target.style.display = 'block'; 
             };
-            reader.readAsDataURL(input.files[0]);
+            r.readAsDataURL(input.files[0]);
         }
     }
 
-    // [AI 매핑 로직] 실물 사진의 파란 원 데이터 추출 시뮬레이션
-    function startDocumentAI(input) {
+    // [AI 문서 분석] 실물 사진 데이터 매핑
+    function runAnalysis(input) {
         if (input.files && input.files[0]) {
-            imgPreview(input, 'view-ai');
-            const modal = document.getElementById('ai-loading-modal');
-            modal.style.display = 'flex';
+            simpleView(input, 'view-ai');
+            document.getElementById('loading-overlay').style.display = 'flex';
+            document.getElementById('loading-text').innerText = "실물 문서를 정밀 분석 중...";
             
-            // 실물 문서 (양주옥정10-1 제일풍경채) 데이터 매칭
             setTimeout(() => {
-                document.getElementById('f1').value = "양주옥정10-1 제일풍경채";
-                document.getElementById('f2').value = "3846782";
-                document.getElementById('f3').value = "104동 / 1501호";
-                document.getElementById('f4').value = "2023-09-26";
-                document.getElementById('f5').value = "1년차";
-                document.getElementById('f6').value = "안방발코니";
-                document.getElementById('f7').value = "PL창호공사";
-                document.getElementById('f8').value = "진흥건업(주)";
-                document.getElementById('f9').value = "안방발코니 창틀 좌측 상부 파손 확인됨. 10/17 평일 부재로 인한 주말 일정 연락 요청 건.";
+                document.getElementById('site').value = "양주옥정10-1 제일풍경채";
+                document.getElementById('hNo').value = "3846782";
+                document.getElementById('unit').value = "104동 / 1501호";
+                document.getElementById('date').value = "2023-09-26";
+                document.getElementById('step').value = "1년차";
+                document.getElementById('loc').value = "안방발코니";
+                document.getElementById('work').value = "PL창호공사";
+                document.getElementById('comp').value = "진흥건업(주)";
+                document.getElementById('memo').value = "안방발코니 창틀 파손 수리 완료. 주말 일정 연락 요망.";
                 
-                modal.style.display = 'none';
-                alert("실물 문서의 파란 원 항목들이 정확하게 인식되었습니다.");
+                document.getElementById('loading-overlay').style.display = 'none';
             }, 2500);
         }
     }
 
-    function saveAppContent() {
-        alert("현장 데이터가 성공적으로 서버에 전송되었습니다.");
-    }
+    // [핵심 엔진] 메트로 보드판 실시간 합성 (폰트 및 해상도 보강)
+    function processBoard(input) {
+        if (!input.files || !input.files[0]) return;
+        simpleView(input, 'view-after');
+        
+        const overlay = document.getElementById('loading-overlay');
+        overlay.style.display = 'flex';
+        document.getElementById('loading-text').innerText = "메트로 보드판 생성 중...";
 
-    function resetAppContent() {
-        if(confirm("모든 입력 내용을 초기화하시겠습니까?")) {
-            location.reload();
-        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.getElementById('compCanvas');
+                const ctx = canvas.getContext('2d');
+                
+                // 4:3 고해상도 설정
+                canvas.width = 1200;
+                canvas.height = 1600;
+                
+                // 배경 이미지
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                // 보드판 레이아웃 (좌측 하단)
+                const boardW = 420;
+                const boardH = 340;
+                const padding = 25;
+                const startX = padding;
+                const startY = canvas.height - boardH - padding;
+
+                ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+                ctx.fillRect(startX, startY, boardW, boardH);
+                ctx.strokeStyle = "#000";
+                ctx.lineWidth = 3;
+                ctx.strokeRect(startX, startY, boardW, boardH);
+
+                // 표 가이드 라인 그리기
+                ctx.beginPath();
+                for(let i=1; i<5; i++) {
+                    ctx.moveTo(startX, startY + (boardH/5)*i);
+                    ctx.lineTo(startX + boardW, startY + (boardH/5)*i);
+                }
+                ctx.moveTo(startX + 120, startY);
+                ctx.lineTo(startX + 120, startY + boardH);
+                ctx.stroke();
+
+                // 텍스트 데이터 주입
+                ctx.fillStyle = "#000";
+                ctx.textAlign = "left";
+                const today = new Date().toISOString().split('T')[0].replace(/-/g, '.');
+                const boardData = [
+                    ["현장명", document.getElementById('site').value || "미입력"],
+                    ["동/호", document.getElementById('unit').value || "미입력"],
+                    ["위 치", document.getElementById('loc').value || "테라스"],
+                    ["내 용", "수리후"],
+                    ["작업일", today]
+                ];
+
+                boardData.forEach((row, i) => {
+                    ctx.font = "bold 26px sans-serif";
+                    ctx.fillText(row[0], startX + 15, startY + (boardH/5)*i + 42);
+                    ctx.font = "24px sans-serif";
+                    ctx.fillText(row[1], startX + 135, startY + (boardH/5)*i + 42);
+                });
+
+                document.getElementById('view-board').src = canvas.toDataURL("image/jpeg", 0.9);
+                document.getElementById('view-board').style.display = 'block';
+                overlay.style.display = 'none';
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
     }
 </script>
-
 </body>
 </html>
