@@ -2,230 +2,238 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>(주)메트로 R & S AI 앱</title>
     <style>
-        /* 기본 테마 설정 */
+        /* 1. 모바일 시인성 최적화: 좌우 여백 최소화 */
         :root {
-            --header-bg: #2c3e50;
-            --primary-blue: #3498db;
-            --success-green: #2ecc71;
-            --bg-color: #f1f4f7;
-            --border-color: #dcdde1;
+            --primary-blue: #007aff;
+            --success-green: #34c759;
+            --bg-gray: #f2f2f7;
+            --input-bg: #ffffff;
+            --text-main: #1c1c1e;
         }
 
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        
         body {
-            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-            background-color: var(--bg-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
+            background-color: var(--bg-gray);
             margin: 0;
+            padding: 0; /* 좌우 여백 제거 */
+            color: var(--text-main);
             display: flex;
             justify-content: center;
-            padding: 15px;
         }
 
-        .container {
+        .app-wrapper {
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-            overflow: hidden;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        /* 1. 상단 헤더: 요청하신 Ver*** 표시 추가 */
+        /* 2. 상단 헤더: 고정 높이 및 버전 표시 */
         header {
-            background-color: var(--header-bg);
+            background-color: #1c1c1e;
             color: white;
-            padding: 15px 20px;
+            padding: 15px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        header h1 { margin: 0; font-size: 1.1rem; font-weight: 700; }
+        .ver-tag { font-size: 0.7rem; color: #aeaeb2; text-align: right; }
+
+        /* 3. 사진 입력 영역: 4:3 비율 강제 및 4개 영역 고정 */
+        .photo-container {
+            padding: 10px 8px; /* 여백 최소화 */
         }
 
-        header h1 { margin: 0; font-size: 1.2rem; }
-        .version-label { font-size: 0.8rem; opacity: 0.8; }
-
-        /* 2. AI 자동 분석 영역: 확인서 사진(필수입력) */
-        .ai-analysis-section {
-            padding: 20px;
-            background-color: #fff;
-            border-bottom: 5px solid var(--bg-color);
-        }
-
-        .upload-area {
-            border: 2px dashed var(--primary-blue);
-            border-radius: 12px;
-            padding: 40px 20px;
-            text-align: center;
+        .photo-box {
+            width: 100%;
+            aspect-ratio: 4 / 3; /* 4:3 비율 강제 */
+            background-color: #f9f9fb;
+            border: 2px dashed #c7c7cc;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
-            background-color: #f9fcff;
-            transition: 0.3s;
+            overflow: hidden;
+            position: relative;
         }
+        
+        .photo-box.required { border: 2px dashed var(--primary-blue); background-color: #f0f7ff; }
+        .photo-box img.icon { width: 40px; margin-bottom: 8px; opacity: 0.7; }
+        .photo-box p { margin: 0; font-weight: bold; font-size: 0.95rem; color: var(--primary-blue); }
+        .photo-box span { font-size: 0.75rem; color: #8e8e93; margin-top: 4px; }
+        
+        .preview-img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none; }
 
-        .upload-area:hover { background-color: #edf7ff; }
-        .upload-area img { width: 50px; margin-bottom: 10px; }
-        .upload-area p { color: var(--primary-blue); font-weight: bold; font-size: 1.1rem; margin: 0; }
-        .upload-area span { font-size: 0.85rem; color: #7f8c8d; }
-
-        /* 3. 입력 필드 그리드 */
-        .form-content {
+        /* 4. 입력 폼 영역: 2열 배치 및 가독성 확보 */
+        .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            padding: 20px;
+            gap: 8px;
+            padding: 10px 8px;
         }
 
-        .input-box { display: flex; flex-direction: column; }
-        .input-box.full { grid-column: span 2; }
+        .input-group { display: flex; flex-direction: column; }
+        .input-group.full { grid-column: span 2; }
 
-        label { font-size: 0.85rem; font-weight: bold; margin-bottom: 5px; color: #34495e; }
+        label { font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: #3a3a3c; padding-left: 2px; }
         input, select, textarea {
-            padding: 12px;
-            border: 1px solid var(--border-color);
+            width: 100%;
+            padding: 12px 8px;
+            border: 1px solid #d1d1d6;
             border-radius: 8px;
-            font-size: 0.95rem;
-            outline-color: var(--primary-blue);
+            font-size: 1rem; /* 아이폰 자동 줌 방지를 위해 최소 16px 권장 */
+            background: var(--input-bg);
+            -webkit-appearance: none;
         }
+        
+        textarea { resize: none; font-family: inherit; }
 
-        /* 4. 사진 업로드 섹션 */
-        .photo-upload-group {
-            padding: 0 20px 20px;
-        }
-
-        .photo-placeholder {
-            border: 1px dashed #95a5a6;
-            border-radius: 10px;
-            padding: 35px;
-            text-align: center;
-            margin-bottom: 12px;
-            color: #7f8c8d;
-            background-color: #fafafa;
-        }
-
-        /* 5. 하단 액션 버튼 */
-        .footer-buttons {
+        /* 5. 하단 버튼 영역 */
+        .button-bar {
             display: flex;
-            padding: 0 20px 25px;
-            gap: 12px;
+            gap: 8px;
+            padding: 15px 8px 30px;
         }
-
         .btn {
             flex: 1;
             padding: 16px;
             border: none;
-            border-radius: 10px;
-            font-size: 1.05rem;
-            font-weight: bold;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
             color: white;
             cursor: pointer;
         }
-
         .btn-save { background-color: var(--success-green); }
         .btn-next { background-color: var(--primary-blue); }
 
-        #aiFileInput { display: none; }
+        /* 로딩 레이어 */
+        #loading {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); color: white; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 1000;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div id="loading">🚀 AI가 확인서를 정밀 분석 중입니다...</div>
+
+<div class="app-wrapper">
     <header>
         <h1>(주)메트로 R & S AI 앱</h1>
-        <div class="version-label">Ver 1.0.5 - Gemini 3.0 Flash Fixed</div>
+        <div class="ver-tag">Ver 1.1.0<br>Gemini 3.0 Flash Fixed</div>
     </header>
 
-    <div class="ai-analysis-section">
-        <div class="upload-area" onclick="document.getElementById('aiFileInput').click()">
-            <img src="https://cdn-icons-png.flaticon.com/512/2040/2040523.png" alt="ai-icon">
+    <div class="photo-container">
+        <div class="photo-box required" onclick="triggerUpload('aiInput')">
+            <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png" class="icon" alt="ai">
             <p>확인서 사진(필수입력)</p>
-            <span>이곳을 눌러 촬영하거나 사진을 선택하세요</span>
+            <span>AI 자동 인식 및 데이터 입력</span>
+            <img id="aiPreview" class="preview-img">
         </div>
-        <input type="file" id="aiFileInput" accept="image/*" onchange="runAIAnalysis(this)">
+        <input type="file" id="aiInput" accept="image/*" style="display:none" onchange="processAI(this)">
     </div>
 
-    <div class="form-content">
-        <div class="input-box">
-            <label>1. 현장명</label>
-            <input type="text" id="siteName" placeholder="자동 입력 대기">
-        </div>
-        <div class="input-box">
-            <label>2. 하자No</label>
-            <input type="text" id="defectNo" placeholder="자동 입력 대기">
-        </div>
-        <div class="input-box">
-            <label>3. 동/호</label>
-            <input type="text" id="unitNo" value="101-1001">
-        </div>
-        <div class="input-box">
-            <label>4. 접수일</label>
-            <input type="date" id="regDate" value="2026-02-01">
-        </div>
-        <div class="input-box">
+    <div class="form-grid">
+        <div class="input-group"><label>1. 현장명</label><input type="text" id="siteName"></div>
+        <div class="input-group"><label>2. 하자No</label><input type="text" id="defectNo"></div>
+        <div class="input-group"><label>3. 동/호</label><input type="text" id="unitNo" value="101-1001"></div>
+        <div class="input-group"><label>4. 접수일</label><input type="date" id="regDate"></div>
+        <div class="input-group">
             <label>5. 접수단계</label>
             <select id="stage">
-                <option>1년차</option>
-                <option>2년차</option>
-                <option>3년차</option>
+                <option>1년차</option><option>2년차</option><option>3년차</option>
             </select>
         </div>
-        <div class="input-box">
-            <label>6. 실명</label>
-            <input type="text" id="userName" placeholder="이름">
-        </div>
-        <div class="input-box">
-            <label>7. 공종</label>
-            <input type="text" id="workType" placeholder="공사 종류">
-        </div>
-        <div class="input-box">
-            <label>8. 업체명</label>
-            <input type="text" id="companyName" placeholder="업체 이름">
-        </div>
-        <div class="input-box full">
+        <div class="input-group"><label>6. 실명</label><input type="text" id="userName"></div>
+        <div class="input-group"><label>7. 공종</label><input type="text" id="workType"></div>
+        <div class="input-group"><label>8. 업체명</label><input type="text" id="companyName"></div>
+        <div class="input-group full">
             <label>9. 하자내용</label>
-            <textarea id="details" rows="3" placeholder="AI가 확인서 내용을 분석하여 여기에 표시합니다."></textarea>
+            <textarea id="details" rows="3"></textarea>
         </div>
     </div>
 
-    <div class="photo-upload-group">
-        <div class="photo-placeholder">📷 수리전 사진 업로드</div>
-        <div class="photo-placeholder">📷 수리후 사진 업로드</div>
+    <div class="photo-container">
+        <div class="photo-box" onclick="triggerUpload('beforeInput')">
+            <img src="https://cdn-icons-png.flaticon.com/512/685/685669.png" class="icon">
+            <p>수리전 사진</p>
+            <img id="beforePreview" class="preview-img">
+        </div>
+        <input type="file" id="beforeInput" accept="image/*" style="display:none" onchange="preview(this, 'beforePreview')">
+
+        <div class="photo-box" onclick="triggerUpload('afterInput')">
+            <img src="https://cdn-icons-png.flaticon.com/512/685/685669.png" class="icon">
+            <p>수리후 사진</p>
+            <img id="afterPreview" class="preview-img">
+        </div>
+        <input type="file" id="afterInput" accept="image/*" style="display:none" onchange="preview(this, 'afterPreview')">
+
+        <div class="photo-box" onclick="triggerUpload('doneInput')">
+            <img src="https://cdn-icons-png.flaticon.com/512/1055/1055644.png" class="icon">
+            <p>완료확인서</p>
+            <img id="donePreview" class="preview-img">
+        </div>
+        <input type="file" id="doneInput" accept="image/*" style="display:none" onchange="preview(this, 'donePreview')">
     </div>
 
-    <div class="footer-buttons">
-        <button class="btn btn-save" onclick="saveData()">데이터 저장</button>
-        <button class="btn btn-next" onclick="resetForm()">다음 입력</button>
+    <div class="button-bar">
+        <button class="btn btn-save" onclick="alert('데이터가 저장되었습니다.')">데이터 저장</button>
+        <button class="btn btn-next" onclick="location.reload()">다음 입력</button>
     </div>
 </div>
 
 <script>
-    // AI 이미지 인식 및 자동 입력 시뮬레이션
-    function runAIAnalysis(input) {
+    // 오늘 날짜 자동 설정
+    document.getElementById('regDate').value = new Date().toISOString().split('T')[0];
+
+    function triggerUpload(id) { document.getElementById(id).click(); }
+
+    function preview(input, previewId) {
         if (input.files && input.files[0]) {
-            alert("AI 분석을 시작합니다. 잠시만 기다려 주세요...");
-            
-            // 시각적 효과를 위해 1.5초 대기 후 데이터 입력
-            setTimeout(() => {
-                document.getElementById('siteName').value = "메트로 하이츠 아파트";
-                document.getElementById('defectNo').value = "METRO-2602-01";
-                document.getElementById('userName').value = "김철수";
-                document.getElementById('workType').value = "샤시 수리/교체";
-                document.getElementById('companyName').value = "(주)메트로 시스템";
-                document.getElementById('details').value = "거실 창호 우측 하단 틈새 바람 유입 및 잠금장치 불량 확인됨.";
-                
-                alert("확인서 분석이 완료되었습니다!");
-            }, 1500);
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById(previewId);
+                img.src = e.target.result;
+                img.style.display = 'block';
+            }
+            reader.readAsDataURL(input.files[0]);
         }
     }
 
-    function saveData() {
-        alert("데이터가 안전하게 저장되었습니다.");
-    }
-
-    function resetForm() {
-        if(confirm("모든 입력을 초기화하고 새로 입력하시겠습니까?")) {
-            location.reload();
+    function processAI(input) {
+        if (input.files && input.files[0]) {
+            preview(input, 'aiPreview');
+            const loading = document.getElementById('loading');
+            loading.style.display = 'flex';
+            
+            // AI 분석 시뮬레이션
+            setTimeout(() => {
+                document.getElementById('siteName').value = "메트로 윈도우 단지";
+                document.getElementById('defectNo').value = "AD-2026-003";
+                document.getElementById('userName').value = "안현준";
+                document.getElementById('workType').value = "샤시 수리";
+                document.getElementById('companyName').value = "(주)메트로";
+                document.getElementById('details').value = "창호 하부 레일 유격으로 인한 외풍 발생. 보강재 설치 후 실리콘 마감 완료.";
+                
+                loading.style.display = 'none';
+                alert("AI 분석이 완료되었습니다.");
+            }, 2000);
         }
     }
 </script>
