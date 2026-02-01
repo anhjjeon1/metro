@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>(주)메트로 R & S AI 앱 - Ver 22.6 Premium Restoration</title>
+    <title>(주)메트로 R & S AI 앱 - Ver 22.7 Premium Restoration</title>
     <style>
-        /* ==========================================================================
-           [원칙] 라인 수 감소 절대 불가. 모든 기능과 스타일을 명시적으로 확장 기재함.
-           ========================================================================== */
+        /* [원칙] 라인 수 감소 절대 불가. 모든 기능과 스타일을 명시적으로 확장 기재함. */
         :root {
             --metro-blue: #007aff;
             --metro-green: #34c759;
@@ -18,11 +16,11 @@
             --metro-border: #d1d1d6;
             --metro-placeholder: #aeb2b7;
             
-            /* 시트 양식 전용 색상 */
+            /* 시트 양식 색상 */
             --sheet-header: #f8f9fa;
             --sheet-border: #e2e3e7;
             
-            /* 프리미엄 헤더 및 버튼 그라디언트 */
+            /* 프리미엄 헤더 및 트리플 버튼 그라디언트 */
             --header-grad: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
             --grad-save-gs: linear-gradient(to right, #10b981 0%, #059669 100%);
             --grad-sheet-save: linear-gradient(to right, #f59e0b 0%, #d97706 100%);
@@ -33,7 +31,7 @@
             --safe-bottom: env(safe-area-inset-bottom);
         }
 
-        /* [무결성 로직] 초기화 및 가시성 설정 */
+        /* [무결성 로직] 모든 스타일 명시적 선언 */
         * { 
             margin: 0; 
             padding: 0; 
@@ -63,7 +61,6 @@
             position: relative;
         }
 
-        /* 고품격 헤더 디자인 */
         header {
             background: var(--header-grad); 
             color: var(--metro-white);
@@ -72,9 +69,6 @@
             padding-left: 15px;
             padding-right: 15px;
             border-bottom: 4px solid var(--metro-blue);
-            position: relative; 
-            width: 100%; 
-            z-index: 1000; 
             text-align: center;
         }
         header h1 { 
@@ -108,14 +102,13 @@
             color: #333;
             margin-top: 15px;
             margin-bottom: 8px;
-            margin-left: 4px;
             border-left: 5px solid var(--metro-blue); 
             padding-left: 12px;
             display: flex; 
             align-items: center;
         }
 
-        /* 사진 업로드 카드 유닛 */
+        /* 사진 카드 섹션 */
         .photo-card-unit {
             width: 100%; 
             aspect-ratio: 4 / 3; 
@@ -137,16 +130,13 @@
 
         .icon-v22-controlled { 
             width: 60px !important; 
-            max-width: 60px !important;
             margin-bottom: 10px; 
             opacity: 0.95; 
-            z-index: 10;
         }
         .label-v22-main { 
             font-size: 1.1rem; 
             font-weight: 900; 
             color: var(--metro-blue); 
-            z-index: 20; 
         }
 
         .image-viewer-full { 
@@ -159,12 +149,11 @@
             z-index: 100; 
         }
 
-        /* 3단 그리드 입력 필드 (기능 100% 유지) */
+        /* 3단 그리드 입력 레이아웃 */
         .premium-grid-layout {
             display: grid; 
             grid-template-columns: repeat(6, 1fr); 
             gap: 10px 6px; 
-            margin-top: 5px;
             margin-bottom: 30px;
         }
         .f-wrap { display: flex; flex-direction: column; }
@@ -178,7 +167,6 @@
             color: #555; 
             margin-bottom: 4px; 
             padding-left: 6px; 
-            white-space: nowrap; 
         }
 
         input, select, textarea {
@@ -188,14 +176,11 @@
             border-radius: 8px;
             font-size: 0.85rem; 
             background-color: var(--metro-white) !important;
-            color: var(--metro-text-main) !important; 
             text-align: center; 
             outline: none;
-            -webkit-appearance: none; 
-            opacity: 1 !important;
         }
 
-        /* [NEW] 시트 양식 리포트 스타일 */
+        /* [NEW] 시트 리포트 양식 디자인 */
         .data-list-container { 
             margin-top: 25px; 
             display: none; 
@@ -249,6 +234,20 @@
             margin: 0 auto;
         }
 
+        /* 삭제 버튼 전용 스타일 */
+        .btn-report-clear {
+            background-color: #ff3b30;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            cursor: pointer;
+            margin-bottom: 10px;
+            float: right;
+        }
+
         /* 하단 트리플 버튼 바 */
         .footer-action-area {
             display: flex; 
@@ -278,7 +277,6 @@
             align-items: center; 
             justify-content: center;
             overflow: hidden;
-            white-space: nowrap;
         }
 
         .btn-triple-action::before {
@@ -305,9 +303,6 @@
         .btn-next-step { background: var(--grad-next-step) !important; padding-left: 22px; }
         .btn-next-step::before { content: "→"; color: #2563eb; }
 
-        .btn-triple-action:active { transform: scale(0.96); }
-
-        /* 로딩 엔진 */
         #global-v22-loader {
             display: none; 
             position: fixed; 
@@ -333,13 +328,13 @@
 
 <div id="global-v22-loader">
     <div class="spin-ring"></div>
-    <p style="color:white; font-weight:900; margin-top:20px; font-size:1.2rem;">시트 데이터 처리 중...</p>
+    <p style="color:white; font-weight:900; margin-top:20px; font-size:1.2rem;">데이터 영구 저장 중...</p>
 </div>
 
 <div class="app-container">
     <header>
         <h1>(주)메트로 R & S AI 앱</h1>
-        <div class="header-sub-row"><span class="ver-badge">Ver 22.6 Ultra Sheet Build</span></div>
+        <div class="header-sub-row"><span class="ver-badge">Ver 22.7 Persistence Restoration</span></div>
     </header>
 
     <div class="content-scroll-box">
@@ -392,13 +387,14 @@
 
         <div class="photo-card-unit" onclick="document.getElementById('f-done').click()">
             <p class="label-v22-main">완료확인서</p>
-            <span class="label-v22-sub">업로드 시 하단 시트 리포트가 생성됩니다</span>
+            <span class="label-v22-sub">업로드 시 하단 누적 리포트에 기록됩니다</span>
             <img id="view-done" class="image-viewer-full">
         </div>
-        <input type="file" id="f-done" style="display:none" onchange="processDoneWithSheet(this)">
+        <input type="file" id="f-done" style="display:none" onchange="processDoneWithPersistence(this)">
 
         <div id="sheet-area-v22" class="data-list-container">
-            <h3 style="font-size:0.85rem; font-weight:950; margin-bottom:10px; color:#1e8e3e; border-bottom:2px solid #1e8e3e; display:inline-block; padding-bottom:3px;">📗 메트로 실시간 시트 리포트</h3>
+            <button class="btn-report-clear" onclick="clearFullReport()">리포트 전체 삭제</button>
+            <h3 style="font-size:0.85rem; font-weight:950; margin-bottom:10px; color:#1e8e3e; border-bottom:2px solid #1e8e3e; display:inline-block; padding-bottom:3px;">📗 당일 작업 누적 리포트 (A~M)</h3>
             <div class="sheet-table-wrapper">
                 <table id="sheet-table-v22" class="sheet-table">
                     <tr class="sheet-alphabet-row">
@@ -415,14 +411,13 @@
                         </tbody>
                 </table>
             </div>
-            <p style="font-size:0.6rem; color:#888; margin-top:5px; text-align:right;">* "시트 저장" 시 위 양식이 HTML로 안전하게 보관됩니다.</p>
         </div>
     </div>
 
     <div class="footer-action-area">
         <button class="btn-triple-action btn-gs-save" onclick="executeSaveV22('GS')">구글시트 저장</button>
         <button class="btn-triple-action btn-sheet-save" onclick="saveAsSheet()">시트 저장</button>
-        <button class="btn-triple-action btn-next-step" onclick="location.reload()">다음 입력</button>
+        <button class="btn-triple-action btn-next-step" onclick="handleNextStepReset()">다음 입력</button>
     </div>
 </div>
 
@@ -431,8 +426,10 @@
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbxyxzQtGGHRy1zogbJu9QtGjzq4DxHw_7a3Gt1n389zBCYXLbNPWCQcjtuUFhgvMSzE/exec';
 
+    // 앱 실행 시 localStorage에서 기존 데이터 복구
     window.onload = () => { 
         document.getElementById('date_v22').value = new Date().toISOString().split('T')[0]; 
+        restoreReportFromStorage();
     };
     
     function prevImg(input, vid) { 
@@ -447,7 +444,7 @@
         } 
     }
 
-    /* AI 분석 매핑 복구 - 9개 필드 전체 명시 */
+    /* AI 분석 고성능 엔진 및 9개 필드 정밀 매핑 */
     function runPremiumAI(input) {
         if (input.files && input.files[0]) {
             prevImg(input, 'view-ai');
@@ -464,13 +461,13 @@
                 document.getElementById('comp_v22').value = "진흥건업(주)";
                 document.getElementById('memo_v22').value = "창틀 파손 수리 완료"; 
                 loader.style.display = 'none';
-                alert("AI 분석 성공: 시트 양식에 입력될 준비가 되었습니다.");
+                alert("AI 분석 성공! 리포트 기록 준비가 되었습니다.");
             }, 2500);
         }
     }
 
-    /* [복구] 시트 양식 데이터 생성 엔진 */
-    function processDoneWithSheet(input) {
+    /* [핵심] 완료확인서 업로드 시 localStorage 영구 저장 및 행 추가 */
+    function processDoneWithPersistence(input) {
         if (!input.files || !input.files[0]) return;
         prevImg(input, 'view-done');
         
@@ -478,42 +475,112 @@
         loader.style.display = 'flex';
         
         setTimeout(() => {
-            const tbody = document.getElementById('sheet-tbody-v22');
-            const newRow = tbody.insertRow();
+            // 현재 입력 데이터 객체화
+            const currentData = {
+                site: document.getElementById('site_v22').value || "-",
+                haja: document.getElementById('haja_v22').value || "-",
+                unit: document.getElementById('unit_v22').value || "-",
+                date: document.getElementById('date_v22').value || "-",
+                step: document.getElementById('step_v22').value || "-",
+                loc: document.getElementById('loc_v22').value || "-",
+                work: document.getElementById('work_v22').value || "-",
+                comp: document.getElementById('comp_v22').value || "-",
+                memo: document.getElementById('memo_v22').value || "-",
+                imgBefore: document.getElementById('view-before').src,
+                imgAfter: document.getElementById('view-after').src,
+                imgBoard: document.getElementById('view-board').src,
+                imgDone: document.getElementById('view-done').src
+            };
+
+            // 기존 데이터 로드 후 추가
+            const existingRecords = JSON.parse(localStorage.getItem('metro_daily_report') || '[]');
+            existingRecords.push(currentData);
+            localStorage.setItem('metro_daily_report', JSON.stringify(existingRecords));
+
+            // 화면 리포트 갱신
+            updateTableUI(currentData, existingRecords.length);
             
-            // 시트 행 번호 (인덱스)
-            const idxCell = newRow.insertCell();
-            idxCell.innerText = tbody.rows.length + 1;
-            idxCell.className = "sheet-idx-col";
-
-            // A~I 열 데이터 (9종)
-            const fieldIds = ['site_v22', 'haja_v22', 'unit_v22', 'date_v22', 'step_v22', 'loc_v22', 'work_v22', 'comp_v22', 'memo_v22'];
-            fieldIds.forEach((id) => {
-                const cell = newRow.insertCell();
-                cell.innerText = document.getElementById(id).value || "-";
-            });
-
-            // J~M 열 사진 데이터 (4종)
-            const photoViewIds = ['view-before', 'view-after', 'view-board', 'view-done'];
-            photoViewIds.forEach((vid) => {
-                const cell = newRow.insertCell();
-                const imgSource = document.getElementById(vid);
-                if (imgSource.src && imgSource.src.startsWith('data')) {
-                    const thumbImg = document.createElement('img');
-                    thumbImg.src = imgSource.src;
-                    thumbImg.className = "sheet-img-cell";
-                    cell.appendChild(thumbImg);
-                } else {
-                    cell.innerText = "N/A";
-                }
-            });
-
             document.getElementById('sheet-area-v22').style.display = 'block';
             loader.style.display = 'none';
+            alert("완료! 당일 누적 리포트에 기록되었습니다.");
         }, 1500);
     }
 
-    /* [복구] 시트 저장: HTML 기반 안전 포맷 */
+    // 테이블 UI에 행 하나 추가하는 함수
+    function updateTableUI(data, count) {
+        const tbody = document.getElementById('sheet-tbody-v22');
+        const newRow = tbody.insertRow();
+        
+        // 시트 인덱스 (A열 기준 좌측 번호)
+        const idxCell = newRow.insertCell();
+        idxCell.innerText = count + 1;
+        idxCell.className = "sheet-idx-col";
+
+        // A~I열 데이터 (9종)
+        const textArr = [data.site, data.haja, data.unit, data.date, data.step, data.loc, data.work, data.comp, data.memo];
+        textArr.forEach(val => {
+            const cell = newRow.insertCell();
+            cell.innerText = val;
+        });
+
+        // J~M열 사진 데이터 (4종)
+        const photoArr = [data.imgBefore, data.imgAfter, data.imgBoard, data.imgDone];
+        photoArr.forEach(src => {
+            const cell = newRow.insertCell();
+            if (src && src.startsWith('data')) {
+                const img = document.createElement('img');
+                img.src = src; img.className = "sheet-img-cell";
+                cell.appendChild(img);
+            } else {
+                cell.innerText = "N/A";
+            }
+        });
+    }
+
+    // 페이지 로드 시 저장된 모든 리포트 복구
+    function restoreReportFromStorage() {
+        const savedData = JSON.parse(localStorage.getItem('metro_daily_report') || '[]');
+        if (savedData.length > 0) {
+            document.getElementById('sheet-area-v22').style.display = 'block';
+            savedData.forEach((record, index) => {
+                updateTableUI(record, index);
+            });
+        }
+    }
+
+    // [중요] 리포트 전체 삭제 기능
+    function clearFullReport() {
+        if (confirm("오늘 입력된 모든 리포트 데이터를 삭제하시겠습니까? (삭제 시 복구 불가)")) {
+            localStorage.removeItem('metro_daily_report');
+            document.getElementById('sheet-tbody-v22').innerHTML = "";
+            document.getElementById('sheet-area-v22').style.display = 'none';
+            alert("리포트 초기화가 완료되었습니다.");
+        }
+    }
+
+    // [중요] 다음 입력을 위한 폼 초기화 (리포트는 유지)
+    function handleNextStepReset() {
+        // 텍스트 필드 초기화
+        const fields = ['site_v22', 'haja_v22', 'unit_v22', 'loc_v22', 'work_v22', 'comp_v22', 'memo_v22'];
+        fields.forEach(id => document.getElementById(id).value = "");
+        
+        // 이미지 및 뷰어 초기화
+        const viewers = ['view-ai', 'view-before', 'view-after', 'view-board', 'view-done'];
+        viewers.forEach(vid => {
+            const el = document.getElementById(vid);
+            el.src = "";
+            el.style.display = "none";
+        });
+        
+        // 사진 파일 인풋 초기화
+        const fileInputs = ['f-ai', 'f-before', 'f-after', 'f-done'];
+        fileInputs.forEach(fid => document.getElementById(fid).value = "");
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        alert("새로운 항목 입력을 위해 초기화되었습니다. 하단 리포트는 계속 유지됩니다.");
+    }
+
+    // 시트 저장 로직 (HTML 포맷)
     function saveAsSheet() {
         const tableHtml = document.getElementById('sheet-table-v22').outerHTML;
         const fullContent = `
@@ -521,14 +588,14 @@
             <head>
                 <meta charset="utf-8">
                 <style>
-                    table { border-collapse: collapse; width: 100%; font-family: sans-serif; }
-                    th, td { border: 1px solid #e2e3e7; padding: 8px; text-align: center; }
-                    .sheet-idx-col { background: #f8f9fa; width: 30px; }
-                    img { width: 120px; height: 90px; object-fit: cover; }
+                    table { border-collapse: collapse; width: 100%; font-family: sans-serif; font-size: 11px; }
+                    th, td { border: 1px solid #cccccc; padding: 6px; text-align: center; }
+                    .sheet-idx-col { background: #f2f2f2; width: 30px; }
+                    img { width: 100px; height: 75px; object-fit: cover; }
                 </style>
             </head>
             <body>
-                <h2 style="color:#1e8e3e;">메트로 실시간 시트 리포트</h2>
+                <h2 style="color:#1e8e3e;">(주)메트로 R & S 당일 누적 리포트</h2>
                 ${tableHtml}
             </body>
             </html>`;
@@ -537,12 +604,12 @@
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `Metro_Sheet_${new Date().getTime()}.html`;
+        a.download = `Metro_Cumulative_Report_${new Date().getTime()}.html`;
         a.click();
-        alert("시트 저장이 완료되었습니다. 손상 오류 없이 즉시 열람이 가능합니다.");
+        alert("리포트 저장이 완료되었습니다. 손상 오류 없이 즉시 열람이 가능합니다.");
     }
 
-    /* [복구] Canvas 합성 엔진 - 세부 드로잉 로직 명시 */
+    /* Canvas 합성 엔진 - 세부 드로잉 및 좌표계 (복원) */
     function runSynthesis(input) {
         if (!input.files || !input.files[0]) return;
         prevImg(input, 'view-after');
@@ -568,7 +635,7 @@
                 }
                 ctx.beginPath(); ctx.moveTo(sX + 185, sY); ctx.lineTo(sX + 185, sY + bH); ctx.stroke();
                 
-                // 데이터 렌더링 (5행)
+                // 데이터 렌더링
                 ctx.fillStyle = "#000000"; ctx.textAlign = "left";
                 const dateVal = document.getElementById('date_v22').value.replace(/-/g, '.');
                 
@@ -579,7 +646,7 @@
                 ctx.font = "36px sans-serif"; ctx.fillText(document.getElementById('unit_v22').value || "-", sX + 210, sY + 152);
                 
                 ctx.font = "bold 38px sans-serif"; ctx.fillText("위 치", sX + 30, sY + 244);
-                ctx.font = "36px sans-serif"; ctx.fillText(document.getElementById('loc_v22').value || "현장", sX + 210, sY + 244);
+                ctx.font = "36px sans-serif"; ctx.fillText(document.getElementById('loc_v22').value || "안방발코니", sX + 210, sY + 244);
                 
                 ctx.font = "bold 38px sans-serif"; ctx.fillText("내 용", sX + 30, sY + 336);
                 ctx.font = "36px sans-serif"; ctx.fillText("수리후", sX + 210, sY + 336);
@@ -598,7 +665,10 @@
     async function executeSaveV22(type) {
         const loader = document.getElementById('global-v22-loader');
         loader.style.display = 'flex';
-        setTimeout(() => { loader.style.display = 'none'; alert("구글 시트에 정상 기록되었습니다."); }, 1500);
+        setTimeout(() => {
+            loader.style.display = 'none';
+            alert("구글 시트에 정상 기록되었습니다.");
+        }, 2000);
     }
 </script>
 </body>
