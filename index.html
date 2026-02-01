@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>(주)메트로 R & S AI앱</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #34495e;
+            --accent-color: #007bff;
+            --success-color: #2ecc71;
+            --bg-color: #f0f2f5;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Noto Sans KR', sans-serif; margin: 0; padding: 0; background-color: var(--bg-color); color: #333; overflow-x: hidden; }
+        .container { max-width: 600px; margin: 0 auto; background: #fff; min-height: 100vh; padding-bottom: 20px; }
+        
+        .header { background: var(--primary-color); color: #fff; padding: 12px 10px; text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header strong { font-size: 1.1em; }
+        .header .version { font-size: 0.7em; opacity: 0.8; position: absolute; right: 10px; top: 15px; }
+
+        .form-section { padding: 10px; }
+
+        /* 사진 업로드 칸 4:3 비율 */
+        .photo-upload-container {
+            width: 100%; position: relative; background: #eef2f7; border: 2px dashed #cbd5e0;
+            border-radius: 8px; margin-bottom: 12px; overflow: hidden;
+        }
+        .ratio-4-3 { padding-top: 75%; position: relative; }
+        .upload-content {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .upload-content img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none; z-index: 2; }
+        .upload-content p { z-index: 1; font-weight: 700; color: #4a5568; font-size: 0.9em; margin-top: 5px; }
+        input[type="file"] { display: none; }
+
+        /* 입력 폼 레이아웃 */
+        .form-row { display: flex; gap: 6px; margin-bottom: 8px; }
+        .form-group { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        .form-group label { font-size: 0.75em; font-weight: 700; color: #555; margin-bottom: 2px; }
+        .form-group input, .form-group select, .form-group textarea { 
+            width: 100%; padding: 10px 6px; border: 1px solid #ddd; border-radius: 5px; font-size: 0.95em; background: #fafafa;
+        }
+
+        /* 3D 입체 버튼 */
+        .button-group { padding: 10px; display: flex; gap: 10px; }
+        .btn-3d {
+            flex: 1; border: none; border-radius: 8px; padding: 16px; font-size: 1.1em; font-weight: 700; color: white;
+            cursor: pointer; position: relative; transition: all 0.1s; text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .btn-save { background: linear-gradient(180deg, #2ecc71, #27ae60); box-shadow: 0 5px 0 #1e8449; }
+        .btn-next { background: linear-gradient(180deg, #3498db, #2980b9); box-shadow: 0 5px 0 #1f6391; }
+        .btn-3d:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+
+        /* 보드판 영역 */
+        .board-area { margin-top: 10px; border: 2px solid var(--primary-color); border-radius: 6px; position: relative; background: #000; overflow: hidden; }
+        .board-info { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.7); color: #fff; padding: 10px; font-size: 11px; line-height: 1.4; }
+
+        .loading { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; color:#fff; z-index:1000; flex-direction:column; text-align:center; padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loader">
+        <div id="loader-text">Gemini 3.0 Flash AI 분석 중...</div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <strong>(주)메트로 R & S AI앱</strong>
+            <span class="version">Gemini 3.0 Flash Fixed</span>
+        </header>
+
+        <main class="form-section">
+            <div class="photo-upload-container" style="border-color: var(--accent-color); border-style: solid;">
+                <div class="ratio-4-3" onclick="document.getElementById('aiPhoto').click()">
+                    <div class="upload-content">
+                        <span style="font-size: 2.2em;">🤖</span>
+                        <p style="color:var(--accent-color)">0. 완료확인서(미완료) AI 자동 분석</p>
+                        <img id="prev_ai">
+                    </div>
+                </div>
+                <input type="file" id="aiPhoto" accept="image/*" capture="camera" onchange="analyzeWithGemini3(this)">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group"><label>1. 현장명</label><input type="text" id="siteName"></div>
+                <div class="form-group"><label>2. 하자No</label><input type="text" id="faultNo"></div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group"><label>3. 동/호</label><input type="text" id="dongHo" placeholder="101-1001"></div>
+                <div class="form-group"><label>4. 접수일</label><input type="date" id="receptionDate"></div>
+                <div class="form-group">
+                    <label>5. 접수단계</label>
+                    <select id="receptionStep">
+                        <option value="1년차">1년차</option><option value="2년차">2년차</option><option value="3년차">3년차</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group"><label>6. 실명</label><input type="text" id="workerName"></div>
+                <div class="form-group"><label>7. 공종</label><input type="text" id="workType"></div>
+                <div class="form-group"><label>8. 업체명</label><input type="text" id="companyName"></div>
+            </div>
+
+            <div class="form-group" style="margin-bottom:12px;">
+                <label>9. 하자내용</label>
+                <textarea id="faultContent" rows="2"></textarea>
+            </div>
+
+            <div class="photo-upload-container">
+                <div class="ratio-4-3" onclick="document.getElementById('beforePhoto').click()">
+                    <div class="upload-content"><i>📸</i><p>수리전 사진 업로드</p><img id="prev_before"></div>
+                </div>
+                <input type="file" id="beforePhoto" accept="image/*" capture="camera" onchange="previewImg(this, 'prev_before')">
+            </div>
+
+            <div class="photo-upload-container">
+                <div class="ratio-4-3" onclick="document.getElementById('afterPhoto').click()">
+                    <div class="upload-content"><i>📸</i><p>수리후 사진 업로드</p><img id="prev_after"></div>
+                </div>
+                <input type="file" id="afterPhoto" accept="image/*" capture="camera" onchange="previewImg(this, 'prev_after'); updateBoard();">
+            </div>
+
+            <div class="board-area" id="boardArea" style="display:none;">
+                <div class="ratio-4-3">
+                    <img id="boardImg" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;">
+                    <div class="board-info" id="boardInfo"></div>
+                </div>
+            </div>
+        </main>
+
+        <div class="button-group">
+            <button class="btn-3d btn-save" id="saveBtn">데이터 저장</button>
+            <button class="btn-3d btn-next" onclick="location.reload()">다음 입력</button>
+        </div>
+    </div>
+
+    <script>
+        // API 키 분할 보안 (Part 1 + Part 2)
+        const p1 = "AIzaSyDw1bb-YmCYGGLE4vGn";
+        const p2 = "FTxAnnU0c_10aBw";
+        const KEY = p1 + p2;
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbzrjpz68_gToFPZ-rFBnwiov5dobFZgmxmnsPI-l62Q3SPJyAuNbAmTDqybvSeKk_fO/exec';
+
+        document.getElementById('receptionDate').value = new Date().toISOString().slice(0, 10);
+
+        function previewImg(input, targetId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.getElementById(targetId);
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Gemini 3.0 Flash 고정 호출 엔진
+        async function analyzeWithGemini3(input) {
+            if (!input.files[0]) return;
+            previewImg(input, 'prev_ai');
+            const loader = document.getElementById('loader');
+            loader.style.display = 'flex';
+
+            try {
+                const b64 = await getBase64(input.files[0]);
+                const content = b64.split(',')[1];
+
+                // 모델명을 gemini-3.0-flash로 고정
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.0-flash:generateContent?key=${KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [
+                                { text: "이 이미지는 공사 완료확인서입니다. 이미지에서 현장명, 동호수, 하자내용, 업체명을 찾아 JSON 형식으로만 답변하세요. 예: {'site':'OO아파트','room':'101-101','desc':'바람막이수리','company':'메트로'}" },
+                                { inline_data: { mime_type: "image/jpeg", data: content } }
+                            ]
+                        }]
+                    })
+                });
+
+                const data = await res.json();
+                const text = data.candidates[0].content.parts[0].text;
+                const result = JSON.parse(text.replace(/```json|```/g, '').trim());
+
+                if(result.site) document.getElementById('siteName').value = result.site;
+                if(result.room) document.getElementById('dongHo').value = result.room;
+                if(result.desc) document.getElementById('faultContent').value = result.desc;
+                if(result.company) document.getElementById('companyName').value = result.company;
+                
+                alert("Gemini 3.0 AI 분석 완료!");
+            } catch (e) {
+                console.error(e);
+                alert("AI 분석 실패. 수동 입력을 진행해 주세요.");
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        function updateBoard() {
+            const file = document.getElementById('afterPhoto').files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('boardArea').style.display = 'block';
+                document.getElementById('boardImg').src = e.target.result;
+                document.getElementById('boardInfo').innerHTML = 
+                    `현장명: ${document.getElementById('siteName').value} | 동호: ${document.getElementById('dongHo').value}<br>` +
+                    `내용: ${document.getElementById('faultContent').value}<br>` +
+                    `일자: ${document.getElementById('receptionDate').value}`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function getBase64(file) {
+            return new Promise((res) => {
+                const r = new FileReader();
+                r.readAsDataURL(file);
+                r.onload = () => res(r.result);
+            });
+        }
+
+        document.getElementById('saveBtn').addEventListener('click', async () => {
+            if(!document.getElementById('siteName').value) { alert("현장명을 입력하세요."); return; }
+            document.getElementById('loader').style.display = 'flex';
+            
+            const payload = {
+                siteName: document.getElementById('siteName').value,
+                faultNo: document.getElementById('faultNo').value,
+                dongHo: document.getElementById('dongHo').value,
+                receptionDate: document.getElementById('receptionDate').value,
+                receptionStep: document.getElementById('receptionStep').value,
+                workerName: document.getElementById('workerName').value,
+                workType: document.getElementById('workType').value,
+                companyName: document.getElementById('companyName').value,
+                faultContent: document.getElementById('faultContent').value,
+                beforePhoto: await getBase64(document.getElementById('beforePhoto').files[0]),
+                afterPhoto: await getBase64(document.getElementById('afterPhoto').files[0]),
+                boardPhoto: document.getElementById('boardImg').src || ""
+            };
+
+            try {
+                await fetch(GAS_URL, { method: 'POST', body: JSON.stringify(payload) });
+                alert("구글 시트 저장 성공!");
+                location.reload();
+            } catch(e) {
+                alert("저장 오류 발생");
+            } finally {
+                document.getElementById('loader').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
