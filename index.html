@@ -480,19 +480,22 @@
         ctx.lineTo(sX + 140, sY + bH);
         ctx.stroke();
 
-        // [데이터 실시간 매핑]
-        ctx.font = "32px sans-serif";
-        const d_site = document.getElementById('site_v22').value || "";
-        const d_unit = document.getElementById('unit_v22').value || "";
-        const d_loc = document.getElementById('loc_v22').value || "";
-        const d_date = document.getElementById('date_v22').value || "";
+       // [데이터 실시간 매핑 로직 보완] - 여기에 붙여넣으세요
+       ctx.font = "bold 32px sans-serif";
+       ctx.fillStyle = "#111111"; 
 
-        ctx.fillText(d_site, sX + 155, sY + 48);
-        ctx.fillText(d_unit, sX + 155, sY + (bH/5)*1 + 48);
-        ctx.fillText(d_loc, sX + 155, sY + (bH/5)*2 + 48);
-        ctx.fillText("수리후", sX + 155, sY + (bH/5)*3 + 48);
-        ctx.fillText(d_date.replace(/-/g, '.'), sX + 155, sY + (bH/5)*4 + 48);
+       const getVal = (id) => document.getElementById(id).value.trim() || "-";
 
+       const d_site = getVal('site_v22');
+       const d_unit = getVal('unit_v22');
+       const d_loc  = getVal('loc_v22');
+       const d_date = getVal('date_v22').replace(/-/g, '.'); 
+
+       ctx.fillText(d_site, sX + 155, sY + 48);
+       ctx.fillText(d_unit, sX + 155, sY + (bH/5)*1 + 48);
+       ctx.fillText(d_loc,  sX + 155, sY + (bH/5)*2 + 48);
+       ctx.fillText("수리후", sX + 155, sY + (bH/5)*3 + 48);
+       ctx.fillText(d_date, sX + 155, sY + (bH/5)*4 + 48);
         // 이미지 전환
         const v_board = document.getElementById('view-board');
         v_board.src = canvas.toDataURL("image/jpeg", 0.95);
@@ -524,7 +527,8 @@
                 const text_all = data.responses[0].fullTextAnnotation.text;
 
                 // [데이터 미출력 오류 해결: 유연한 패턴 매핑]
-                const siteMatch = text_all.match(/[가-힣0-9-]+제일풍경채/) || text_all.match(/[가-힣0-9-]+대우건설/);
+                // 수정 권고: 더 넓은 범위의 현장명을 잡을 수 있도록 수정
+                const siteMatch = text_all.match(/[가-힣0-9-]+(건설|아파트|단지|풍경채|포레나)/);
                 if(siteMatch) document.getElementById('site_v22').value = siteMatch[0].trim();
 
                 const hajaMatch = text_all.match(/\d{7}/);
@@ -566,4 +570,5 @@
 </script>
 </body>
 </html>
+
 
