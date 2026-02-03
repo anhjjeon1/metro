@@ -340,7 +340,7 @@
                 <td colspan="3"><div class="flex-line"><span class="fix-lbl">접수일 :</span><input type="text" id="date_v22" class="ai-val-gray"></div></td>
             </tr>
             <tr>
-                <td colspan="3"><div class="flex-line"><span class="fix-lbl">접수단계 :</span><input type="text" id="step_v22" class="ai-val-gray" value="2년차"></div></td>
+                <td colspan="3"><div class="flex-line"><span class="fix-lbl">접수단계 :</span><input type="text" id="step_v22" class="ai-val-gray" value=""></div></td>
                 <td colspan="3"><div class="flex-line"><span class="fix-lbl">실명(위치) :</span><input type="text" id="loc_v22" class="ai-val-gray"></div></td>
             </tr>
             <tr>
@@ -482,10 +482,10 @@
 
         // [데이터 실시간 매핑]
         ctx.font = "32px sans-serif";
-        const d_site = document.getElementById('site_v22').value || "검암 대우건설";
-        const d_unit = document.getElementById('unit_v22').value || "212동3603";
-        const d_loc = document.getElementById('loc_v22').value || "테라스";
-        const d_date = document.getElementById('date_v22').value || "2025.10.02";
+        const d_site = document.getElementById('site_v22').value || "";
+        const d_unit = document.getElementById('unit_v22').value || "";
+        const d_loc = document.getElementById('loc_v22').value || "";
+        const d_date = document.getElementById('date_v22').value || "";
 
         ctx.fillText(d_site, sX + 155, sY + 48);
         ctx.fillText(d_unit, sX + 155, sY + (bH/5)*1 + 48);
@@ -566,3 +566,4 @@
 </script>
 </body>
 </html>
+
