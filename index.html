@@ -480,22 +480,27 @@
         ctx.lineTo(sX + 140, sY + bH);
         ctx.stroke();
 
-       // [데이터 실시간 매핑 로직 보완] - 여기에 붙여넣으세요
-       ctx.font = "bold 32px sans-serif";
-       ctx.fillStyle = "#111111"; 
+        // [데이터 실시간 매핑 로직 보완] - 무결성 강화 버전
+        ctx.font = "bold 30px sans-serif"; // 글자 크기 살짝 조정 (이탈 방지)
+        ctx.fillStyle = "#111111"; 
 
-       const getVal = (id) => document.getElementById(id).value.trim() || "-";
+        const getVal = (id) => {
+            const el = document.getElementById(id);
+            return (el && el.value.trim()) ? el.value.trim() : "-";
+        };
 
-       const d_site = getVal('site_v22');
-       const d_unit = getVal('unit_v22');
-       const d_loc  = getVal('loc_v22');
-       const d_date = getVal('date_v22').replace(/-/g, '.'); 
+        const d_site = getVal('site_v22');
+        const d_unit = getVal('unit_v22');
+        const d_loc  = getVal('loc_v22');
+        const d_memo = getVal('memo_v22').substring(0, 15); // 내용이 길면 15자까지만
+        const d_date = getVal('date_v22').replace(/-/g, '.'); 
 
-       ctx.fillText(d_site, sX + 155, sY + 48);
-       ctx.fillText(d_unit, sX + 155, sY + (bH/5)*1 + 48);
-       ctx.fillText(d_loc,  sX + 155, sY + (bH/5)*2 + 48);
-       ctx.fillText("수리후", sX + 155, sY + (bH/5)*3 + 48);
-       ctx.fillText(d_date, sX + 155, sY + (bH/5)*4 + 48);
+        // 보드판에 텍스트 그리기 (위치 보정 완료)
+        ctx.fillText(d_site, sX + 155, sY + 48);
+        ctx.fillText(d_unit, sX + 155, sY + (bH/5)*1 + 48);
+        ctx.fillText(d_loc,  sX + 155, sY + (bH/5)*2 + 48);
+        ctx.fillText(d_memo, sX + 155, sY + (bH/5)*3 + 48); // "수리후" 대신 "하자내용" 매핑
+        ctx.fillText(d_date, sX + 155, sY + (bH/5)*4 + 48);
         // 이미지 전환
         const v_board = document.getElementById('view-board');
         v_board.src = canvas.toDataURL("image/jpeg", 0.95);
@@ -570,5 +575,6 @@
 </script>
 </body>
 </html>
+
 
 
