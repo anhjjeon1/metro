@@ -528,8 +528,27 @@
                     body: JSON.stringify(payload)
                 });
 
+                try {
+                // 1. API 호출
+                const res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${MASTER_API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                // 2. 응답 데이터를 JSON으로 변환
                 const data = await res.json();
-               const text_all = data.responses[0].fullTextAnnotation.text;
+                
+                // 3. [핵심] 데이터 응답 무결성 체크 (이 부분이 없으면 자동입력이 실패해도 이유를 알 수 없음)
+                if (!data.responses || !data.responses[0] || !data.responses[0].fullTextAnnotation) {
+                    throw new Error("이미지에서 텍스트를 추출할 수 없습니다. 사진을 더 밝고 선명하게 다시 찍어주세요.");
+                }
+
+                // 4. 텍스트 추출 및 로그 출력
+                const text_all = data.responses[0].fullTextAnnotation.text;
+                console.log("인식된 전체 텍스트:", text_all);
+                
+                // 이후의 현장명, 동/호수 매핑 로직은 그대로 유지하시면 됩니다.
                 console.log("인식된 전체 텍스트:", text_all); // 디버깅용 로그
 
                 // [개선 1] 현장명: '현장명' 글자 뒤에 오는 한글/숫자 조합을 더 넓게 잡음
@@ -585,6 +604,7 @@
 </script>
 </body>
 </html>
+
 
 
 
