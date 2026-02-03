@@ -2,611 +2,283 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>(주)메트로 R & S AI 앱 - Ver 29.2 Ultimate Integrity Master</title>
-    
+    <title>(주)메트로 R & S AI - Ver 36.0 Ultimate Master</title>
     <style>
-        /* ==========================================================================
-           [SYSTEM CONFIGURATION VARIABLES]
-           ========================================================================== */
         :root {
-            --m-blue: #007aff;
-            --m-gray-ai: #444444; /* 자동 입력용 진한 회색 */
-            --m-black-fix: #000000; /* 고정 레이블용 검정색 */
-            --m-border-form: #333333;
-            --m-white: #ffffff;
-            --m-light: #f2f2f7;
-            --m-shadow-master: rgba(0, 0, 0, 0.45);
+            --primary: #007aff; --success: #34c759; --danger: #ff3b30;
+            --dark: #1c1c1e; --light: #f2f2f7; --border: #c6c6c8;
+            --ai-gray: #444444;
         }
 
-        /* ==========================================================================
-           [CSS ATOMIC RESET ENGINE] - 라인 확보를 위한 속성 파편화 선언
-           ========================================================================== */
-        html { margin-top: 0px; }
-        html { margin-right: 0px; }
-        html { margin-bottom: 0px; }
-        html { margin-left: 0px; }
-        html { padding-top: 0px; }
-        html { padding-right: 0px; }
-        html { padding-bottom: 0px; }
-        html { padding-left: 0px; }
+        /* [SYSTEM RESET ENGINE] */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body, html { margin: 0; padding: 0; background: var(--light); font-family: sans-serif; height: 100vh; overflow: hidden; }
 
-        body { margin-top: 0px; }
-        body { margin-right: 0px; }
-        body { margin-bottom: 0px; }
-        body { margin-left: 0px; }
-        body { padding-top: 0px; }
-        body { padding-right: 0px; }
-        body { padding-bottom: 0px; }
-        body { padding-left: 0px; }
+        .app-container { max-width: 500px; margin: 0 auto; background: #fff; height: 100%; display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.2); }
 
-        div { margin-top: 0px; }
-        div { margin-right: 0px; }
-        div { margin-bottom: 0px; }
-        div { margin-left: 0px; }
-        div { padding-top: 0px; }
-        div { padding-right: 0px; }
-        div { padding-bottom: 0px; }
-        div { padding-left: 0px; }
+        header { background: var(--dark); color: #fff; text-align: center; padding: 20px 0; border-bottom: 4px solid var(--primary); }
+        header h1 { margin: 0; font-size: 1.3rem; font-weight: 900; }
+        .badge { font-size: 0.7rem; color: var(--primary); font-weight: bold; margin-top: 5px; display: block; }
 
-        header { margin-top: 0px; }
-        header { margin-right: 0px; }
-        header { margin-bottom: 0px; }
-        header { margin-left: 0px; }
+        .content { flex: 1; overflow-y: auto; padding: 15px; -webkit-overflow-scrolling: touch; }
 
-        p { margin-top: 0px; }
-        p { margin-right: 0px; }
-        p { margin-bottom: 0px; }
-        p { margin-left: 0px; }
+        /* [PHOTO CARDS - 4:3 RATIO] */
+        .drop-zone { 
+            width: 100%; aspect-ratio: 4/3; border: 2.5px dashed var(--border); border-radius: 12px; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            cursor: pointer; overflow: hidden; position: relative; margin-bottom: 15px; background: #f8f9fa; 
+        }
+        .preview-img { width: 100%; height: 100%; object-fit: contain; position: absolute; background: #000; display: none; z-index: 10; }
+        .zone-txt { font-weight: 900; color: #666; text-align: center; font-size: 0.9rem; z-index: 5; }
 
-        h1 { margin-top: 0px; }
-        h1 { margin-right: 0px; }
-        h1 { margin-bottom: 0px; }
-        h1 { margin-left: 0px; }
+        /* [DATA TABLE] */
+        .data-table { width: 100%; border-collapse: collapse; border: 2px solid #222; margin-bottom: 15px; background: #fff; }
+        .data-table td { border: 1px solid #333; padding: 6px; position: relative; height: 48px; vertical-align: middle; }
+        .data-table label { position: absolute; top: 3px; left: 6px; font-size: 0.6rem; font-weight: 900; color: var(--primary); }
+        .data-table input { width: 100%; border: none; font-size: 0.88rem; font-weight: 800; outline: none; background: transparent; padding-top: 12px; color: var(--ai-gray); }
+        .memo-td { height: 120px !important; vertical-align: top !important; padding-top: 25px !important; }
+        .memo-td textarea { width: 100%; height: 100%; border: none; resize: none; outline: none; font-size: 0.85rem; line-height: 1.4; }
 
-        table { margin-top: 0px; }
-        table { margin-right: 0px; }
-        table { margin-bottom: 0px; }
-        table { margin-left: 0px; }
+        /* [SPREADSHEET VIEW] */
+        .sheet-section { margin-top: 25px; margin-bottom: 40px; }
+        .sheet-title { font-size: 1rem; font-weight: 900; margin-bottom: 10px; border-left: 5px solid var(--success); padding-left: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .table-scroll { width: 100%; overflow-x: auto; border: 1px solid #ddd; border-radius: 10px; background: #fff; }
+        #spreadsheet { width: 100%; border-collapse: collapse; font-size: 0.65rem; min-width: 700px; }
+        #spreadsheet th { background: #f1f5f9; padding: 12px 8px; border-bottom: 2px solid #cbd5e1; font-weight: 900; }
+        #spreadsheet td { padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center; color: #444; }
 
-        /* [Visual Fidelity & Container 설계] */
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-font-smoothing: antialiased;
-        }
+        /* [SYSTEM LOADER] */
+        #loader { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; color: #fff; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #333; border-top-color: var(--primary); border-radius: 50%; animation: rot 0.8s linear infinite; }
+        @keyframes rot { 100% { transform: rotate(360deg); } }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Malgun Gothic", sans-serif;
-            background-color: var(--m-light);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 500px;
-            background-color: var(--m-white);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            min-height: 100vh;
-            box-shadow: 0px 0px 100px var(--m-shadow-master);
-        }
-
-        header {
-            background-image: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #ffffff;
-            padding-top: 20px;
-            padding-bottom: 16px;
-            text-align: center;
-            border-bottom-width: 4px;
-            border-bottom-style: solid;
-            border-bottom-color: var(--m-blue);
-        }
-
-        header h1 { font-size: 1.4rem; font-weight: 950; letter-spacing: -1.2px; }
-
-        .content-scroll-box {
-            padding-top: 12px;
-            padding-right: 10px;
-            padding-bottom: 50px;
-            padding-left: 10px;
-            flex-grow: 1;
-        }
-
-        /* [핵심: 원본 양식 동기화 및 시인성 최적화 테이블] */
-        .form-sync-table {
-            width: 100%;
-            border-collapse: collapse;
-            border-top-width: 2px;
-            border-right-width: 2px;
-            border-bottom-width: 2px;
-            border-left-width: 2px;
-            border-style: solid;
-            border-color: var(--m-border-form);
-            background-color: #ffffff;
-            margin-bottom: 25px;
-            table-layout: fixed;
-        }
-
-        .form-sync-table td {
-            border-top-width: 1px;
-            border-right-width: 1px;
-            border-bottom-width: 1px;
-            border-left-width: 1px;
-            border-style: solid;
-            border-color: var(--m-border-form);
-            padding-top: 5px;
-            padding-bottom: 5px;
-            padding-left: 6px;
-            padding-right: 6px;
-            vertical-align: middle;
-            height: 42px;
-        }
-
-        .flex-line {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .fix-lbl {
-            font-size: 0.85rem;
-            font-weight: 950;
-            color: var(--m-black-fix);
-            white-space: nowrap;
-        }
-
-        /* 자동 입력값 글자 크기 축소 및 수평 정렬 */
-        .ai-val-gray {
-            flex-grow: 1;
-            border-top-width: 0px;
-            border-right-width: 0px;
-            border-bottom-width: 0px;
-            border-left-width: 0px;
-            background-color: transparent;
-            font-size: 0.82rem; /* 폰 화면 이탈 방지 */
-            font-weight: 900;
-            color: var(--m-gray-ai) !important;
-            outline: none;
-            padding-top: 0px;
-            padding-bottom: 0px;
-            margin-top: 0px;
-            margin-bottom: 0px;
-        }
-
-        /* 하자내용 레이블 좌상단 고정 및 가로 광폭 설계 */
-        .memo-cell {
-            position: relative;
-            padding-top: 25px !important;
-            height: 140px !important;
-        }
-
-        .fix-lbl-top {
-            position: absolute;
-            top: 5px;
-            left: 6px;
-            font-size: 0.85rem;
-            font-weight: 950;
-            color: var(--m-black-fix);
-        }
-
-        .memo-ai-val {
-            width: 100%;
-            height: 100%;
-            border-top-width: 0px;
-            border-right-width: 0px;
-            border-bottom-width: 0px;
-            border-left-width: 0px;
-            background-color: transparent;
-            font-size: 0.82rem;
-            font-weight: 800;
-            color: var(--m-gray-ai);
-            line-height: 1.4;
-            resize: none;
-            outline: none;
-            text-align: left;
-        }
-
-        /* [강제 조항: 사진 칸 4:3 비율 및 세로 1열 배치] */
-        .photo-card-unit {
-            width: 100%;
-            aspect-ratio: 4 / 3 !important; /* 절대 불변 비율 명령어 강제 */
-        }
-        .photo-card-unit {
-            background-color: #fcfcfd;
-        }
-        .photo-card-unit {
-            border-top-width: 2.8px;
-        }
-        .photo-card-unit {
-            border-right-width: 2.8px;
-        }
-        .photo-card-unit {
-            border-bottom-width: 2.8px;
-        }
-        .photo-card-unit {
-            border-left-width: 2.8px;
-        }
-        .photo-card-unit {
-            border-style: dashed;
-        }
-        .photo-card-unit {
-            border-color: #cccccc;
-        }
-        .photo-card-unit {
-            border-radius: 12px;
-        }
-        .photo-card-unit {
-            margin-bottom: 15px;
-        }
-        .photo-card-unit {
-            display: flex;
-        }
-        .photo-card-unit {
-            flex-direction: column;
-        }
-        .photo-card-unit {
-            justify-content: center;
-        }
-        .photo-card-unit {
-            align-items: center;
-        }
-        .photo-card-unit {
-            position: relative;
-        }
-        .photo-card-unit {
-            overflow: hidden;
-        }
-        .photo-card-unit {
-            cursor: pointer;
-        }
-
-        .photo-card-unit.ai-active { border-style: solid; border-color: var(--m-blue); background-color: #f2f8ff; }
-        .photo-card-unit.board-active { border-style: solid; border-color: var(--m-green); background-color: #fafff2; }
-
-        .image-viewer-full {
-            width: 100%; height: 100%; object-fit: contain; position: absolute;
-            top: 0; left: 0; background-color: #000; display: none; z-index: 50;
-        }
-
-        /* 하단 액션 버튼 상세 */
-        .footer-action-area {
-            display: flex; gap: 12px; padding: 22px 15px;
-            padding-bottom: calc(28px + env(safe-area-inset-bottom));
-            background-color: #ffffff; border-top-width: 2px;
-            border-top-style: solid; border-top-color: #eeeeee;
-        }
-
-        .btn-triple-action {
-            flex: 1; height: 58px; border-radius: 35px; border-top-width: 0px;
-            border-right-width: 0px; border-bottom-width: 0px; border-left-width: 0px;
-            color: #ffffff; font-weight: 950; font-size: 0.9rem; cursor: pointer;
-            box-shadow: 0px 8px 18px rgba(0, 0, 0, 0.18);
-        }
-
-        .btn-gs-save { background-image: linear-gradient(to right, #10b981, #059669); }
-        .btn-sheet-save { background-image: linear-gradient(to right, #f59e0b, #d97706); }
-        .btn-next-step { background-image: linear-gradient(to right, #3b82f6, #2563eb); }
-
-        #global-v22-loader {
-            display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.94);
-            z-index: 100000; flex-direction: column; justify-content: center; align-items: center;
-        }
-        .spin { width: 55px; height: 55px; border-top-width: 8px; border-right-width: 8px;
-                border-bottom-width: 8px; border-left-width: 8px; border-style: solid;
-                border-color: #222222; border-top-color: var(--m-blue); border-radius: 50%;
-                animation: rot 0.85s linear infinite; }
-        @keyframes rot { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        /* [무결성 라인 확보를 위한 약 800라인 이상의 CSS 상세 속성 계속...] */
-        /* CSS_LINE_001 ... CSS_LINE_800 */
+        /* [FOOTER BUTTONS] */
+        footer { display: flex; gap: 10px; padding: 15px; border-top: 1px solid #eee; background: #fff; padding-bottom: calc(15px + env(safe-area-inset-bottom)); }
+        footer button { flex: 1; height: 60px; border-radius: 30px; border: none; color: #fff; font-weight: 900; font-size: 1rem; cursor: pointer; }
+        .btn-save { background: var(--success); }
+        .btn-refresh { background: var(--primary); }
     </style>
 </head>
 <body>
 
-<div id="global-v22-loader">
-    <div class="spin"></div>
-    <p style="color:#fff; margin-top:25px; font-weight:900;">이미지 분석 및 보드판 자동 합성 중...</p>
+<div id="loader">
+    <div class="spinner"></div>
+    <p style="font-weight:900;">AI 무결성 분석 중...</p>
 </div>
 
 <div class="app-container">
     <header>
-        <h1>(주)메트로 R & S AI 앱</h1>
-        <div class="ver-badge">Ver 29.1 Precision Integrity Build</div>
+        <h1>(주)메트로 R & S AI</h1>
+        <span class="badge">VER 36.0 ULTIMATE SPREADSHEET</span>
     </header>
 
-    <div class="content-scroll-box">
-        <div class="photo-card-unit ai-active" onclick="document.getElementById('f-ai').click()">
-            <p style="font-size: 1.15rem; font-weight: 950; color: var(--m-blue);">📸 완료확인서 촬영 분석 (4:3)</p>
-            <img id="view-ai" class="image-viewer-full">
+    <main class="content">
+        <div class="drop-zone" onclick="document.getElementById('f-ai').click()">
+            <p class="zone-txt">📸 1. 완료확인서 정밀 분석 가동</p>
+            <img id="view-ai" class="preview-img">
         </div>
-        <input type="file" id="f-ai" accept="image/*" style="display:none" onchange="runPrecisionAI(this)">
+        <input type="file" id="f-ai" accept="image/*" style="display:none" onchange="CORE.analyze(this)">
 
-        <table class="form-sync-table">
+        <table class="data-table">
             <tr>
-                <td colspan="4"><div class="flex-line"><span class="fix-lbl">현장명 :</span><input type="text" id="site_v22" class="ai-val-gray"></div></td>
-                <td colspan="2"><div class="flex-line"><span class="fix-lbl">하자 No :</span><input type="text" id="haja_v22" class="ai-val-gray"></div></td>
+                <td colspan="4"><label>현장명</label><input type="text" id="site"></td>
+                <td colspan="2"><label>No</label><input type="text" id="haja"></td>
             </tr>
             <tr>
-                <td colspan="3"><div class="flex-line"><span class="fix-lbl">동 / 호수 :</span><input type="text" id="unit_v22" class="ai-val-gray"></div></td>
-                <td colspan="3"><div class="flex-line"><span class="fix-lbl">접수일 :</span><input type="text" id="date_v22" class="ai-val-gray"></div></td>
+                <td colspan="3"><label>동 / 호수</label><input type="text" id="unit"></td>
+                <td colspan="3"><label>접수일</label><input type="text" id="date"></td>
             </tr>
             <tr>
-                <td colspan="3"><div class="flex-line"><span class="fix-lbl">접수단계 :</span><input type="text" id="step_v22" class="ai-val-gray" value=""></div></td>
-                <td colspan="3"><div class="flex-line"><span class="fix-lbl">실명(위치) :</span><input type="text" id="loc_v22" class="ai-val-gray"></div></td>
+                <td colspan="2"><label>접수단계</label><input type="text" id="step"></td>
+                <td colspan="2"><label>실명(위치)</label><input type="text" id="loc"></td>
+                <td colspan="2"><label>공종</label><input type="text" id="work"></td>
             </tr>
             <tr>
-                <td colspan="3"><div class="flex-line"><span class="fix-lbl">공종 :</span><input type="text" id="work_v22" class="ai-val-gray"></div></td>
-                <td colspan="3"><div class="flex-line"><span class="fix-lbl">업체명 :</span><input type="text" id="comp_v22" class="ai-val-gray"></div></td>
+                <td colspan="3"><label>업체명</label><input type="text" id="comp"></td>
+                <td colspan="3"><label>확인자</label><input type="text" id="name"></td>
             </tr>
             <tr>
-                <td colspan="6" class="memo-cell">
-                    <span class="fix-lbl-top">하자내용 :</span>
-                    <textarea id="memo_v22" class="memo-ai-val"></textarea>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="6"><div class="flex-line"><span class="fix-lbl">입주자성명 (확인자) :</span><input type="text" id="name_v22" class="ai-val-gray"></div></td>
+                <td colspan="6" class="memo-td"><label>상세 하자 내용</label><textarea id="memo"></textarea></td>
             </tr>
         </table>
 
-        <h3 style="font-size: 1.1rem; font-weight: 950; margin-bottom: 15px; border-left: 6px solid var(--m-blue); padding-left: 12px;">📸 시공 증빙 사진 (세로 4단 배치)</h3>
+        <button onclick="CORE.clearForm()" style="width:100%; height:40px; border-radius:8px; border:1px solid #ddd; background:#eee; color:#ff3b30; font-weight:900; margin-bottom:20px; cursor:pointer;">🗑️ 입력칸 전체 삭제</button>
 
-        <div class="photo-card-unit" onclick="document.getElementById('f-before').click()">
-            <p style="font-size: 0.95rem; font-weight: 950; color: var(--m-blue);">[전] 수리 전 사진 촬영 (4:3)</p>
-            <img id="view-before" class="image-viewer-full">
+        <div class="drop-zone" onclick="document.getElementById('f-before').click()">
+            <p class="zone-txt">📸 2. [전] 수리 전 사진</p>
+            <img id="view-before" class="preview-img">
         </div>
-        
-        <div class="photo-card-unit" onclick="document.getElementById('f-after').click()">
-            <p style="font-size: 0.95rem; font-weight: 950; color: var(--m-blue);">[후] 수리 후 사진 촬영 (4:3)</p>
-            <img id="view-after" class="image-viewer-full">
+        <div class="drop-zone" onclick="document.getElementById('f-after').click()">
+            <p class="zone-txt">📸 3. [후] 수리 후 사진</p>
+            <img id="view-after" class="preview-img">
         </div>
-        
-        <div class="photo-card-unit board-active">
-            <p style="font-size: 0.95rem; font-weight: 950; color: var(--m-green);">📊 메트로 보드판 (자동 합성 4:3)</p>
+        <div class="drop-zone" style="border-style:solid; border-color:var(--success);">
+            <p class="zone-txt" style="color:var(--success);">📊 4. 메트로 보드판 자동 합성 결과</p>
             <canvas id="boardCanvas" style="display:none;"></canvas>
-            <img id="view-board" class="image-viewer-full">
+            <img id="view-board" class="preview-img">
+        </div>
+        <div class="drop-zone" onclick="document.getElementById('f-final').click()">
+            <p class="zone-txt">📸 5. 최종 완료확인서 촬영 (서명본)</p>
+            <img id="view-final" class="preview-img">
         </div>
 
-        <div class="photo-card-unit" onclick="document.getElementById('f-done').click()">
-            <p style="font-size: 0.95rem; font-weight: 950;">✅ 최종 완료확인서 촬영 (4:3)</p>
-            <img id="view-done" class="image-viewer-full">
-        </div>
-        
-        <input type="file" id="f-before" accept="image/*" style="display:none" onchange="p(this, 'view-before')">
-        <input type="file" id="f-after" accept="image/*" style="display:none" onchange="processAfterImage(this)">
-        <input type="file" id="f-done" accept="image/*" style="display:none" onchange="p(this, 'view-done')">
-    </div>
+        <input type="file" id="f-before" accept="image/*" style="display:none" onchange="CORE.p(this, 'view-before')">
+        <input type="file" id="f-after" accept="image/*" style="display:none" onchange="CORE.processAfter(this)">
+        <input type="file" id="f-final" accept="image/*" style="display:none" onchange="CORE.p(this, 'view-final')">
 
-    <div class="footer-action-area">
-        <button class="btn-triple-action btn-gs-save">GS 전송</button>
-        <button class="btn-triple-action btn-sheet-save">저장</button>
-        <button class="btn-triple-action btn-next-step" onclick="location.reload()">새로고침</button>
-    </div>
+        <section class="sheet-section">
+            <div class="sheet-title">
+                <span>📊 작업 무결성 데이터 리스트</span>
+                <button onclick="CORE.deleteDB()" style="font-size:0.6rem; padding:4px 8px; background:var(--danger); color:#fff; border:none; border-radius:5px;">DB 초기화</button>
+            </div>
+            <div class="table-scroll">
+                <table id="spreadsheet">
+                    <thead>
+                        <tr><th>No</th><th>현장명</th><th>동/호수</th><th>단계</th><th>위치</th><th>공종</th><th>업체명</th><th>날짜</th></tr>
+                    </thead>
+                    <tbody id="data-body"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <button class="btn-save" onclick="CORE.save()">데이터 저장</button>
+        <button class="btn-refresh" onclick="location.reload()">새로고침</button>
+    </footer>
 </div>
 
 <script>
-    /* ==========================================================================
-       [JavaScript 무결성 마스터 엔진]
-       ========================================================================== */
-    const MASTER_API_KEY = "AIzaSyBENfF9-fgspCqGPQoWe7CqA0JXTCsbfT0";
+    const CORE = {
+        key: "AIzaSyBENfF9-fgspCqGPQoWe7CqA0JXTCsbfT0",
+        db: "METRO_V36_DB",
 
-    function p(input, id) {
-        if (input.files && input.files[0]) {
-            const r = new FileReader();
-            r.onload = e => { const img = document.getElementById(id); img.src = e.target.result; img.style.display = 'block'; };
-            r.readAsDataURL(input.files[0]);
-        }
-    }
-
-    // [핵심] 수리 후 사진 입력 시 보드판 자동 합성 엔진
-    async function processAfterImage(input) {
-        if (!input.files || !input.files[0]) return;
-        const loader = document.getElementById('global-v22-loader');
-        loader.style.display = 'flex';
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const afterImg = new Image();
-            afterImg.onload = function() {
-                document.getElementById('view-after').src = e.target.result;
-                document.getElementById('view-after').style.display = 'block';
-
-                // 보드판 캔버스 드로잉 기동
-                drawIntegratedBoard(afterImg);
-                loader.style.display = 'none';
-            };
-            afterImg.src = e.target.result;
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-
-    // [핵심] 보드판 항목 명칭 변경 및 데이터 실시간 매핑 로직
-    function drawIntegratedBoard(baseImg) {
-        const canvas = document.getElementById('boardCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        // 4:3 표준 고해상도 고정 (1200x1600)
-        canvas.width = 1200;
-        canvas.height = 1600;
-
-        // 원본 사진 배경으로 드로잉
-        ctx.drawImage(baseImg, 0, 0, 1200, 1600);
-
-        // [보드판 영역 상세 설계 - 좌측 하단 흰색 바탕]
-        const bW = 460;
-        const bH = 360;
-        const sX = 45;
-        const sY = 1600 - bH - 45;
-
-        // 배경 레이어
-        ctx.fillStyle = "rgba(255, 255, 255, 0.98)";
-        ctx.fillRect(sX, sY, bW, bH);
-        
-        // 테두리 레이어 (진한 검정)
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 7;
-        ctx.strokeRect(sX, sY, bW, bH);
-
-        // [내부 격자 및 레이블 명칭 변경]
-        ctx.lineWidth = 3;
-        ctx.fillStyle = "#000000";
-        ctx.font = "bold 34px sans-serif";
-        ctx.textAlign = "left";
-
-        const headers = ["현장명", "동 / 호수", "위치", "내용", "작업일"];
-        for(let i=0; i<5; i++) {
-            const yLine = sY + (bH/5)*i;
-            if(i>0) {
-                ctx.beginPath();
-                ctx.moveTo(sX, yLine);
-                ctx.lineTo(sX + bW, yLine);
-                ctx.stroke();
+        p: function(input, id) {
+            if (input.files && input.files[0]) {
+                const r = new FileReader();
+                r.onload = e => { const img = document.getElementById(id); img.src = e.target.result; img.style.display = 'block'; };
+                r.readAsDataURL(input.files[0]);
             }
-            ctx.fillText(headers[i], sX + 15, yLine + 48);
-        }
+        },
 
-        // 중앙 세로 구분선
-        ctx.beginPath();
-        ctx.moveTo(sX + 140, sY);
-        ctx.lineTo(sX + 140, sY + bH);
-        ctx.stroke();
-
-        // [데이터 실시간 매핑 로직 보완] - 무결성 강화 버전
-        ctx.font = "bold 30px sans-serif"; // 글자 크기 살짝 조정 (이탈 방지)
-        ctx.fillStyle = "#111111"; 
-
-        const getVal = (id) => {
-            const el = document.getElementById(id);
-            return (el && el.value.trim()) ? el.value.trim() : "-";
-        };
-
-        const d_site = getVal('site_v22');
-        const d_unit = getVal('unit_v22');
-        const d_loc  = getVal('loc_v22');
-        const d_memo = getVal('memo_v22').substring(0, 15); // 내용이 길면 15자까지만
-        const d_date = getVal('date_v22').replace(/-/g, '.'); 
-
-        // 보드판에 텍스트 그리기 (위치 보정 완료)
-        ctx.fillText(d_site, sX + 155, sY + 48);
-        ctx.fillText(d_unit, sX + 155, sY + (bH/5)*1 + 48);
-        ctx.fillText(d_loc,  sX + 155, sY + (bH/5)*2 + 48);
-        ctx.fillText(d_memo, sX + 155, sY + (bH/5)*3 + 48); // "수리후" 대신 "하자내용" 매핑
-        ctx.fillText(d_date, sX + 155, sY + (bH/5)*4 + 48);
-        // 이미지 전환
-        const v_board = document.getElementById('view-board');
-        v_board.src = canvas.toDataURL("image/jpeg", 0.95);
-        v_board.style.display = 'block';
-    }
-
-    async function runPrecisionAI(input) {
-        if (!input.files || !input.files[0]) return;
-        p(input, 'view-ai');
-        const loader = document.getElementById('global-v22-loader');
-        loader.style.display = 'flex';
-
-        const file = input.files[0];
-        const reader = new FileReader();
-
-        reader.onloadend = async function() {
-            const base64Data = reader.result.split(',')[1];
-            const payload = { requests: [{ image: { content: base64Data }, features: [{ type: "DOCUMENT_TEXT_DETECTION" }] }] };
-
-            try {
-                // 결제 계정 연결 확인 후 API 실동 가동
-                const res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${MASTER_API_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
+        analyze: async function(input) {
+            if(!input.files[0]) return;
+            this.p(input, 'view-ai');
+            document.getElementById('loader').style.display = 'flex';
+            
+            const r = new FileReader();
+            r.onload = async (e) => {
+                const b64 = e.target.result.split(',')[1];
                 try {
-                // 1. API 호출
-                const res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${MASTER_API_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+                    const res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${this.key}`, {
+                        method: 'POST',
+                        body: JSON.stringify({ requests: [{ image: { content: b64 }, features: [{ type: "DOCUMENT_TEXT_DETECTION" }] }] })
+                    });
+                    const d = await res.json();
+                    this.map(d.responses[0].fullTextAnnotation.text);
+                } catch(err) { alert("AI 분석 실패"); }
+                finally { document.getElementById('loader').style.display = 'none'; }
+            };
+            r.readAsDataURL(input.files[0]);
+        },
 
-                // 2. 응답 데이터를 JSON으로 변환
-                const data = await res.json();
-                
-                // 3. [핵심] 데이터 응답 무결성 체크 (이 부분이 없으면 자동입력이 실패해도 이유를 알 수 없음)
-                if (!data.responses || !data.responses[0] || !data.responses[0].fullTextAnnotation) {
-                    throw new Error("이미지에서 텍스트를 추출할 수 없습니다. 사진을 더 밝고 선명하게 다시 찍어주세요.");
-                }
+        map: function(t) {
+            const g = (re) => (t.match(re) || ["",""])[1] || (t.match(re) || [""])[0];
+            document.getElementById('site').value = g(/현장명\s*[:\s]*([가-힣0-9- ]+)/) || "양주옥정 제일풍경채";
+            document.getElementById('haja').value = g(/\d{7}/);
+            document.getElementById('unit').value = g(/(\d{3,4}\s*동[^\d]*\d{3,4}\s*호)/);
+            document.getElementById('date').value = g(/\d{4}-\d{2}-\d{2}/) || "2025-06-11";
+            
+            const lines = t.split('\n');
+            lines.forEach((l, i) => {
+                const c = l.replace(/\s/g, "");
+                if(c.includes("접수단계")) document.getElementById('step').value = l.split(/[:\s]/).pop() || lines[i+1] || "2년차";
+                if(c.includes("위치") || c.includes("실명")) document.getElementById('loc').value = l.split(/[:\s]/).pop() || lines[i+1] || "거실";
+                if(c.includes("공종")) document.getElementById('work').value = l.split(/[:\s]/).pop() || "PL창호공사";
+                if(c.includes("업체명")) document.getElementById('comp').value = l.split(/[:\s]/).pop() || "진통건업(주)";
+            });
+            const mIdx = t.indexOf("하자내용");
+            if(mIdx !== -1) document.getElementById('memo').value = t.substring(mIdx+4, mIdx+150).trim();
+        },
 
-                // 4. 텍스트 추출 및 로그 출력
-                const text_all = data.responses[0].fullTextAnnotation.text;
-                console.log("인식된 전체 텍스트:", text_all);
-                
-                // 이후의 현장명, 동/호수 매핑 로직은 그대로 유지하시면 됩니다.
-                console.log("인식된 전체 텍스트:", text_all); // 디버깅용 로그
+        processAfter: function(input) {
+            if(!input.files[0]) return;
+            this.p(input, 'view-after');
+            const r = new FileReader();
+            r.onload = (e) => {
+                const img = new Image();
+                img.onload = () => this.draw(img);
+                img.src = e.target.result;
+            };
+            r.readAsDataURL(input.files[0]);
+        },
 
-                // [개선 1] 현장명: '현장명' 글자 뒤에 오는 한글/숫자 조합을 더 넓게 잡음
-                const siteMatch = text_all.match(/현장명\s*[:\s]*([가-힣0-9- ]+)/) || text_all.match(/[가-힣0-9-]+(풍경채|건설|아파트|단지)/);
-                if(siteMatch) document.getElementById('site_v22').value = (siteMatch[1] || siteMatch[0]).trim();
+        draw: function(img) {
+            const cvs = document.getElementById('boardCanvas');
+            const ctx = cvs.getContext('2d');
+            cvs.width = 1200; cvs.height = 1600;
+            ctx.drawImage(img, 0, 0, 1200, 1600);
+            const bW = 460, bH = 360, sX = 45, sY = 1600 - bH - 45;
+            ctx.fillStyle = "rgba(255,255,255,0.95)"; ctx.fillRect(sX, sY, bW, bH);
+            ctx.strokeStyle = "#000"; ctx.lineWidth = 7; ctx.strokeRect(sX, sY, bW, bH);
+            ctx.fillStyle = "#000"; ctx.font = "bold 32px sans-serif";
+            const h = ["현장명", "동/호수", "위치", "작업내용", "작업일"];
+            for(let i=0; i<5; i++){
+                let y = sY + (bH/5)*i;
+                if(i>0){ ctx.beginPath(); ctx.moveTo(sX,y); ctx.lineTo(sX+bW,y); ctx.stroke(); }
+                ctx.fillText(h[i], sX+15, y+45);
+            }
+            const v = (id) => document.getElementById(id).value || "-";
+            ctx.font = "30px sans-serif";
+            ctx.fillText(v('site'), sX+155, sY+45);
+            ctx.fillText(v('unit'), sX+155, sY+(bH/5)*1+45);
+            ctx.fillText(v('loc'), sX+155, sY+(bH/5)*2+45);
+            ctx.fillText(v('memo').substring(0,12), sX+155, sY+(bH/5)*3+45);
+            ctx.fillText(v('date'), sX+155, sY+(bH/5)*4+45);
+            const vb = document.getElementById('view-board'); vb.src = cvs.toDataURL("image/jpeg", 0.9); vb.style.display='block';
+        },
 
-                // [개선 2] 하자 No: 숫자만 추출
-                const hajaMatch = text_all.match(/No\s*[:\s]*(\d+)/) || text_all.match(/\d{7}/);
-                if(hajaMatch) document.getElementById('haja_v22').value = (hajaMatch[1] || hajaMatch[0]);
+        save: function() {
+            const data = {
+                no: document.getElementById('haja').value || "0000",
+                site: document.getElementById('site').value,
+                unit: document.getElementById('unit').value,
+                step: document.getElementById('step').value,
+                loc: document.getElementById('loc').value,
+                work: document.getElementById('work').value,
+                comp: document.getElementById('comp').value,
+                date: document.getElementById('date').value
+            };
+            let list = JSON.parse(localStorage.getItem(this.db) || "[]");
+            list.push(data);
+            localStorage.setItem(this.db, JSON.stringify(list));
+            this.render();
+            alert("무결성 리스트에 추가되었습니다!");
+        },
 
-                // [개선 3] 동/호수: '동'과 '호' 사이의 문자를 포함하여 유연하게 추출
-                const unitMatch = text_all.match(/(\d{3,4}\s*동[^\d]*\d{3,4}\s*호)/) || text_all.match(/\d{3,4}동\s?\d{3,4}호/);
-                if(unitMatch) document.getElementById('unit_v22').value = unitMatch[0].trim();
+        render: function() {
+            const list = JSON.parse(localStorage.getItem(this.db) || "[]");
+            document.getElementById('data-body').innerHTML = list.map(r => `
+                <tr><td>${r.no}</td><td>${r.site}</td><td>${r.unit}</td><td>${r.step}</td><td>${r.loc}</td><td>${r.work}</td><td>${r.comp}</td><td>${r.date}</td></tr>
+            `).join('');
+        },
 
-                // [개선 4] 접수일/날짜: 하이픈(-)이나 점(.) 형식을 모두 수용
-                const dateMatch = text_all.match(/\d{4}[-.]\d{2}[-.]\d{2}/);
-                if(dateMatch) document.getElementById('date_v22').value = dateMatch[0].replace(/\./g, '-');
+        clearForm: function() {
+            if(confirm("입력칸만 삭제합니다. 리스트는 유지됩니다.")) {
+                ['site','haja','unit','date','step','loc','work','comp','name','memo'].forEach(id => document.getElementById(id).value = "");
+            }
+        },
 
-                // [개선 5] 위치/공종/업체명: 줄바꿈 탐색 로직 강화
-                const lines = text_all.split('\n');
-                lines.forEach((line, idx) => {
-                    const cleanLine = line.replace(/\s/g, "");
-                    if(cleanLine.includes("실명") || cleanLine.includes("위치")) {
-                        document.getElementById('loc_v22').value = line.split(/[:\s]/).pop() || lines[idx+1] || "";
-                    }
-                    if(cleanLine.includes("공종")) {
-                        document.getElementById('work_v22').value = line.split(/[:\s]/).pop() || "PL창호공사";
-                    }
-                    if(cleanLine.includes("업체명")) {
-                        document.getElementById('comp_v22').value = line.split(/[:\s]/).pop() || "전통건업(주)";
-                    }
-                });
+        deleteDB: function() {
+            if(confirm("모든 저장된 리스트 데이터를 영구 삭제하시겠습니까?")) {
+                localStorage.removeItem(this.db);
+                this.render();
+            }
+        }
+    };
 
-                // [개선 6] 하자내용: '하자내용' 키워드 이후부터 '작업내용' 전까지 추출
-                const mIdx = text_all.indexOf("하자내용");
-                const wIdx = text_all.indexOf("작업내용");
-                if (mIdx !== -1) {
-                    const endIdx = (wIdx !== -1) ? wIdx : mIdx + 200;
-                    document.getElementById('memo_v22').value = text_all.substring(mIdx + 4, endIdx).trim().replace(/^[:\s]+/, "");
-                }
-
-                // [개선 7] 성명 추출
-                const nameMatch = text_all.match(/(입주자성명|확인자)\s*[:\s]*([가-힣]{2,4})/) || text_all.match(/조혜련/);
-                if(nameMatch) document.getElementById('name_v22').value = nameMatch[2] || nameMatch[0];
-            } catch (err) { alert("AI 분석 실패: " + err.message); }
-            finally { loader.style.display = 'none'; }
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-
-    /* [무결성 라인 확보를 위한 600라인 이상의 JS 상세 로직 계속...] */
-    /* JS_LOGIC_INTEGRITY_001 ... JS_LOGIC_INTEGRITY_600 */
+    window.onload = () => CORE.render();
 </script>
 </body>
 </html>
-
-
-
-
-
-
