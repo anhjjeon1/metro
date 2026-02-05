@@ -157,7 +157,7 @@
       line-height: 1.4; 
     }
 
-    /* [SPREADSHEET VIEW - 세로칸 높이 확대 수정] */
+    /* [SPREADSHEET VIEW - 형식 가시성 수정] */
     .sheet-section { 
       margin-top: 25px; 
       margin-bottom: 40px; 
@@ -186,30 +186,30 @@
     #spreadsheet { 
       width: 100%; 
       border-collapse: collapse; 
-      font-size: 0.7rem; 
-      min-width: 1400px; 
+      font-size: 0.75rem; 
+      min-width: 1500px; /* 우측 끝까지 보이기 위해 확장 */
     }
 
     #spreadsheet th { 
       background: #f1f5f9; 
-      padding: 15px 8px; 
-      border-bottom: 2px solid #cbd5e1; 
+      padding: 12px 8px; 
+      border: 1px solid #cbd5e1; 
       font-weight: 900; 
       white-space: nowrap; 
     }
 
     #spreadsheet td { 
-      padding: 10px 8px; 
-      border-bottom: 1px solid #e2e8f0; 
+      padding: 8px; 
+      border: 1px solid #e2e8f0; 
       text-align: center; 
       color: #444; 
       vertical-align: middle; 
-      height: 110px; /* 세로칸 높이 대폭 확대 */
+      height: 120px; /* 세로칸 높이 대폭 확대 */
     }
 
     .thumb { 
-      width: 90px; /* 썸네일 크기 확대 */
-      height: 68px; 
+      width: 110px; 
+      height: 85px; 
       object-fit: cover; 
       border-radius: 6px; 
       border: 1px solid #ccc; 
@@ -367,7 +367,7 @@
     db: "METRO_V36_DB",
 
 
-    // --- p 시작 ---
+    // --- p 시작 (사진 업로드 보장) ---
     p: function(input, id) {
       if (!input.files || !input.files[0]) return;
       const targetImg = document.getElementById(id);
@@ -464,19 +464,15 @@
       const ctx = cvs.getContext('2d');
       cvs.width = 1200; cvs.height = 1600;
       ctx.drawImage(img, 0, 0, 1200, 1600);
-      
       const bW = 460, bH = 360, sX = 45, sY = 1600 - bH - 45;
       ctx.fillStyle = "rgba(255,255,255,0.95)"; 
       ctx.fillRect(sX, sY, bW, bH);
-      
       ctx.strokeStyle = "#000"; 
       ctx.lineWidth = 7; 
       ctx.strokeRect(sX, sY, bW, bH);
-      
       ctx.fillStyle = "#000"; 
       ctx.font = "bold 32px sans-serif";
       const h = ["현장명", "동/호수", "위치", "작업진행", "작업일"];
-      
       for(let i=0; i<5; i++){
         let y = sY + (bH/5)*i;
         if(i>0){ 
@@ -484,25 +480,20 @@
         }
         ctx.fillText(h[i], sX+15, y+45);
       }
-      
       const v = (id) => document.getElementById(id).value || "-";
       ctx.font = "30px sans-serif";
       ctx.fillText(v('site'), sX+155, sY+45);
       ctx.fillText(v('unit'), sX+155, sY+(bH/5)*1+45);
       ctx.fillText(v('loc'), sX+155, sY+(bH/5)*2+45);
-      
-      // "수리후" 고정 출력
       ctx.fillText("수리후", sX+155, sY+(bH/5)*3+45);
-      
       ctx.fillText(v('date'), sX+155, sY+(bH/5)*4+45);
-      
       const vb = document.getElementById('view-board');
       vb.src = cvs.toDataURL("image/jpeg", 0.9);
       vb.style.display='block';
     },
 
 
-    // --- save 시작 (데이터 저장 무결성 유지) ---
+    // --- save 시작 (자동 매핑 무결성 유지) ---
     save: function() {
       const getSrc = (id) => {
         const el = document.getElementById(id);
@@ -529,16 +520,18 @@
       list.push(data);
       localStorage.setItem(this.db, JSON.stringify(list));
       this.render();
-      alert("데이터가 리스트에 저장되었습니다!");
+      alert("스프레드시트에 데이터가 기록되었습니다!");
     },
 
 
-    // --- render 시작 (세로칸 높이 확대 적용) ---
+    // --- render 시작 (입력칸 시각화 강화) ---
     render: function() {
       const list = JSON.parse(localStorage.getItem(this.db) || "[]");
-      const makeImg = (src) => src ? `<img src="${src}" class="thumb">` : "-";
+      const makeImg = (src) => src ? `<img src="${src}" class="thumb">` : "";
+      const body = document.getElementById('data-body');
       
-      document.getElementById('data-body').innerHTML = list.map(r => `
+      // 실제 데이터 출력
+      let html = list.map(r => `
         <tr>
           <td>${r.site}</td>
           <td>${r.no}</td>
@@ -548,17 +541,30 @@
           <td>${r.loc}</td>
           <td>${r.work}</td>
           <td>${r.comp}</td>
-          <td style="text-align:left; min-width:180px;">${r.memo.substring(0,40)}</td>
+          <td style="text-align:left; min-width:200px;">${r.memo.substring(0,60)}</td>
           <td>${makeImg(r.imgBefore)}</td>
           <td>${makeImg(r.imgAfter)}</td>
           <td>${makeImg(r.imgBoard)}</td>
           <td>${makeImg(r.imgFinal)}</td>
         </tr>
       `).join('');
+
+      // [무결성 포인트] 데이터가 없어도 빈 입력칸(형식) 출력
+      const emptyRow = `<tr>${'<td></td>'.repeat(13)}</tr>`;
+      const minRows = 5;
+      const currentRows = list.length;
+      
+      if(currentRows < minRows) {
+        for(let i=0; i < (minRows - currentRows); i++) {
+          html += emptyRow;
+        }
+      }
+      
+      body.innerHTML = html;
     },
 
 
-    // --- clearForm 시작 ---
+    // --- clearForm 및 deleteDB ---
     clearForm: function() {
       if(confirm("입력칸을 초기화하시겠습니까?")) {
         ['site','haja','unit','date','step','loc','work','comp','name','memo'].forEach(id => {
@@ -573,7 +579,6 @@
     },
 
 
-    // --- deleteDB 시작 ---
     deleteDB: function() {
       if(confirm("모든 데이터를 영구 삭제하시겠습니까?")) {
         localStorage.removeItem(this.db);
