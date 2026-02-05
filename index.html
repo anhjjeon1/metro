@@ -6,84 +6,277 @@
   <title>(주)메트로 R & S AI - Ver 36.0 Ultimate Master</title>
   <style>
     :root {
-      --primary: #007aff; --success: #34c759; --danger: #ff3b30;
-      --dark: #1c1c1e; --light: #f2f2f7; --border: #c6c6c8;
+      --primary: #007aff;
+      --success: #34c759;
+      --danger: #ff3b30;
+      --dark: #1c1c1e;
+      --light: #f2f2f7;
+      --border: #c6c6c8;
       --ai-gray: #444444;
     }
 
-
     /* [SYSTEM RESET ENGINE] */
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body, html { margin: 0; padding: 0; background: var(--light); font-family: sans-serif; height: 100vh; overflow: hidden; }
-
-
-    .app-container { max-width: 500px; margin: 0 auto; background: #fff; height: 100%; display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.2); }
-
-
-    header { background: var(--dark); color: #fff; text-align: center; padding: 20px 0; border-bottom: 4px solid var(--primary); }
-    header h1 { margin: 0; font-size: 1.3rem; font-weight: 900; }
-    .badge { font-size: 0.7rem; color: var(--primary); font-weight: bold; margin-top: 5px; display: block; }
-
-
-    .content { flex: 1; overflow-y: auto; padding: 15px; -webkit-overflow-scrolling: touch; }
-
-
-    /* [PHOTO CARDS - 4:3 RATIO] */
-    .drop-zone { 
-      width: 100%; aspect-ratio: 4/3; border: 2.5px dashed var(--border); border-radius: 12px; 
-      display: flex; flex-direction: column; justify-content: center; align-items: center; 
-      cursor: pointer; overflow: hidden; position: relative; margin-bottom: 15px; background: #f8f9fa; 
+    * { 
+      box-sizing: border-box; 
+      -webkit-tap-highlight-color: transparent; 
     }
-    .preview-img { width: 100%; height: 100%; object-fit: contain; position: absolute; background: #000; display: none; z-index: 10; }
-    .zone-txt { font-weight: 900; color: #666; text-align: center; font-size: 0.9rem; z-index: 5; }
 
+    body, html { 
+      margin: 0; 
+      padding: 0; 
+      background: var(--light); 
+      font-family: sans-serif; 
+      height: 100vh; 
+      overflow: hidden; 
+    }
+
+    .app-container { 
+      max-width: 500px; 
+      margin: 0 auto; 
+      background: #fff; 
+      height: 100%; 
+      display: flex; 
+      flex-direction: column; 
+      box-shadow: 0 0 50px rgba(0,0,0,0.2); 
+    }
+
+    header { 
+      background: var(--dark); 
+      color: #fff; 
+      text-align: center; 
+      padding: 20px 0; 
+      border-bottom: 4px solid var(--primary); 
+    }
+
+    header h1 { 
+      margin: 0; 
+      font-size: 1.3rem; 
+      font-weight: 900; 
+    }
+
+    .badge { 
+      font-size: 0.7rem; 
+      color: var(--primary); 
+      font-weight: bold; 
+      margin-top: 5px; 
+      display: block; 
+    }
+
+    .content { 
+      flex: 1; 
+      overflow-y: auto; 
+      padding: 15px; 
+      -webkit-overflow-scrolling: touch; 
+    }
+
+    /* [PHOTO CARDS] */
+    .drop-zone { 
+      width: 100%; 
+      aspect-ratio: 4/3; 
+      border: 2.5px dashed var(--border); 
+      border-radius: 12px; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: center; 
+      align-items: center; 
+      cursor: pointer; 
+      overflow: hidden; 
+      position: relative; 
+      margin-bottom: 15px; 
+      background: #f8f9fa; 
+    }
+
+    .preview-img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: contain; 
+      position: absolute; 
+      background: #000; 
+      display: none; 
+      z-index: 10; 
+    }
+
+    .zone-txt { 
+      font-weight: 900; 
+      color: #666; 
+      text-align: center; 
+      font-size: 0.9rem; 
+      z-index: 5; 
+    }
 
     /* [DATA TABLE] */
-    .data-table { width: 100%; border-collapse: collapse; border: 2px solid #222; margin-bottom: 15px; background: #fff; }
-    .data-table td { border: 1px solid #333; padding: 6px; position: relative; height: 48px; vertical-align: middle; }
-    .data-table label { position: absolute; top: 3px; left: 6px; font-size: 0.6rem; font-weight: 900; color: var(--primary); }
-    .data-table input { width: 100%; border: none; font-size: 0.88rem; font-weight: 800; outline: none; background: transparent; padding-top: 12px; color: var(--ai-gray); }
-    .memo-td { height: 120px !important; vertical-align: top !important; padding-top: 25px !important; }
-    .memo-td textarea { width: 100%; height: 100%; border: none; resize: none; outline: none; font-size: 0.85rem; line-height: 1.4; }
+    .data-table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      border: 2px solid #222; 
+      margin-bottom: 15px; 
+      background: #fff; 
+    }
 
+    .data-table td { 
+      border: 1px solid #333; 
+      padding: 6px; 
+      position: relative; 
+      height: 48px; 
+      vertical-align: middle; 
+    }
 
-    /* [SPREADSHEET VIEW] */
-    .sheet-section { margin-top: 25px; margin-bottom: 40px; }
-    .sheet-title { font-size: 1rem; font-weight: 900; margin-bottom: 10px; border-left: 5px solid var(--success); padding-left: 10px; display: flex; justify-content: space-between; align-items: center; }
-    .table-scroll { width: 100%; overflow-x: auto; border: 1px solid #ddd; border-radius: 10px; background: #fff; }
-    #spreadsheet { width: 100%; border-collapse: collapse; font-size: 0.65rem; min-width: 700px; }
-    #spreadsheet th { background: #f1f5f9; padding: 12px 8px; border-bottom: 2px solid #cbd5e1; font-weight: 900; }
-    #spreadsheet td { padding: 10px 8px; border-bottom: 1px solid #e2e8f0; text-align: center; color: #444; }
+    .data-table label { 
+      position: absolute; 
+      top: 3px; 
+      left: 6px; 
+      font-size: 0.6rem; 
+      font-weight: 900; 
+      color: var(--primary); 
+    }
 
+    .data-table input { 
+      width: 100%; 
+      border: none; 
+      font-size: 0.88rem; 
+      font-weight: 800; 
+      outline: none; 
+      background: transparent; 
+      padding-top: 12px; 
+      color: var(--ai-gray); 
+    }
 
-    /* [SYSTEM LOADER] */
-    #loader { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; color: #fff; }
-    .spinner { width: 50px; height: 50px; border: 5px solid #333; border-top-color: var(--primary); border-radius: 50%; animation: rot 0.8s linear infinite; }
+    .memo-td { 
+      height: 120px !important; 
+      vertical-align: top !important; 
+      padding-top: 25px !important; 
+    }
+
+    .memo-td textarea { 
+      width: 100%; 
+      height: 100%; 
+      border: none; 
+      resize: none; 
+      outline: none; 
+      font-size: 0.85rem; 
+      line-height: 1.4; 
+    }
+
+    /* [SPREADSHEET VIEW - 세로칸 높이 확대 수정] */
+    .sheet-section { 
+      margin-top: 25px; 
+      margin-bottom: 40px; 
+    }
+
+    .sheet-title { 
+      font-size: 1rem; 
+      font-weight: 900; 
+      margin-bottom: 10px; 
+      border-left: 5px solid var(--success); 
+      padding-left: 10px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+
+    .table-scroll { 
+      width: 100%; 
+      overflow-x: auto; 
+      border: 1px solid #ddd; 
+      border-radius: 10px; 
+      background: #fff; 
+      -webkit-overflow-scrolling: touch; 
+    }
+    
+    #spreadsheet { 
+      width: 100%; 
+      border-collapse: collapse; 
+      font-size: 0.7rem; 
+      min-width: 1400px; 
+    }
+
+    #spreadsheet th { 
+      background: #f1f5f9; 
+      padding: 15px 8px; 
+      border-bottom: 2px solid #cbd5e1; 
+      font-weight: 900; 
+      white-space: nowrap; 
+    }
+
+    #spreadsheet td { 
+      padding: 10px 8px; 
+      border-bottom: 1px solid #e2e8f0; 
+      text-align: center; 
+      color: #444; 
+      vertical-align: middle; 
+      height: 110px; /* 세로칸 높이 대폭 확대 */
+    }
+
+    .thumb { 
+      width: 90px; /* 썸네일 크기 확대 */
+      height: 68px; 
+      object-fit: cover; 
+      border-radius: 6px; 
+      border: 1px solid #ccc; 
+      background: #eee; 
+      display: block;
+      margin: 0 auto;
+    }
+
+    #loader { 
+      position: fixed; 
+      inset: 0; 
+      background: rgba(0,0,0,0.9); 
+      z-index: 9999; 
+      display: none; 
+      flex-direction: column; 
+      justify-content: center; 
+      align-items: center; 
+      color: #fff; 
+    }
+
+    .spinner { 
+      width: 50px; 
+      height: 50px; 
+      border: 5px solid #333; 
+      border-top-color: var(--primary); 
+      border-radius: 50%; 
+      animation: rot 0.8s linear infinite; 
+    }
+
     @keyframes rot { 100% { transform: rotate(360deg); } }
 
+    footer { 
+      display: flex; 
+      gap: 10px; 
+      padding: 15px; 
+      border-top: 1px solid #eee; 
+      background: #fff; 
+      padding-bottom: calc(15px + env(safe-area-inset-bottom)); 
+    }
 
-    /* [FOOTER BUTTONS] */
-    footer { display: flex; gap: 10px; padding: 15px; border-top: 1px solid #eee; background: #fff; padding-bottom: calc(15px + env(safe-area-inset-bottom)); }
-    footer button { flex: 1; height: 60px; border-radius: 30px; border: none; color: #fff; font-weight: 900; font-size: 1rem; cursor: pointer; }
+    footer button { 
+      flex: 1; 
+      height: 60px; 
+      border-radius: 30px; 
+      border: none; 
+      color: #fff; 
+      font-weight: 900; 
+      font-size: 1rem; 
+      cursor: pointer; 
+    }
+
     .btn-save { background: var(--success); }
     .btn-refresh { background: var(--primary); }
   </style>
 </head>
 <body>
 
-
 <div id="loader">
   <div class="spinner"></div>
   <p style="font-weight:900;">AI 무결성 분석 중...</p>
 </div>
-
 
 <div class="app-container">
   <header>
     <h1>(주)메트로 R & S AI</h1>
     <span class="badge">VER 36.0 ULTIMATE SPREADSHEET</span>
   </header>
-
 
   <main class="content">
     <div class="drop-zone" onclick="document.getElementById('f-ai').click()">
@@ -92,11 +285,10 @@
     </div>
     <input type="file" id="f-ai" accept="image/*" style="display:none" onchange="CORE.analyze(this)">
 
-
     <table class="data-table">
       <tr>
         <td colspan="4"><label>현장명</label><input type="text" id="site"></td>
-        <td colspan="2"><label>No</label><input type="text" id="haja"></td>
+        <td colspan="2"><label>하자No</label><input type="text" id="haja"></td>
       </tr>
       <tr>
         <td colspan="3"><label>동 / 호수</label><input type="text" id="unit"></td>
@@ -116,33 +308,32 @@
       </tr>
     </table>
 
-
     <button onclick="CORE.clearForm()" style="width:100%; height:40px; border-radius:8px; border:1px solid #ddd; background:#eee; color:#ff3b30; font-weight:900; margin-bottom:20px; cursor:pointer;">🗑️ 입력칸 전체 삭제</button>
-
 
     <div class="drop-zone" onclick="document.getElementById('f-before').click()">
       <p class="zone-txt">📸 2. [전] 수리 전 사진</p>
       <img id="view-before" class="preview-img">
     </div>
+
     <div class="drop-zone" onclick="document.getElementById('f-after').click()">
       <p class="zone-txt">📸 3. [후] 수리 후 사진</p>
       <img id="view-after" class="preview-img">
     </div>
+
     <div class="drop-zone" style="border-style:solid; border-color:var(--success);">
       <p class="zone-txt" style="color:var(--success);">📊 4. 메트로 보드판 자동 합성 결과</p>
       <canvas id="boardCanvas" style="display:none;"></canvas>
       <img id="view-board" class="preview-img">
     </div>
+
     <div class="drop-zone" onclick="document.getElementById('f-final').click()">
       <p class="zone-txt">📸 5. 최종 완료확인서 촬영 (서명본)</p>
       <img id="view-final" class="preview-img">
     </div>
 
-
     <input type="file" id="f-before" accept="image/*" style="display:none" onchange="CORE.p(this, 'view-before')">
     <input type="file" id="f-after" accept="image/*" style="display:none" onchange="CORE.processAfter(this)">
     <input type="file" id="f-final" accept="image/*" style="display:none" onchange="CORE.p(this, 'view-final')">
-
 
     <section class="sheet-section">
       <div class="sheet-title">
@@ -152,7 +343,11 @@
       <div class="table-scroll">
         <table id="spreadsheet">
           <thead>
-            <tr><th>No</th><th>현장명</th><th>동/호수</th><th>단계</th><th>위치</th><th>공종</th><th>업체명</th><th>날짜</th></tr>
+            <tr>
+              <th>현장명</th><th>하자No</th><th>동/호수</th><th>접수일</th>
+              <th>단계</th><th>위치</th><th>공종</th><th>업체명</th>
+              <th>하자내용</th><th>전</th><th>후</th><th>보드</th><th>확인서</th>
+            </tr>
           </thead>
           <tbody id="data-body"></tbody>
         </table>
@@ -160,13 +355,11 @@
     </section>
   </main>
 
-
   <footer>
     <button class="btn-save" onclick="CORE.save()">데이터 저장</button>
     <button class="btn-refresh" onclick="location.reload()">새로고침</button>
   </footer>
 </div>
-
 
 <script>
   const CORE = {
@@ -174,7 +367,7 @@
     db: "METRO_V36_DB",
 
 
-    // --- p 시작 (사진 입력 무결성 강화) ---
+    // --- p 시작 ---
     p: function(input, id) {
       if (!input.files || !input.files[0]) return;
       const targetImg = document.getElementById(id);
@@ -229,19 +422,13 @@
       if(!input.files[0]) return;
       this.p(input, 'view-ai');
       document.getElementById('loader').style.display = 'flex';
-      
       const r = new FileReader();
       r.onload = async (e) => {
         const b64 = e.target.result.split(',')[1];
         try {
           const res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${this.key}`, {
             method: 'POST',
-            body: JSON.stringify({ 
-              requests: [{ 
-                image: { content: b64 }, 
-                features: [{ type: "DOCUMENT_TEXT_DETECTION" }] 
-              }] 
-            })
+            body: JSON.stringify({ requests: [{ image: { content: b64 }, features: [{ type: "DOCUMENT_TEXT_DETECTION" }] }] })
           });
           const d = await res.json();
           if (d.responses[0]?.fullTextAnnotation) {
@@ -271,7 +458,7 @@
     },
 
 
-    // --- draw 시작 (작업진행 "수리후" 고정 수정 적용) ---
+    // --- draw 시작 ---
     draw: function(img) {
       const cvs = document.getElementById('boardCanvas');
       const ctx = cvs.getContext('2d');
@@ -304,7 +491,7 @@
       ctx.fillText(v('unit'), sX+155, sY+(bH/5)*1+45);
       ctx.fillText(v('loc'), sX+155, sY+(bH/5)*2+45);
       
-      // [무결성 유지] 특정 문자열 "수리후" 고정 출력
+      // "수리후" 고정 출력
       ctx.fillText("수리후", sX+155, sY+(bH/5)*3+45);
       
       ctx.fillText(v('date'), sX+155, sY+(bH/5)*4+45);
@@ -315,41 +502,72 @@
     },
 
 
-    // --- save 시작 ---
+    // --- save 시작 (데이터 저장 무결성 유지) ---
     save: function() {
+      const getSrc = (id) => {
+        const el = document.getElementById(id);
+        return (el && el.src && el.style.display !== 'none') ? el.src : "";
+      };
+      
       const data = {
-        no: document.getElementById('haja').value || "0000",
         site: document.getElementById('site').value,
+        no: document.getElementById('haja').value || "0000",
         unit: document.getElementById('unit').value,
+        date: document.getElementById('date').value,
         step: document.getElementById('step').value,
         loc: document.getElementById('loc').value,
         work: document.getElementById('work').value,
         comp: document.getElementById('comp').value,
-        date: document.getElementById('date').value
+        memo: document.getElementById('memo').value,
+        imgBefore: getSrc('view-before'),
+        imgAfter: getSrc('view-after'),
+        imgBoard: getSrc('view-board'),
+        imgFinal: getSrc('view-final')
       };
       
       let list = JSON.parse(localStorage.getItem(this.db) || "[]");
       list.push(data);
       localStorage.setItem(this.db, JSON.stringify(list));
       this.render();
-      alert("데이터가 무결성 리스트에 저장되었습니다!");
+      alert("데이터가 리스트에 저장되었습니다!");
     },
 
 
-    // --- render 시작 ---
+    // --- render 시작 (세로칸 높이 확대 적용) ---
     render: function() {
       const list = JSON.parse(localStorage.getItem(this.db) || "[]");
+      const makeImg = (src) => src ? `<img src="${src}" class="thumb">` : "-";
+      
       document.getElementById('data-body').innerHTML = list.map(r => `
-        <tr><td>${r.no}</td><td>${r.site}</td><td>${r.unit}</td><td>${r.step}</td><td>${r.loc}</td><td>${r.work}</td><td>${r.comp}</td><td>${r.date}</td></tr>
+        <tr>
+          <td>${r.site}</td>
+          <td>${r.no}</td>
+          <td>${r.unit}</td>
+          <td>${r.date}</td>
+          <td>${r.step}</td>
+          <td>${r.loc}</td>
+          <td>${r.work}</td>
+          <td>${r.comp}</td>
+          <td style="text-align:left; min-width:180px;">${r.memo.substring(0,40)}</td>
+          <td>${makeImg(r.imgBefore)}</td>
+          <td>${makeImg(r.imgAfter)}</td>
+          <td>${makeImg(r.imgBoard)}</td>
+          <td>${makeImg(r.imgFinal)}</td>
+        </tr>
       `).join('');
     },
 
 
     // --- clearForm 시작 ---
     clearForm: function() {
-      if(confirm("입력칸만 삭제하시겠습니까? 리스트는 보존됩니다.")) {
+      if(confirm("입력칸을 초기화하시겠습니까?")) {
         ['site','haja','unit','date','step','loc','work','comp','name','memo'].forEach(id => {
           document.getElementById(id).value = "";
+        });
+        ['view-ai','view-before','view-after','view-board','view-final'].forEach(id => {
+          const img = document.getElementById(id);
+          img.src = "";
+          img.style.display = "none";
         });
       }
     },
@@ -357,7 +575,7 @@
 
     // --- deleteDB 시작 ---
     deleteDB: function() {
-      if(confirm("저장된 모든 데이터를 영구 삭제하시겠습니까?")) {
+      if(confirm("모든 데이터를 영구 삭제하시겠습니까?")) {
         localStorage.removeItem(this.db);
         this.render();
       }
