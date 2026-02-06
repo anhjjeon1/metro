@@ -590,6 +590,31 @@
         데이터는 <strong>로컬 DB에 안전하게 저장</strong>되며, 화면 하단 리스트에서 확인할 수 있습니다.
       </div>
     </div>
+
+    <!-- Google Vision API 키 설정 (선택사항) -->
+    <div class="config-section" style="border-color: #ff9500;">
+      <h3>🔑 Google Vision API 키 (선택사항)</h3>
+      <input type="text" id="visionApiKey" class="config-input" placeholder="Google Cloud Vision API 키 (선택사항)">
+      <button class="btn-3d" style="background: linear-gradient(135deg, #ff9500 0%, #ff6b00 100%); box-shadow: 0 4px 8px rgba(255, 149, 0, 0.3);" onclick="CORE.saveApiKey()">💾 API 키 저장</button>
+      
+      <div class="cors-info" style="background: #e8f5e9; border-color: #4caf50;">
+        <strong>✅ OCR은 API 키 없이도 작동합니다!</strong><br>
+        Tesseract.js를 사용하여 로컬에서 OCR을 수행합니다.<br>
+        Google Vision API 키는 더 정확한 인식을 원할 때만 입력하세요.<br><br>
+        
+        <details style="cursor: pointer;">
+          <summary style="font-weight: 700; color: #2e7d32;">📖 API 키 발급 방법 보기</summary>
+          <div style="margin-top: 8px; padding-left: 10px; border-left: 3px solid #4caf50;">
+            <strong>1단계:</strong> <a href="https://console.cloud.google.com" target="_blank" style="color: #1976d2;">Google Cloud Console</a> 접속<br>
+            <strong>2단계:</strong> 새 프로젝트 만들기<br>
+            <strong>3단계:</strong> "API 및 서비스" → "라이브러리"<br>
+            <strong>4단계:</strong> "Cloud Vision API" 검색 후 사용 설정<br>
+            <strong>5단계:</strong> "사용자 인증 정보" → "API 키 만들기"<br>
+            <strong>6단계:</strong> 생성된 키 복사 후 위 입력칸에 붙여넣기
+          </div>
+        </details>
+      </div>
+    </div>
   
     <!-- 1. 완료확인서 OCR 입력 -->
     <div class="drop-zone" onclick="document.getElementById('f-ai').click()">
@@ -671,7 +696,10 @@
     <section class="sheet-section">
       <div class="sheet-title">
         <span>📊 작업 무결성 데이터 리스트 <span class="data-count" id="dataCount">(0건)</span></span>
-        <button class="btn-delete-db" onclick="CORE.deleteDB()">DB 초기화</button>
+        <div>
+          <button onclick="CORE.testRender()" style="font-size:0.6rem; padding:4px 8px; background:linear-gradient(135deg, #2196f3 0%, #1976d2 100%); color:#fff; border:none; border-radius:5px; cursor:pointer; margin-right:5px;">테스트</button>
+          <button onclick="CORE.deleteDB()" style="font-size:0.6rem; padding:4px 8px; background:linear-gradient(135deg, #ff3b30 0%, #e63946 100%); color:#fff; border:none; border-radius:5px; cursor:pointer;">DB 초기화</button>
+        </div>
       </div>
       <div class="table-scroll">
         <table id="spreadsheet">
@@ -715,10 +743,38 @@
   const CODE_VERSION = "3.0";
   
   const CORE = {
-    key: "AIzaSyBENfF9-fgspCqGPQoWe7CqA0JXTCsbfT0",
+    key: "", // API 키는 사용자가 입력하도록 변경
     db: "METRO_DB_SYNC",
     versionKey: "METRO_VERSION_SYNC",
     codeVersionKey: "METRO_CODE_VERSION_SYNC",
+    apiKeyStorage: "METRO_VISION_API_KEY",
+
+    // API 키 저장
+    saveApiKey: function() {
+      const apiKey = document.getElementById('visionApiKey').value.trim();
+      if (apiKey) {
+        localStorage.setItem(this.apiKeyStorage, apiKey);
+        this.key = apiKey;
+        alert('✅ API 키가 저장되었습니다!\n\n더 정확한 OCR 인식이 가능합니다.');
+      } else {
+        alert('❌ API 키를 입력해주세요.');
+      }
+    },
+
+    // API 키 로드
+    loadApiKey: function() {
+      const savedKey = localStorage.getItem(this.apiKeyStorage);
+      if (savedKey) {
+        this.key = savedKey;
+        const input = document.getElementById('visionApiKey');
+        if (input) {
+          input.value = savedKey;
+        }
+        console.log('✅ 저장된 API 키 로드 완료');
+      } else {
+        console.log('ℹ️ 저장된 API 키 없음 - Tesseract.js 사용');
+      }
+    },
 
     // 버전 체크 및 동기화
     checkAndSyncVersion: function() {
@@ -860,49 +916,62 @@
       const file = input.files[0];
       let success = false;
       
-      // 방법 1: Google Cloud Vision API 시도
+      // 방법 1: Tesseract.js 로컬 OCR 시도 (우선 순위 1)
       try {
-        console.log('📸 방법 1: Google Cloud Vision API 시도...');
-        success = await this.tryGoogleVision(file);
-        if (success) {
-          console.log('✅ Google Vision API 성공!');
-          document.getElementById('loader').style.display = 'none';
-          alert('✅ AI 분석 완료! 자동으로 입력되었습니다.');
-          return;
-        }
-      } catch(err) {
-        console.log('❌ Google Vision API 실패:', err.message);
-      }
-      
-      // 방법 2: Tesseract.js 로컬 OCR 시도
-      try {
-        console.log('📸 방법 2: Tesseract.js 로컬 OCR 시도...');
+        console.log('📸 방법 1: Tesseract.js 로컬 OCR 시도...');
         success = await this.tryTesseract(file);
         if (success) {
           console.log('✅ Tesseract.js 성공!');
           document.getElementById('loader').style.display = 'none';
-          alert('✅ 로컬 OCR 분석 완료! 자동으로 입력되었습니다.');
+          alert('✅ 로컬 OCR 분석 완료! 자동으로 입력되었습니다.\n\n※ 정확도를 높이려면 Google Vision API 키를 설정하세요.');
           return;
         }
       } catch(err) {
         console.log('❌ Tesseract.js 실패:', err.message);
       }
       
+      // 방법 2: Google Cloud Vision API 시도 (API 키가 있을 때만)
+      if (this.key) {
+        try {
+          console.log('📸 방법 2: Google Cloud Vision API 시도...');
+          success = await this.tryGoogleVision(file);
+          if (success) {
+            console.log('✅ Google Vision API 성공!');
+            document.getElementById('loader').style.display = 'none';
+            alert('✅ AI 분석 완료! 자동으로 입력되었습니다.');
+            return;
+          }
+        } catch(err) {
+          console.log('❌ Google Vision API 실패:', err.message);
+        }
+      } else {
+        console.log('ℹ️ Google Vision API 키 없음 - 건너뜀');
+      }
+      
       // 방법 3: 샘플 데이터로 자동 입력 (데모용)
       console.log('📸 방법 3: 샘플 데이터 자동 입력...');
       this.fillSampleData();
       document.getElementById('loader').style.display = 'none';
-      alert('ℹ️ OCR 라이브러리 로딩 중입니다.\n샘플 데이터가 입력되었습니다.\n실제 데이터로 수정 후 저장하세요.');
+      alert('ℹ️ OCR 처리 중 문제가 발생했습니다.\n\n샘플 데이터가 입력되었습니다.\n실제 데이터로 수정 후 저장하세요.\n\n※ 더 정확한 인식을 원하시면:\n   Google Vision API 키를 설정해주세요.');
     },
 
     // Google Cloud Vision API 시도
     tryGoogleVision: async function(file) {
+      if (!this.key) {
+        console.log('⚠️ Google Vision API 키가 설정되지 않았습니다.');
+        return Promise.reject(new Error('API 키 없음'));
+      }
+      
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = async (e) => {
           try {
             const b64 = e.target.result.split(',')[1];
-            const res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${this.key}`, {
+            const url = `https://vision.googleapis.com/v1/images:annotate?key=${this.key}`;
+            
+            console.log('🔑 API 키 사용:', this.key.substring(0, 10) + '...');
+            
+            const res = await fetch(url, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ 
@@ -914,11 +983,20 @@
             });
             
             if (!res.ok) {
-              reject(new Error('API 응답 오류'));
+              const errorText = await res.text();
+              console.error('API 응답 오류:', res.status, errorText);
+              reject(new Error(`API 응답 오류: ${res.status}`));
               return;
             }
             
             const data = await res.json();
+            
+            if (data.error) {
+              console.error('API 에러:', data.error);
+              reject(new Error(data.error.message));
+              return;
+            }
+            
             if (data.responses && data.responses[0]?.fullTextAnnotation) {
               this.map(data.responses[0].fullTextAnnotation.text);
               resolve(true);
@@ -926,6 +1004,7 @@
               reject(new Error('텍스트 인식 실패'));
             }
           } catch(err) {
+            console.error('Vision API 오류:', err);
             reject(err);
           }
         };
@@ -1055,6 +1134,15 @@
     save: async function() {
       console.log('💾 ===== 저장 시작 =====');
       
+      // 입력값 검증
+      const site = document.getElementById('site').value;
+      const haja = document.getElementById('haja').value;
+      
+      if (!site && !haja) {
+        alert('❌ 최소한 현장명이나 하자번호를 입력해주세요!');
+        return;
+      }
+      
       const getSrc = (id) => {
         const el = document.getElementById(id);
         return (el && el.src && el.style.display !== 'none') ? el.src : "";
@@ -1079,19 +1167,28 @@
         version: this.getVersion()
       };
       
+      console.log('📝 저장할 데이터:', data);
+      
       // 1. 로컬 DB에 저장
       let list = JSON.parse(localStorage.getItem(this.db) || "[]");
+      console.log(`📦 기존 데이터: ${list.length}건`);
+      
       list.push(data);
       localStorage.setItem(this.db, JSON.stringify(list));
       console.log(`✅ 로컬 DB 저장 완료 (총 ${list.length}건)`);
+      
+      // 저장 직후 즉시 확인
+      const savedList = JSON.parse(localStorage.getItem(this.db) || "[]");
+      console.log(`🔍 저장 확인: ${savedList.length}건 (마지막: ${savedList[savedList.length-1]?.site})`);
       
       // 2. 버전 증가
       const newVersion = this.incrementVersion();
       console.log(`📈 버전: ${newVersion}`);
       
       // 3. 화면 스프레드시트 테이블에 즉시 자동 표시
+      console.log('🎨 렌더링 시작...');
       this.render();
-      console.log('✅ 하단 스프레드시트 테이블에 자동 표시 완료!');
+      console.log('✅ 렌더링 완료!');
       
       // 4. 구글 시트 연동 시도
       let sheetSuccess = false;
@@ -1109,13 +1206,16 @@
         ? '\n📊 구글 스프레드시트: 연동 성공!' 
         : '\n📊 스프레드시트: 하단 리스트에 자동 표시됨';
       
-      alert(`✅ 저장 완료!${sheetMsg}\n\n버전: ${newVersion}\n총 데이터: ${list.length}건\n\n※ 아래로 스크롤하여\n   "작업 무결성 데이터 리스트"를 확인하세요!`);
+      alert(`✅ 저장 완료!${sheetMsg}\n\n버전: ${newVersion}\n총 데이터: ${list.length}건\n\n※ 아래로 스크롤하여\n   "작업 무결성 데이터 리스트"를 확인하세요!\n\n(F12 개발자도구 콘솔에서 상세 로그 확인 가능)`);
       
       // 6. 스프레드시트로 자동 스크롤
       setTimeout(() => {
         const sheetSection = document.querySelector('.sheet-section');
         if (sheetSection) {
           sheetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          console.log('📜 스프레드시트로 스크롤 완료');
+        } else {
+          console.error('❌ .sheet-section 요소를 찾을 수 없습니다!');
         }
       }, 500);
       
@@ -1124,20 +1224,37 @@
 
     // 화면 렌더링
     render: function() {
+      console.log('🎨 ===== 렌더링 시작 =====');
+      
       const list = JSON.parse(localStorage.getItem(this.db) || "[]");
+      console.log(`📊 로컬 DB 데이터: ${list.length}건`);
+      
       const body = document.getElementById('data-body');
       const dataCount = document.getElementById('dataCount');
       
-      if (dataCount) dataCount.textContent = `(${list.length}건)`;
-      
-      if (list.length === 0) {
-        body.innerHTML = '<tr><td colspan="14" style="padding:30px; color:#999;">저장된 데이터가 없습니다</td></tr>';
+      if (!body) {
+        console.error('❌ data-body 요소를 찾을 수 없습니다!');
         return;
       }
       
-      const makeImg = (src) => src ? `<img src="${src}" class="thumb">` : '-';
+      console.log('✅ data-body 요소 발견');
       
-      const html = list.map(r => `
+      if (dataCount) {
+        dataCount.textContent = `(${list.length}건)`;
+        console.log(`✅ 데이터 개수 표시: ${list.length}건`);
+      }
+      
+      if (list.length === 0) {
+        body.innerHTML = '<tr><td colspan="14" style="padding:30px; color:#999;">저장된 데이터가 없습니다</td></tr>';
+        console.log('ℹ️ 데이터가 없어서 빈 메시지 표시');
+        return;
+      }
+      
+      const makeImg = (src) => src ? `<img src="${src}" class="thumb" alt="사진">` : '-';
+      
+      const html = list.reverse().map((r, index) => {
+        console.log(`📝 행 ${index + 1} 렌더링: ${r.site} / ${r.no}`);
+        return `
         <tr>
           <td style="font-weight:700;">${r.site || '-'}</td>
           <td style="color:#007aff;">${r.no || '-'}</td>
@@ -1154,9 +1271,11 @@
           <td>${makeImg(r.imgBoard)}</td>
           <td>${makeImg(r.imgFinal)}</td>
         </tr>
-      `).join('');
+      `;}).join('');
       
       body.innerHTML = html;
+      console.log(`✅ ${list.length}개 행 렌더링 완료!`);
+      console.log('🎨 ===== 렌더링 완료 =====');
     },
 
     // 입력칸 초기화
@@ -1181,6 +1300,66 @@
         this.render();
         alert(`✅ 로컬 DB가 초기화되었습니다.`);
       }
+    },
+
+    // 테스트 렌더링
+    testRender: function() {
+      console.log('🧪 ===== 테스트 시작 =====');
+      
+      // 1. LocalStorage 확인
+      const dbData = localStorage.getItem(this.db);
+      console.log('📦 LocalStorage 데이터:', dbData);
+      
+      if (!dbData) {
+        alert('⚠️ 저장된 데이터가 없습니다.\n\n먼저 데이터를 저장해보세요!');
+        
+        // 테스트 데이터 추가
+        if (confirm('테스트 데이터를 추가하시겠습니까?')) {
+          const testData = {
+            site: '테스트현장',
+            no: 'TEST001',
+            unit: '101동 1001호',
+            date: new Date().toISOString().split('T')[0],
+            step: '1년차',
+            loc: '거실',
+            work: 'PL창호공사',
+            comp: '테스트업체',
+            name: '홍길동',
+            memo: '테스트 하자 내용',
+            imgBefore: '',
+            imgAfter: '',
+            imgBoard: '',
+            imgFinal: '',
+            timestamp: new Date().toLocaleString('ko-KR'),
+            version: this.getVersion()
+          };
+          
+          let list = JSON.parse(localStorage.getItem(this.db) || "[]");
+          list.push(testData);
+          localStorage.setItem(this.db, JSON.stringify(list));
+          
+          console.log('✅ 테스트 데이터 추가 완료');
+        }
+      }
+      
+      // 2. DOM 요소 확인
+      const dataBody = document.getElementById('data-body');
+      console.log('🔍 data-body 요소:', dataBody);
+      
+      if (!dataBody) {
+        alert('❌ 오류: data-body 요소를 찾을 수 없습니다!');
+        return;
+      }
+      
+      // 3. 강제 렌더링
+      console.log('🎨 강제 렌더링 시작...');
+      this.render();
+      
+      // 4. 결과 확인
+      const list = JSON.parse(localStorage.getItem(this.db) || "[]");
+      alert(`✅ 테스트 완료!\n\n저장된 데이터: ${list.length}건\n\nF12 개발자도구 콘솔에서\n상세 로그를 확인하세요.`);
+      
+      console.log('🧪 ===== 테스트 완료 =====');
     }
   };
 
@@ -1189,10 +1368,14 @@
     console.log('🚀 시스템 시작');
     CORE.checkAndSyncVersion();
     CORE.updateVersionDisplay();
+    CORE.loadApiKey(); // API 키 로드
     CORE.render();
     
     // 오늘 날짜 자동 설정
-    document.getElementById('date').valueAsDate = new Date();
+    const dateInput = document.getElementById('date');
+    if (dateInput) {
+      dateInput.valueAsDate = new Date();
+    }
     
     console.log('✅ 초기화 완료');
   };
