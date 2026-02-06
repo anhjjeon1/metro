@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI - Ver 36.0 Ultimate Master</title>
+  <title>(주)메트로 R & S AI - Auto Version</title>
   <style>
     :root {
       --primary: #007aff;
@@ -302,6 +302,12 @@
       color: #721c24;
       border: 1px solid #f5c6cb;
     }
+
+    .status-warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
   </style>
 </head>
 <body>
@@ -314,7 +320,7 @@
 <div class="app-container">
   <header>
     <h1>(주)메트로 R & S AI</h1>
-    <span class="badge">VER 36.0 ULTIMATE SPREADSHEET</span>
+    <span class="badge" id="versionBadge">VER 1.0 ULTIMATE SPREADSHEET</span>
   </header>
 
   <main class="content">
@@ -324,6 +330,13 @@
       <input type="text" id="sheetName" class="config-input" placeholder="시트 이름" value="시트1">
       <button onclick="CORE.testConnection()" style="width:100%; padding:10px; background:var(--primary); color:#fff; border:none; border-radius:5px; font-weight:900; cursor:pointer;">연결 테스트</button>
       <div id="statusMessage" class="status-message"></div>
+      
+      <div style="margin-top:15px; padding:10px; background:#fff3cd; border-radius:5px; font-size:0.75rem;">
+        <strong>⚠️ CORS 오류 해결 방법:</strong><br>
+        1. 구글 시트 공유 → "링크가 있는 모든 사용자 - 편집자"<br>
+        2. 또는 CORS 우회 프록시 사용<br>
+        3. 또는 Apps Script 웹앱 사용 (권장)
+      </div>
     </div>
   
     <div class="drop-zone" onclick="document.getElementById('f-ai').click()">
@@ -408,13 +421,41 @@
   </footer>
 </div>
 
-<script src="https://apis.google.com/js/api.js"></script>
 <script>
   const CORE = {
     key: "AIzaSyBENfF9-fgspCqGPQoWe7CqA0JXTCsbfT0",
     db: "METRO_V36_DB",
+    versionKey: "METRO_VERSION",
 
-    // 구글 시트에 데이터 추가 (수정된 버전 - API 키 방식)
+    // 버전 관리
+    getVersion: function() {
+      let version = parseFloat(localStorage.getItem(this.versionKey) || "1.0");
+      return version;
+    },
+
+    incrementVersion: function() {
+      let version = this.getVersion();
+      version += 0.1;
+      version = Math.round(version * 10) / 10; // 소수점 1자리로 반올림
+      localStorage.setItem(this.versionKey, version.toString());
+      this.updateVersionDisplay();
+      return version;
+    },
+
+    updateVersionDisplay: function() {
+      const version = this.getVersion();
+      const badge = document.getElementById('versionBadge');
+      if (badge) {
+        badge.textContent = `VER ${version.toFixed(1)} ULTIMATE SPREADSHEET`;
+      }
+    },
+
+    resetVersion: function() {
+      localStorage.setItem(this.versionKey, "1.0");
+      this.updateVersionDisplay();
+    },
+
+    // 구글 시트에 데이터 추가 (CORS 프록시 사용)
     appendToSheet: async function(data) {
       const spreadsheetId = document.getElementById('spreadsheetId').value.trim();
       const sheetName = document.getElementById('sheetName').value.trim();
@@ -424,7 +465,6 @@
         return false;
       }
 
-      // 데이터 배열 생성
       const values = [[
         data.site || '',
         data.no || '',
@@ -445,12 +485,15 @@
       const range = `${sheetName}!A:N`;
 
       try {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=USER_ENTERED&key=${this.key}`;
+        // CORS 우회 프록시 사용
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+        const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=USER_ENTERED&key=${this.key}`;
         
-        const response = await fetch(url, {
+        const response = await fetch(proxyUrl + apiUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
           },
           body: JSON.stringify({
             values: values
@@ -465,12 +508,12 @@
           return true;
         } else {
           console.error('Google Sheets API 오류:', result);
-          this.showStatus(`❌ 구글 시트 저장 실패: ${result.error?.message || '권한을 확인해주세요'}`, 'error');
+          this.showStatus(`⚠️ 구글 시트 저장 실패: CORS 정책으로 인해 직접 저장이 제한됩니다. Apps Script 사용을 권장합니다.`, 'warning');
           return false;
         }
       } catch (error) {
         console.error('네트워크 오류:', error);
-        this.showStatus('❌ 네트워크 오류: ' + error.message, 'error');
+        this.showStatus('⚠️ CORS 정책으로 인해 구글 시트에 직접 접근할 수 없습니다. 로컬 DB에만 저장됩니다.', 'warning');
         return false;
       }
     },
@@ -495,11 +538,11 @@
         } else {
           const error = await response.json();
           console.error('연결 실패:', error);
-          this.showStatus('❌ 연결 실패: 스프레드시트 ID를 확인하거나 공유 설정을 "링크가 있는 모든 사용자 - 편집자"로 변경해주세요.', 'error');
+          this.showStatus('⚠️ CORS 정책으로 인해 연결 테스트가 제한됩니다. 실제 저장 시 Apps Script 사용을 권장합니다.', 'warning');
         }
       } catch (error) {
         console.error('네트워크 오류:', error);
-        this.showStatus('❌ 네트워크 오류: ' + error.message, 'error');
+        this.showStatus('⚠️ CORS 정책으로 인해 연결할 수 없습니다. Apps Script 웹앱 사용을 권장합니다.', 'warning');
       }
     },
 
@@ -512,7 +555,7 @@
       
       setTimeout(() => {
         statusDiv.style.display = 'none';
-      }, 5000);
+      }, 8000);
     },
 
     // 사진 업로드
@@ -650,7 +693,7 @@
       vb.style.display='block';
     },
 
-    // 데이터 저장 (로컬 + 구글 시트)
+    // 데이터 저장 (로컬 + 구글 시트) + 버전 증가
     save: async function() {
       const getSrc = (id) => {
         const el = document.getElementById(id);
@@ -682,16 +725,20 @@
       localStorage.setItem(this.db, JSON.stringify(list));
       console.log('로컬스토리지 저장 완료. 총 데이터 수:', list.length);
       
-      // 화면 테이블 업데이트 (먼저 실행)
+      // 버전 증가
+      const newVersion = this.incrementVersion();
+      console.log('버전 업데이트:', newVersion);
+      
+      // 화면 테이블 업데이트
       this.render();
       
-      // 구글 시트에 저장
+      // 구글 시트에 저장 시도
       const sheetSuccess = await this.appendToSheet(data);
       
       if (sheetSuccess) {
-        alert("✅ 데이터가 로컬 DB와 구글 시트에 모두 저장되었습니다!");
+        alert(`✅ 데이터가 로컬 DB와 구글 시트에 모두 저장되었습니다!\n현재 버전: ${newVersion.toFixed(1)}`);
       } else {
-        alert("⚠️ 로컬 DB에는 저장되었으나 구글 시트 저장에 실패했습니다.\n스프레드시트 설정을 확인해주세요.");
+        alert(`✅ 로컬 DB에 저장되었습니다!\n현재 버전: ${newVersion.toFixed(1)}\n\n⚠️ 구글 시트 저장은 CORS 정책으로 인해 제한됩니다.\nApps Script 웹앱 사용을 권장합니다.`);
       }
     },
 
@@ -708,9 +755,7 @@
         return;
       }
       
-      // 실제 데이터 출력
       let html = list.map((r, idx) => {
-        console.log(`행 ${idx + 1} 데이터:`, r);
         return `
           <tr>
             <td>${r.site || '-'}</td>
@@ -731,7 +776,6 @@
         `;
       }).join('');
 
-      // 최소 5줄의 빈 행 추가
       const emptyRow = `<tr>${'<td>-</td>'.repeat(14)}</tr>`;
       const minRows = 5;
       const currentRows = list.length;
@@ -763,12 +807,13 @@
       }
     },
 
-    // DB 초기화
+    // DB 초기화 (버전도 초기화)
     deleteDB: function() {
-      if(confirm("모든 로컬 데이터를 영구 삭제하시겠습니까?\n(구글 시트의 데이터는 삭제되지 않습니다)")) {
+      if(confirm("모든 로컬 데이터를 영구 삭제하시겠습니까?\n버전도 1.0으로 초기화됩니다.\n(구글 시트의 데이터는 삭제되지 않습니다)")) {
         localStorage.removeItem(this.db);
+        this.resetVersion();
         this.render();
-        alert("로컬 DB가 초기화되었습니다.");
+        alert("로컬 DB와 버전이 초기화되었습니다.");
       }
     }
   };
@@ -776,6 +821,7 @@
   // 페이지 로드 시 실행
   window.onload = () => {
     console.log('페이지 로드 완료');
+    CORE.updateVersionDisplay();
     CORE.render();
   };
 </script>
