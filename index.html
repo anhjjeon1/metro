@@ -177,37 +177,52 @@
       border-radius: 10px; 
       background: #fff; 
       -webkit-overflow-scrolling: touch; 
+      max-height: 400px;
+      overflow-y: auto;
     }
     
     #spreadsheet { 
       width: 100%; 
       border-collapse: collapse; 
-      font-size: 0.75rem; 
-      min-width: 1500px;
+      font-size: 0.7rem; 
+      min-width: 800px;
     }
 
     #spreadsheet th { 
-      background: #f1f5f9; 
-      padding: 12px 8px; 
-      border: 1px solid #cbd5e1; 
+      background: #34c759; 
+      color: white;
+      padding: 10px 6px; 
+      border: 1px solid #2ba84a; 
       font-weight: 900; 
       white-space: nowrap; 
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
     #spreadsheet td { 
-      padding: 8px; 
+      padding: 8px 6px; 
       border: 1px solid #e2e8f0; 
       text-align: center; 
       color: #444; 
       vertical-align: middle; 
-      height: 120px;
+      min-height: 50px;
+      font-size: 0.7rem;
+    }
+
+    #spreadsheet tbody tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+
+    #spreadsheet tbody tr:hover {
+      background-color: #e3f2fd;
     }
 
     .thumb { 
-      width: 110px; 
-      height: 85px; 
+      width: 60px; 
+      height: 45px; 
       object-fit: cover; 
-      border-radius: 6px; 
+      border-radius: 4px; 
       border: 1px solid #ccc; 
       background: #eee; 
       display: block;
@@ -308,6 +323,12 @@
       color: #856404;
       border: 1px solid #ffeaa7;
     }
+
+    .data-count {
+      font-size: 0.75rem;
+      color: #666;
+      font-weight: normal;
+    }
   </style>
 </head>
 <body>
@@ -330,13 +351,6 @@
       <input type="text" id="sheetName" class="config-input" placeholder="시트 이름" value="시트1">
       <button onclick="CORE.testConnection()" style="width:100%; padding:10px; background:var(--primary); color:#fff; border:none; border-radius:5px; font-weight:900; cursor:pointer;">연결 테스트</button>
       <div id="statusMessage" class="status-message"></div>
-      
-      <div style="margin-top:15px; padding:10px; background:#fff3cd; border-radius:5px; font-size:0.75rem;">
-        <strong>⚠️ CORS 오류 해결 방법:</strong><br>
-        1. 구글 시트 공유 → "링크가 있는 모든 사용자 - 편집자"<br>
-        2. 또는 CORS 우회 프록시 사용<br>
-        3. 또는 Apps Script 웹앱 사용 (권장)
-      </div>
     </div>
   
     <div class="drop-zone" onclick="document.getElementById('f-ai').click()">
@@ -397,19 +411,25 @@
 
     <section class="sheet-section">
       <div class="sheet-title">
-        <span>📊 작업 무결성 데이터 리스트</span>
+        <span>📊 작업 무결성 데이터 리스트 <span class="data-count" id="dataCount">(0건)</span></span>
         <button onclick="CORE.deleteDB()" style="font-size:0.6rem; padding:4px 8px; background:var(--danger); color:#fff; border:none; border-radius:5px; cursor:pointer;">DB 초기화</button>
       </div>
       <div class="table-scroll">
         <table id="spreadsheet">
           <thead>
             <tr>
-              <th>현장명</th><th>하자No</th><th>동/호수</th><th>접수일</th>
-              <th>단계</th><th>위치</th><th>공종</th><th>업체명</th>
-              <th>확인자</th><th>하자내용</th><th>전</th><th>후</th><th>보드</th><th>확인서</th>
+              <th>현장명</th>
+              <th>하자No</th>
+              <th>동/호수</th>
+              <th>접수일</th>
+              <th>위치</th>
             </tr>
           </thead>
-          <tbody id="data-body"></tbody>
+          <tbody id="data-body">
+            <tr>
+              <td colspan="5" style="padding:30px; color:#999;">저장된 데이터가 없습니다</td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </section>
@@ -436,7 +456,7 @@
     incrementVersion: function() {
       let version = this.getVersion();
       version += 0.1;
-      version = Math.round(version * 10) / 10; // 소수점 1자리로 반올림
+      version = Math.round(version * 10) / 10;
       localStorage.setItem(this.versionKey, version.toString());
       this.updateVersionDisplay();
       return version;
@@ -455,7 +475,7 @@
       this.updateVersionDisplay();
     },
 
-    // 구글 시트에 데이터 추가 (CORS 프록시 사용)
+    // 구글 시트에 데이터 추가
     appendToSheet: async function(data) {
       const spreadsheetId = document.getElementById('spreadsheetId').value.trim();
       const sheetName = document.getElementById('sheetName').value.trim();
@@ -485,15 +505,12 @@
       const range = `${sheetName}!A:N`;
 
       try {
-        // CORS 우회 프록시 사용
-        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-        const apiUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=USER_ENTERED&key=${this.key}`;
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=USER_ENTERED&key=${this.key}`;
         
-        const response = await fetch(proxyUrl + apiUrl, {
+        const response = await fetch(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
           },
           body: JSON.stringify({
             values: values
@@ -508,12 +525,12 @@
           return true;
         } else {
           console.error('Google Sheets API 오류:', result);
-          this.showStatus(`⚠️ 구글 시트 저장 실패: CORS 정책으로 인해 직접 저장이 제한됩니다. Apps Script 사용을 권장합니다.`, 'warning');
+          this.showStatus(`⚠️ 구글 시트 저장 실패: CORS 정책 제한`, 'warning');
           return false;
         }
       } catch (error) {
         console.error('네트워크 오류:', error);
-        this.showStatus('⚠️ CORS 정책으로 인해 구글 시트에 직접 접근할 수 없습니다. 로컬 DB에만 저장됩니다.', 'warning');
+        this.showStatus('⚠️ 로컬 DB에만 저장됩니다.', 'warning');
         return false;
       }
     },
@@ -534,15 +551,13 @@
         if (response.ok) {
           const data = await response.json();
           console.log('스프레드시트 정보:', data);
-          this.showStatus('✅ 연결 성공! 스프레드시트에 접근할 수 있습니다.', 'success');
+          this.showStatus('✅ 연결 성공!', 'success');
         } else {
-          const error = await response.json();
-          console.error('연결 실패:', error);
-          this.showStatus('⚠️ CORS 정책으로 인해 연결 테스트가 제한됩니다. 실제 저장 시 Apps Script 사용을 권장합니다.', 'warning');
+          this.showStatus('⚠️ CORS 정책으로 연결 제한', 'warning');
         }
       } catch (error) {
         console.error('네트워크 오류:', error);
-        this.showStatus('⚠️ CORS 정책으로 인해 연결할 수 없습니다. Apps Script 웹앱 사용을 권장합니다.', 'warning');
+        this.showStatus('⚠️ CORS 정책으로 연결할 수 없습니다.', 'warning');
       }
     },
 
@@ -555,7 +570,7 @@
       
       setTimeout(() => {
         statusDiv.style.display = 'none';
-      }, 8000);
+      }, 5000);
     },
 
     // 사진 업로드
@@ -580,7 +595,7 @@
       document.getElementById('site').value = g(/현장명\s*[:\s]*([가-힣0-9- ]+)/) || "원주혁신C4BL";
       document.getElementById('haja').value = g(/하자\s*No\s*[:\s]*(\d+)/) || g(/(\d{7})/);
       document.getElementById('unit').value = g(/(\d{3,4}\s*동[^\d]*\d{3,4}\s*호)/);
-      document.getElementById('date').value = g(/(\d{4}-\d{2}-\d{2})/) || "2023-03-27";
+      document.getElementById('date').value = g(/(\d{4}-\d{2}-\d{2})/) || "2025-06-11";
       
       const lines = t.split('\n');
       lines.forEach((l, i) => {
@@ -693,7 +708,7 @@
       vb.style.display='block';
     },
 
-    // 데이터 저장 (로컬 + 구글 시트) + 버전 증가
+    // 데이터 저장
     save: async function() {
       const getSrc = (id) => {
         const el = document.getElementById(id);
@@ -714,20 +729,21 @@
         imgBefore: getSrc('view-before'),
         imgAfter: getSrc('view-after'),
         imgBoard: getSrc('view-board'),
-        imgFinal: getSrc('view-final')
+        imgFinal: getSrc('view-final'),
+        timestamp: new Date().toLocaleString('ko-KR')
       };
       
-      console.log('저장할 데이터:', data);
+      console.log('💾 저장할 데이터:', data);
       
       // 로컬스토리지에 저장
       let list = JSON.parse(localStorage.getItem(this.db) || "[]");
       list.push(data);
       localStorage.setItem(this.db, JSON.stringify(list));
-      console.log('로컬스토리지 저장 완료. 총 데이터 수:', list.length);
+      console.log('✅ 로컬스토리지 저장 완료. 총 데이터 수:', list.length);
       
       // 버전 증가
       const newVersion = this.incrementVersion();
-      console.log('버전 업데이트:', newVersion);
+      console.log('📌 버전 업데이트:', newVersion);
       
       // 화면 테이블 업데이트
       this.render();
@@ -736,58 +752,58 @@
       const sheetSuccess = await this.appendToSheet(data);
       
       if (sheetSuccess) {
-        alert(`✅ 데이터가 로컬 DB와 구글 시트에 모두 저장되었습니다!\n현재 버전: ${newVersion.toFixed(1)}`);
+        alert(`✅ 저장 완료!\n버전: ${newVersion.toFixed(1)}\n\n로컬 DB ✓\n구글 시트 ✓`);
       } else {
-        alert(`✅ 로컬 DB에 저장되었습니다!\n현재 버전: ${newVersion.toFixed(1)}\n\n⚠️ 구글 시트 저장은 CORS 정책으로 인해 제한됩니다.\nApps Script 웹앱 사용을 권장합니다.`);
+        alert(`✅ 로컬 DB에 저장되었습니다!\n버전: ${newVersion.toFixed(1)}`);
       }
     },
 
     // 화면 렌더링
     render: function() {
       const list = JSON.parse(localStorage.getItem(this.db) || "[]");
-      console.log('렌더링할 데이터 개수:', list.length);
+      console.log('🔄 렌더링 시작. 데이터 개수:', list.length);
       
-      const makeImg = (src) => src ? `<img src="${src}" class="thumb">` : "-";
       const body = document.getElementById('data-body');
+      const dataCount = document.getElementById('dataCount');
       
       if (!body) {
-        console.error('data-body 요소를 찾을 수 없습니다!');
+        console.error('❌ data-body 요소를 찾을 수 없습니다!');
         return;
       }
       
-      let html = list.map((r, idx) => {
+      // 데이터 개수 업데이트
+      if (dataCount) {
+        dataCount.textContent = `(${list.length}건)`;
+      }
+      
+      if (list.length === 0) {
+        body.innerHTML = '<tr><td colspan="5" style="padding:30px; color:#999;">저장된 데이터가 없습니다</td></tr>';
+        console.log('ℹ️ 저장된 데이터 없음');
+        return;
+      }
+      
+      const html = list.map((r, idx) => {
+        console.log(`📋 행 ${idx + 1}:`, {
+          현장명: r.site,
+          하자No: r.no,
+          동호수: r.unit,
+          접수일: r.date,
+          위치: r.loc
+        });
+        
         return `
           <tr>
-            <td>${r.site || '-'}</td>
-            <td>${r.no || '-'}</td>
+            <td style="font-weight:700;">${r.site || '-'}</td>
+            <td style="color:#007aff;">${r.no || '-'}</td>
             <td>${r.unit || '-'}</td>
-            <td>${r.date || '-'}</td>
-            <td>${r.step || '-'}</td>
+            <td style="font-size:0.65rem;">${r.date || '-'}</td>
             <td>${r.loc || '-'}</td>
-            <td>${r.work || '-'}</td>
-            <td>${r.comp || '-'}</td>
-            <td>${r.name || '-'}</td>
-            <td style="text-align:left; min-width:200px;">${(r.memo || '-').substring(0,60)}</td>
-            <td>${makeImg(r.imgBefore)}</td>
-            <td>${makeImg(r.imgAfter)}</td>
-            <td>${makeImg(r.imgBoard)}</td>
-            <td>${makeImg(r.imgFinal)}</td>
           </tr>
         `;
       }).join('');
-
-      const emptyRow = `<tr>${'<td>-</td>'.repeat(14)}</tr>`;
-      const minRows = 5;
-      const currentRows = list.length;
-      
-      if(currentRows < minRows) {
-        for(let i=0; i < (minRows - currentRows); i++) {
-          html += emptyRow;
-        }
-      }
       
       body.innerHTML = html;
-      console.log('렌더링 완료');
+      console.log('✅ 렌더링 완료!');
     },
 
     // 입력칸 초기화
@@ -807,20 +823,20 @@
       }
     },
 
-    // DB 초기화 (버전도 초기화)
+    // DB 초기화
     deleteDB: function() {
-      if(confirm("모든 로컬 데이터를 영구 삭제하시겠습니까?\n버전도 1.0으로 초기화됩니다.\n(구글 시트의 데이터는 삭제되지 않습니다)")) {
+      if(confirm("모든 로컬 데이터를 영구 삭제하시겠습니까?\n버전도 1.0으로 초기화됩니다.")) {
         localStorage.removeItem(this.db);
         this.resetVersion();
         this.render();
-        alert("로컬 DB와 버전이 초기화되었습니다.");
+        alert("✅ 로컬 DB와 버전이 초기화되었습니다.");
       }
     }
   };
 
   // 페이지 로드 시 실행
   window.onload = () => {
-    console.log('페이지 로드 완료');
+    console.log('🚀 페이지 로드 완료');
     CORE.updateVersionDisplay();
     CORE.render();
   };
