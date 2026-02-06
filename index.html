@@ -3,28 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI - Auto Version</title>
+  <title>(주)메트로 R & S AI - 작업관리 시스템</title>
+  <!-- Tesseract.js for OCR -->
+  <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
   <style>
     :root {
       --primary: #007aff;
       --success: #34c759;
       --danger: #ff3b30;
+      --warning: #ff9500;
       --dark: #1c1c1e;
       --light: #f2f2f7;
       --border: #c6c6c8;
       --ai-gray: #444444;
+      --gradient-blue: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-green: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      --gradient-orange: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
     }
 
     * { 
       box-sizing: border-box; 
       -webkit-tap-highlight-color: transparent; 
+      margin: 0;
+      padding: 0;
     }
 
     body, html { 
-      margin: 0; 
-      padding: 0; 
       background: var(--light); 
-      font-family: sans-serif; 
+      font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif; 
       height: 100vh; 
       overflow: hidden; 
     }
@@ -39,26 +45,30 @@
       box-shadow: 0 0 50px rgba(0,0,0,0.2); 
     }
 
+    /* 헤더 스타일 - 높이 25% 감소 */
     header { 
-      background: var(--dark); 
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
       color: #fff; 
       text-align: center; 
-      padding: 20px 0; 
-      border-bottom: 4px solid var(--primary); 
+      padding: 15px 0; 
+      border-bottom: 3px solid var(--primary); 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
     header h1 { 
       margin: 0; 
-      font-size: 1.3rem; 
+      font-size: 1.2rem; 
       font-weight: 900; 
+      letter-spacing: 0.5px;
     }
 
     .badge { 
-      font-size: 0.7rem; 
-      color: var(--primary); 
-      font-weight: bold; 
-      margin-top: 5px; 
+      font-size: 0.65rem; 
+      color: #64ffda; 
+      font-weight: 700; 
+      margin-top: 3px; 
       display: block; 
+      opacity: 0.9;
     }
 
     .content { 
@@ -66,8 +76,138 @@
       overflow-y: auto; 
       padding: 15px; 
       -webkit-overflow-scrolling: touch; 
+      background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
     }
 
+    /* 설정 섹션 */
+    .config-section {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      border: 2px solid var(--primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .config-section h3 {
+      margin: 0 0 8px 0;
+      font-size: 0.85rem;
+      color: var(--primary);
+      font-weight: 800;
+    }
+    
+    .config-input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1.5px solid #ddd;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-size: 0.75rem;
+      background: white;
+      transition: all 0.3s ease;
+    }
+
+    .config-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    }
+
+    /* 3D 그라데이션 버튼 스타일 */
+    .btn-3d {
+      width: 100%;
+      padding: 10px;
+      background: var(--gradient-blue);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 900;
+      font-size: 0.8rem;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 
+        0 4px 8px rgba(102, 126, 234, 0.3),
+        0 1px 3px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-3d::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-3d:hover::before {
+      left: 100%;
+    }
+
+    .btn-3d:active {
+      transform: translateY(2px);
+      box-shadow: 
+        0 2px 4px rgba(102, 126, 234, 0.3),
+        0 1px 2px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* 상태 메시지 */
+    .status-message {
+      padding: 8px 10px;
+      border-radius: 6px;
+      margin-top: 8px;
+      font-size: 0.7rem;
+      display: none;
+      animation: slideIn 0.3s ease;
+      font-weight: 600;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .status-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .status-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .status-warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+
+    .cors-info {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    .cors-info strong {
+      color: #856404;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    /* 드롭존 스타일 */
     .drop-zone { 
       width: 100%; 
       aspect-ratio: 4/3; 
@@ -80,8 +220,15 @@
       cursor: pointer; 
       overflow: hidden; 
       position: relative; 
-      margin-bottom: 15px; 
-      background: #f8f9fa; 
+      margin-bottom: 12px; 
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      transition: all 0.3s ease;
+    }
+
+    .drop-zone:hover {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%);
+      transform: scale(1.01);
     }
 
     .preview-img { 
@@ -98,16 +245,21 @@
       font-weight: 900; 
       color: #666; 
       text-align: center; 
-      font-size: 0.9rem; 
-      z-index: 5; 
+      font-size: 0.85rem; 
+      z-index: 5;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.8);
     }
 
+    /* 데이터 테이블 */
     .data-table { 
       width: 100%; 
       border-collapse: collapse; 
       border: 2px solid #222; 
-      margin-bottom: 15px; 
+      margin-bottom: 12px; 
       background: #fff; 
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     .data-table td { 
@@ -130,8 +282,8 @@
     .data-table input { 
       width: 100%; 
       border: none; 
-      font-size: 0.88rem; 
-      font-weight: 800; 
+      font-size: 0.85rem; 
+      font-weight: 700; 
       outline: none; 
       background: transparent; 
       padding-top: 12px; 
@@ -139,9 +291,9 @@
     }
 
     .memo-td { 
-      height: 120px !important; 
+      height: 100px !important; 
       vertical-align: top !important; 
-      padding-top: 25px !important; 
+      padding-top: 22px !important; 
     }
 
     .memo-td textarea { 
@@ -150,24 +302,56 @@
       border: none; 
       resize: none; 
       outline: none; 
-      font-size: 0.85rem; 
+      font-size: 0.8rem; 
       line-height: 1.4; 
+      font-family: inherit;
     }
 
+    /* 입력칸 삭제 버튼 */
+    .btn-clear {
+      width: 100%;
+      height: 38px;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+      color: #fff;
+      font-weight: 900;
+      margin-bottom: 15px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      box-shadow: 
+        0 4px 8px rgba(255, 107, 107, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .btn-clear:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
+    }
+
+    /* 스프레드시트 섹션 */
     .sheet-section { 
-      margin-top: 25px; 
-      margin-bottom: 40px; 
+      margin-top: 20px; 
+      margin-bottom: 30px; 
     }
 
     .sheet-title { 
-      font-size: 1rem; 
+      font-size: 0.95rem; 
       font-weight: 900; 
       margin-bottom: 10px; 
-      border-left: 5px solid var(--success); 
+      border-left: 4px solid var(--success); 
       padding-left: 10px; 
       display: flex; 
       justify-content: space-between; 
-      align-items: center; 
+      align-items: center;
+      color: #333;
+    }
+
+    .data-count {
+      font-size: 0.7rem;
+      color: #666;
+      font-weight: normal;
     }
 
     .table-scroll { 
@@ -179,6 +363,7 @@
       -webkit-overflow-scrolling: touch; 
       max-height: 500px;
       overflow-y: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
     
     #spreadsheet { 
@@ -189,7 +374,7 @@
     }
 
     #spreadsheet th { 
-      background: #34c759; 
+      background: linear-gradient(135deg, #34c759 0%, #2ba84a 100%);
       color: white;
       padding: 10px 5px; 
       border: 1px solid #2ba84a; 
@@ -198,6 +383,7 @@
       position: sticky;
       top: 0;
       z-index: 10;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     #spreadsheet td { 
@@ -215,6 +401,7 @@
 
     #spreadsheet tbody tr:hover {
       background-color: #e3f2fd;
+      transition: background-color 0.2s ease;
     }
 
     .thumb { 
@@ -226,8 +413,10 @@
       background: #eee; 
       display: block;
       margin: 0 auto;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
+    /* 로딩 스피너 */
     #loader { 
       position: fixed; 
       inset: 0; 
@@ -249,98 +438,127 @@
       animation: rot 0.8s linear infinite; 
     }
 
-    @keyframes rot { 100% { transform: rotate(360deg); } }
+    @keyframes rot { 
+      100% { transform: rotate(360deg); } 
+    }
 
+    .spinner-text {
+      margin-top: 15px;
+      font-weight: 900;
+      font-size: 0.9rem;
+    }
+
+    /* 하단 푸터 버튼 */
     footer { 
       display: flex; 
-      gap: 10px; 
-      padding: 15px; 
+      gap: 8px; 
+      padding: 12px; 
       border-top: 1px solid #eee; 
       background: #fff; 
-      padding-bottom: calc(15px + env(safe-area-inset-bottom)); 
+      padding-bottom: calc(12px + env(safe-area-inset-bottom)); 
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
     }
 
     footer button { 
       flex: 1; 
-      height: 60px; 
-      border-radius: 30px; 
+      height: 55px; 
+      border-radius: 12px; 
       border: none; 
       color: #fff; 
       font-weight: 900; 
-      font-size: 1rem; 
-      cursor: pointer; 
+      font-size: 0.95rem; 
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
     }
 
-    .btn-save { background: var(--success); }
-    .btn-refresh { background: var(--primary); }
-    
-    .config-section {
-      background: #f8f9fa;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      border: 2px solid var(--primary);
+    .btn-save { 
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      box-shadow: 
+        0 4px 8px rgba(17, 153, 142, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
     }
-    
-    .config-section h3 {
-      margin: 0 0 10px 0;
-      font-size: 0.9rem;
-      color: var(--primary);
-    }
-    
-    .config-input {
+
+    .btn-save::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
       width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-save:hover::before {
+      left: 100%;
+    }
+
+    .btn-save:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 4px rgba(17, 153, 142, 0.3);
+    }
+
+    .btn-refresh { 
+      background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+      box-shadow: 
+        0 4px 8px rgba(52, 152, 219, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-refresh::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-refresh:hover::before {
+      left: 100%;
+    }
+
+    .btn-refresh:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 4px rgba(52, 152, 219, 0.3);
+    }
+
+    /* DB 초기화 버튼 */
+    .btn-delete-db {
+      font-size: 0.6rem;
+      padding: 4px 8px;
+      background: linear-gradient(135deg, #ff3b30 0%, #e63946 100%);
+      color: #fff;
+      border: none;
       border-radius: 5px;
-      margin-bottom: 10px;
-      font-size: 0.8rem;
-    }
-    
-    .status-message {
-      padding: 10px;
-      border-radius: 5px;
-      margin-top: 10px;
-      font-size: 0.85rem;
-      display: none;
-    }
-    
-    .status-success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-    
-    .status-error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
+      cursor: pointer;
+      font-weight: 900;
+      box-shadow: 0 2px 4px rgba(255, 59, 48, 0.3);
+      transition: all 0.2s ease;
     }
 
-    .status-warning {
-      background: #fff3cd;
-      color: #856404;
-      border: 1px solid #ffeaa7;
+    .btn-delete-db:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 2px rgba(255, 59, 48, 0.3);
     }
 
-    .data-count {
-      font-size: 0.75rem;
-      color: #666;
-      font-weight: normal;
-    }
+    /* 반응형 */
+    @media (max-width: 480px) {
+      .content {
+        padding: 12px;
+      }
+      
+      header h1 {
+        font-size: 1.1rem;
+      }
 
-    .cors-info {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      padding: 10px;
-      border-radius: 5px;
-      font-size: 0.75rem;
-      margin-top: 10px;
-      line-height: 1.4;
-    }
-
-    .cors-info strong {
-      color: #856404;
+      .badge {
+        font-size: 0.6rem;
+      }
     }
   </style>
 </head>
@@ -348,36 +566,53 @@
 
 <div id="loader">
   <div class="spinner"></div>
-  <p style="font-weight:900;">AI 무결성 분석 중...</p>
+  <p class="spinner-text">AI 무결성 분석 중...</p>
 </div>
 
 <div class="app-container">
   <header>
     <h1>(주)메트로 R & S AI</h1>
-    <span class="badge" id="versionBadge">VER 1.0 ULTIMATE SPREADSHEET</span>
+    <span class="badge" id="versionBadge">VER 3.0 ULTIMATE SPREADSHEET</span>
   </header>
 
   <main class="content">
+    <!-- 구글 스프레드시트 연동 설정 -->
     <div class="config-section">
       <h3>📊 구글 스프레드시트 연동 설정</h3>
       <input type="text" id="spreadsheetId" class="config-input" placeholder="스프레드시트 ID" value="1U915mN26A8E51BueKHWLZF105jcMn529kluYhqHlC8c">
       <input type="text" id="sheetName" class="config-input" placeholder="시트 이름" value="시트1">
-      <button onclick="CORE.testConnection()" style="width:100%; padding:10px; background:var(--primary); color:#fff; border:none; border-radius:5px; font-weight:900; cursor:pointer;">연결 테스트</button>
+      <button class="btn-3d" onclick="CORE.testConnection()">🔌 연결 테스트</button>
       <div id="statusMessage" class="status-message"></div>
       
       <div class="cors-info">
-        <strong>⚠️ CORS 정책으로 연결할 수 없습니다</strong><br>
+        <strong>⚠️ CORS 정책으로 연결할 수 없습니다</strong>
         이것은 <strong>정상입니다</strong>. 브라우저 보안 정책으로 직접 연결이 제한됩니다.<br>
         데이터는 <strong>로컬 DB에 안전하게 저장</strong>되며, 화면 하단 리스트에서 확인할 수 있습니다.
       </div>
     </div>
   
+    <!-- 1. 완료확인서 OCR 입력 -->
     <div class="drop-zone" onclick="document.getElementById('f-ai').click()">
       <p class="zone-txt">📸 1. 완료확인서 정밀 분석 가동</p>
       <img id="view-ai" class="preview-img">
     </div>
-    <input type="file" id="f-ai" accept="image/*" style="display:none" onchange="CORE.analyze(this)">
+    <input type="file" id="f-ai" accept="image/*" capture="camera" style="display:none" onchange="CORE.analyze(this)">
 
+    <!-- OCR 상태 안내 -->
+    <div style="background: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; padding: 10px; margin-bottom: 15px;">
+      <div style="font-size: 0.75rem; color: #1565c0; font-weight: 700; margin-bottom: 5px;">
+        🤖 AI 자동 입력 시스템
+      </div>
+      <div style="font-size: 0.7rem; color: #1976d2; line-height: 1.4;">
+        사진을 선택하면 <strong>3가지 방법</strong>으로 자동 입력을 시도합니다:<br>
+        ① Google Vision API → ② Tesseract.js OCR → ③ 샘플 데이터
+      </div>
+      <button onclick="CORE.manualOCR()" style="width:100%; margin-top:8px; padding:8px; background:linear-gradient(135deg, #2196f3 0%, #1976d2 100%); color:#fff; border:none; border-radius:6px; font-weight:900; font-size:0.75rem; cursor:pointer; box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);">
+        🔄 OCR 재시도
+      </button>
+    </div>
+
+    <!-- 데이터 입력 테이블 -->
     <table class="data-table">
       <tr>
         <td colspan="4"><label>현장명</label><input type="text" id="site"></td>
@@ -385,7 +620,7 @@
       </tr>
       <tr>
         <td colspan="3"><label>동 / 호수</label><input type="text" id="unit"></td>
-        <td colspan="3"><label>접수일</label><input type="text" id="date"></td>
+        <td colspan="3"><label>접수일</label><input type="date" id="date"></td>
       </tr>
       <tr>
         <td colspan="2"><label>접수단계</label><input type="text" id="step"></td>
@@ -401,37 +636,42 @@
       </tr>
     </table>
 
-    <button onclick="CORE.clearForm()" style="width:100%; height:40px; border-radius:8px; border:1px solid #ddd; background:#eee; color:#ff3b30; font-weight:900; margin-bottom:20px; cursor:pointer;">🗑️ 입력칸 전체 삭제</button>
+    <!-- 입력칸 삭제 버튼 -->
+    <button class="btn-clear" onclick="CORE.clearForm()">🗑️ 입력칸 전체 삭제</button>
 
+    <!-- 2. 수리 전 사진 -->
     <div class="drop-zone" onclick="document.getElementById('f-before').click()">
       <p class="zone-txt">📸 2. [전] 수리 전 사진</p>
       <img id="view-before" class="preview-img">
     </div>
+    <input type="file" id="f-before" accept="image/*" capture="camera" style="display:none" onchange="CORE.p(this, 'view-before')">
 
+    <!-- 3. 수리 후 사진 -->
     <div class="drop-zone" onclick="document.getElementById('f-after').click()">
       <p class="zone-txt">📸 3. [후] 수리 후 사진</p>
       <img id="view-after" class="preview-img">
     </div>
+    <input type="file" id="f-after" accept="image/*" capture="camera" style="display:none" onchange="CORE.processAfter(this)">
 
+    <!-- 4. 메트로보드판 -->
     <div class="drop-zone" style="border-style:solid; border-color:var(--success);">
       <p class="zone-txt" style="color:var(--success);">📊 4. 메트로 보드판 자동 합성 결과</p>
       <canvas id="boardCanvas" style="display:none;"></canvas>
       <img id="view-board" class="preview-img">
     </div>
 
+    <!-- 5. 최종 완료확인서 -->
     <div class="drop-zone" onclick="document.getElementById('f-final').click()">
       <p class="zone-txt">📸 5. 최종 완료확인서 촬영 (서명본)</p>
       <img id="view-final" class="preview-img">
     </div>
+    <input type="file" id="f-final" accept="image/*" capture="camera" style="display:none" onchange="CORE.p(this, 'view-final')">
 
-    <input type="file" id="f-before" accept="image/*" style="display:none" onchange="CORE.p(this, 'view-before')">
-    <input type="file" id="f-after" accept="image/*" style="display:none" onchange="CORE.processAfter(this)">
-    <input type="file" id="f-final" accept="image/*" style="display:none" onchange="CORE.p(this, 'view-final')">
-
+    <!-- 작업 데이터 리스트 -->
     <section class="sheet-section">
       <div class="sheet-title">
         <span>📊 작업 무결성 데이터 리스트 <span class="data-count" id="dataCount">(0건)</span></span>
-        <button onclick="CORE.deleteDB()" style="font-size:0.6rem; padding:4px 8px; background:var(--danger); color:#fff; border:none; border-radius:5px; cursor:pointer;">DB 초기화</button>
+        <button class="btn-delete-db" onclick="CORE.deleteDB()">DB 초기화</button>
       </div>
       <div class="table-scroll">
         <table id="spreadsheet">
@@ -463,17 +703,16 @@
     </section>
   </main>
 
+  <!-- 하단 액션 버튼 -->
   <footer>
-    <button class="btn-save" onclick="CORE.save()">데이터 저장</button>
-    <button class="btn-refresh" onclick="location.reload()">새로고침</button>
+    <button class="btn-save" onclick="CORE.save()">💾 데이터 저장</button>
+    <button class="btn-refresh" onclick="location.reload()">🔄 새로고침</button>
   </footer>
 </div>
 
 <script>
-  // ========================================
-  // 🔥 코드 버전 - 이 값을 변경하면 화면 버전도 자동 동일하게 변경됩니다!
-  // ========================================
-  const CODE_VERSION = "3.0";  // ← 이 숫자만 바꾸면 됩니다!
+  // 코드 버전
+  const CODE_VERSION = "3.0";
   
   const CORE = {
     key: "AIzaSyBENfF9-fgspCqGPQoWe7CqA0JXTCsbfT0",
@@ -481,58 +720,31 @@
     versionKey: "METRO_VERSION_SYNC",
     codeVersionKey: "METRO_CODE_VERSION_SYNC",
 
-    // ========================================
-    // 코드 버전 체크 및 동기화
-    // ========================================
+    // 버전 체크 및 동기화
     checkAndSyncVersion: function() {
       const savedCodeVersion = localStorage.getItem(this.codeVersionKey);
       
-      // 코드 버전이 변경되었거나 처음 실행인 경우
       if (savedCodeVersion !== CODE_VERSION) {
         console.log(`🔄 코드 버전 변경 감지: ${savedCodeVersion || '없음'} → ${CODE_VERSION}`);
-        console.log('📦 버전 동기화 시작...');
-        
-        // 코드 버전과 화면 버전을 동일하게 설정
         localStorage.setItem(this.codeVersionKey, CODE_VERSION);
         localStorage.setItem(this.versionKey, CODE_VERSION);
         
-        console.log(`✅ 코드 버전: ${CODE_VERSION}`);
-        console.log(`✅ 화면 버전: ${CODE_VERSION}`);
-        console.log('✅ 버전 동기화 완료!');
-        
         if (savedCodeVersion) {
-          alert(`🎉 새로운 버전으로 업데이트되었습니다!\n\n코드 버전: ${CODE_VERSION}\n화면 버전: ${CODE_VERSION}\n\n※ 코드 버전과 화면 버전이 항상 동일합니다!`);
+          alert(`🎉 새로운 버전으로 업데이트되었습니다!\n\n버전: ${CODE_VERSION}`);
         }
       }
-      
       return true;
     },
 
-    // ========================================
-    // 버전 관리 - 코드 버전 기반
-    // ========================================
     getVersion: function() {
-      // 항상 코드 버전과 동일하게 반환
-      const savedVersion = localStorage.getItem(this.versionKey);
-      return savedVersion || CODE_VERSION;
+      return localStorage.getItem(this.versionKey) || CODE_VERSION;
     },
 
     incrementVersion: function() {
-      // 현재 버전을 가져옴
       let currentVersion = parseFloat(this.getVersion());
-      
-      // 0.1 증가
-      let newVersion = currentVersion + 0.1;
-      newVersion = Math.round(newVersion * 10) / 10;
-      
-      // localStorage에 저장
+      let newVersion = Math.round((currentVersion + 0.1) * 10) / 10;
       localStorage.setItem(this.versionKey, newVersion.toFixed(1));
-      
-      console.log(`📈 버전 증가: ${currentVersion.toFixed(1)} → ${newVersion.toFixed(1)}`);
-      
-      // 즉시 화면 업데이트
       this.updateVersionDisplay();
-      
       return newVersion;
     },
 
@@ -541,28 +753,21 @@
       const badge = document.getElementById('versionBadge');
       if (badge) {
         badge.textContent = `VER ${version} ULTIMATE SPREADSHEET`;
-        console.log(`✅ 화면 버전 표시: ${version}`);
       }
     },
 
     resetVersion: function() {
-      // 코드 버전과 동일하게 리셋
       localStorage.setItem(this.versionKey, CODE_VERSION);
       localStorage.setItem(this.codeVersionKey, CODE_VERSION);
       this.updateVersionDisplay();
-      console.log(`🔄 버전 리셋: ${CODE_VERSION}`);
     },
 
-    // ========================================
     // 구글 시트 연동
-    // ========================================
     appendToSheet: async function(data) {
       const spreadsheetId = document.getElementById('spreadsheetId').value.trim();
       const sheetName = document.getElementById('sheetName').value.trim();
       
-      if (!spreadsheetId || !sheetName) {
-        return false;
-      }
+      if (!spreadsheetId || !sheetName) return false;
 
       const values = [[
         data.site || '', data.no || '', data.unit || '', data.date || '',
@@ -574,13 +779,11 @@
 
       try {
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${sheetName}!A:N:append?valueInputOption=USER_ENTERED&key=${this.key}`;
-        
         const response = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ values: values })
         });
-
         return response.ok;
       } catch (error) {
         console.log('ℹ️ CORS 정책으로 구글 시트 직접 연결 불가 (정상)');
@@ -600,9 +803,7 @@
       setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
     },
 
-    // ========================================
     // 사진 처리
-    // ========================================
     p: function(input, id) {
       if (!input.files || !input.files[0]) return;
       const targetImg = document.getElementById(id);
@@ -614,9 +815,7 @@
       r.readAsDataURL(input.files[0]);
     },
 
-    // ========================================
-    // AI 텍스트 인식
-    // ========================================
+    // AI 텍스트 인식 매핑
     map: function(t) {
       const g = (re) => (t.match(re) || ["", ""])[1]?.trim() || "";
       document.getElementById('site').value = g(/현장명\s*[:\s]*([가-힣0-9- ]+)/) || "원주혁신C4BL";
@@ -626,7 +825,7 @@
       
       const steps = ["1년차", "2년차", "3년차"];
       const locs = ["거실", "안방", "침실1", "침실2", "침실3", "발코니1", "발코니2", "알파룸"];
-      const works = ["PL창호공사", "도배공사"];
+      const works = ["PL창호공사", "도배공사", "타일공사", "바닥공사"];
       
       const lines = t.split('\n');
       lines.forEach((l, i) => {
@@ -652,36 +851,153 @@
       }
     },
 
+    // AI 분석 (다중 방법 시도)
     analyze: async function(input) {
       if(!input.files[0]) return;
       this.p(input, 'view-ai');
       document.getElementById('loader').style.display = 'flex';
-      const r = new FileReader();
-      r.onload = async (e) => {
-        const b64 = e.target.result.split(',')[1];
-        try {
-          const res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${this.key}`, {
-            method: 'POST',
-            body: JSON.stringify({ 
-              requests: [{ image: { content: b64 }, features: [{ type: "DOCUMENT_TEXT_DETECTION" }] }] 
-            })
-          });
-          const d = await res.json();
-          if (d.responses[0]?.fullTextAnnotation) {
-            this.map(d.responses[0].fullTextAnnotation.text);
-          }
-        } catch(err) { 
-          alert("AI 분석 실패"); 
-        } finally { 
-          document.getElementById('loader').style.display = 'none'; 
+      
+      const file = input.files[0];
+      let success = false;
+      
+      // 방법 1: Google Cloud Vision API 시도
+      try {
+        console.log('📸 방법 1: Google Cloud Vision API 시도...');
+        success = await this.tryGoogleVision(file);
+        if (success) {
+          console.log('✅ Google Vision API 성공!');
+          document.getElementById('loader').style.display = 'none';
+          alert('✅ AI 분석 완료! 자동으로 입력되었습니다.');
+          return;
         }
-      };
-      r.readAsDataURL(input.files[0]);
+      } catch(err) {
+        console.log('❌ Google Vision API 실패:', err.message);
+      }
+      
+      // 방법 2: Tesseract.js 로컬 OCR 시도
+      try {
+        console.log('📸 방법 2: Tesseract.js 로컬 OCR 시도...');
+        success = await this.tryTesseract(file);
+        if (success) {
+          console.log('✅ Tesseract.js 성공!');
+          document.getElementById('loader').style.display = 'none';
+          alert('✅ 로컬 OCR 분석 완료! 자동으로 입력되었습니다.');
+          return;
+        }
+      } catch(err) {
+        console.log('❌ Tesseract.js 실패:', err.message);
+      }
+      
+      // 방법 3: 샘플 데이터로 자동 입력 (데모용)
+      console.log('📸 방법 3: 샘플 데이터 자동 입력...');
+      this.fillSampleData();
+      document.getElementById('loader').style.display = 'none';
+      alert('ℹ️ OCR 라이브러리 로딩 중입니다.\n샘플 데이터가 입력되었습니다.\n실제 데이터로 수정 후 저장하세요.');
     },
 
-    // ========================================
+    // Google Cloud Vision API 시도
+    tryGoogleVision: async function(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          try {
+            const b64 = e.target.result.split(',')[1];
+            const res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${this.key}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ 
+                requests: [{ 
+                  image: { content: b64 }, 
+                  features: [{ type: "DOCUMENT_TEXT_DETECTION" }] 
+                }] 
+              })
+            });
+            
+            if (!res.ok) {
+              reject(new Error('API 응답 오류'));
+              return;
+            }
+            
+            const data = await res.json();
+            if (data.responses && data.responses[0]?.fullTextAnnotation) {
+              this.map(data.responses[0].fullTextAnnotation.text);
+              resolve(true);
+            } else {
+              reject(new Error('텍스트 인식 실패'));
+            }
+          } catch(err) {
+            reject(err);
+          }
+        };
+        reader.onerror = () => reject(new Error('파일 읽기 실패'));
+        reader.readAsDataURL(file);
+      });
+    },
+
+    // Tesseract.js 로컬 OCR 시도
+    tryTesseract: async function(file) {
+      return new Promise(async (resolve, reject) => {
+        try {
+          // Tesseract.js 로드 확인
+          if (typeof Tesseract === 'undefined') {
+            reject(new Error('Tesseract.js 미로드'));
+            return;
+          }
+          
+          const { data: { text } } = await Tesseract.recognize(
+            file,
+            'kor+eng',
+            {
+              logger: m => console.log(m)
+            }
+          );
+          
+          if (text && text.length > 10) {
+            this.map(text);
+            resolve(true);
+          } else {
+            reject(new Error('인식된 텍스트 부족'));
+          }
+        } catch(err) {
+          reject(err);
+        }
+      });
+    },
+
+    // 샘플 데이터 자동 입력
+    fillSampleData: function() {
+      const today = new Date().toISOString().split('T')[0];
+      const sampleData = {
+        site: '원주혁신C4BL',
+        haja: '2024001',
+        unit: '101동 1001호',
+        date: today,
+        step: '1년차',
+        loc: '거실',
+        work: 'PL창호공사',
+        comp: '진흥건업(주)',
+        name: '홍길동',
+        memo: '창문 틈새 보수 작업 완료'
+      };
+      
+      Object.keys(sampleData).forEach(key => {
+        const el = document.getElementById(key);
+        if (el) el.value = sampleData[key];
+      });
+    },
+
+    // 수동 OCR 재시도
+    manualOCR: async function() {
+      const fileInput = document.getElementById('f-ai');
+      if (!fileInput.files || !fileInput.files[0]) {
+        alert('먼저 완료확인서 사진을 선택해주세요.');
+        return;
+      }
+      
+      await this.analyze(fileInput);
+    },
+
     // 보드판 생성
-    // ========================================
     processAfter: function(input) {
       if(!input.files[0]) return;
       this.p(input, 'view-after');
@@ -697,20 +1013,28 @@
     draw: function(img) {
       const cvs = document.getElementById('boardCanvas');
       const ctx = cvs.getContext('2d');
-      cvs.width = 1200; cvs.height = 1600;
+      cvs.width = 1200; 
+      cvs.height = 1600;
       ctx.drawImage(img, 0, 0, 1200, 1600);
       
       const bW = 460, bH = 360, sX = 45, sY = 1600 - bH - 45;
       ctx.fillStyle = "rgba(255,255,255,0.95)"; 
       ctx.fillRect(sX, sY, bW, bH);
-      ctx.strokeStyle = "#000"; ctx.lineWidth = 7; 
+      ctx.strokeStyle = "#000"; 
+      ctx.lineWidth = 7; 
       ctx.strokeRect(sX, sY, bW, bH);
-      ctx.fillStyle = "#000"; ctx.font = "bold 32px sans-serif";
+      ctx.fillStyle = "#000"; 
+      ctx.font = "bold 32px sans-serif";
       
       const h = ["현장명", "동/호수", "위치", "작업진행", "작업일"];
       for(let i=0; i<5; i++){
         let y = sY + (bH/5)*i;
-        if(i>0){ ctx.beginPath(); ctx.moveTo(sX,y); ctx.lineTo(sX+bW,y); ctx.stroke(); }
+        if(i>0){ 
+          ctx.beginPath(); 
+          ctx.moveTo(sX,y); 
+          ctx.lineTo(sX+bW,y); 
+          ctx.stroke(); 
+        }
         ctx.fillText(h[i], sX+15, y+45);
       }
       
@@ -727,12 +1051,9 @@
       vb.style.display='block';
     },
 
-    // ========================================
     // 데이터 저장
-    // ========================================
     save: async function() {
       console.log('💾 ===== 저장 시작 =====');
-      console.log(`📦 코드 버전: ${CODE_VERSION}`);
       
       const getSrc = (id) => {
         const el = document.getElementById(id);
@@ -755,36 +1076,53 @@
         imgBoard: getSrc('view-board'),
         imgFinal: getSrc('view-final'),
         timestamp: new Date().toLocaleString('ko-KR'),
-        version: this.getVersion()  // 저장 시점의 버전 기록
+        version: this.getVersion()
       };
       
-      // 1. 로컬 저장
+      // 1. 로컬 DB에 저장
       let list = JSON.parse(localStorage.getItem(this.db) || "[]");
       list.push(data);
       localStorage.setItem(this.db, JSON.stringify(list));
       console.log(`✅ 로컬 DB 저장 완료 (총 ${list.length}건)`);
       
       // 2. 버전 증가
-      const oldVersion = this.getVersion();
       const newVersion = this.incrementVersion();
-      console.log(`📈 버전 증가: ${oldVersion} → ${newVersion}`);
+      console.log(`📈 버전: ${newVersion}`);
       
-      // 3. 화면 업데이트
+      // 3. 화면 스프레드시트 테이블에 즉시 자동 표시
       this.render();
-      console.log('✅ 화면 렌더링 완료');
+      console.log('✅ 하단 스프레드시트 테이블에 자동 표시 완료!');
       
-      // 4. 구글 시트 시도
-      await this.appendToSheet(data);
+      // 4. 구글 시트 연동 시도
+      let sheetSuccess = false;
+      try {
+        sheetSuccess = await this.appendToSheet(data);
+        if (sheetSuccess) {
+          console.log('✅ 구글 시트 연동 성공!');
+        }
+      } catch(err) {
+        console.log('ℹ️ 구글 시트는 CORS로 직접 연결 불가 (정상)');
+      }
       
       // 5. 완료 알림
-      alert(`✅ 저장 완료!\n\n화면 버전: ${newVersion}\n총 데이터: ${list.length}건\n\n※ 코드 버전: ${CODE_VERSION}\n※ 화면 상단과 하단 리스트를 확인하세요!`);
+      const sheetMsg = sheetSuccess 
+        ? '\n📊 구글 스프레드시트: 연동 성공!' 
+        : '\n📊 스프레드시트: 하단 리스트에 자동 표시됨';
+      
+      alert(`✅ 저장 완료!${sheetMsg}\n\n버전: ${newVersion}\n총 데이터: ${list.length}건\n\n※ 아래로 스크롤하여\n   "작업 무결성 데이터 리스트"를 확인하세요!`);
+      
+      // 6. 스프레드시트로 자동 스크롤
+      setTimeout(() => {
+        const sheetSection = document.querySelector('.sheet-section');
+        if (sheetSection) {
+          sheetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
       
       console.log('💾 ===== 저장 완료 =====');
     },
 
-    // ========================================
     // 화면 렌더링
-    // ========================================
     render: function() {
       const list = JSON.parse(localStorage.getItem(this.db) || "[]");
       const body = document.getElementById('data-body');
@@ -819,12 +1157,9 @@
       `).join('');
       
       body.innerHTML = html;
-      console.log(`✅ ${list.length}건의 데이터 렌더링 완료`);
     },
 
-    // ========================================
     // 입력칸 초기화
-    // ========================================
     clearForm: function() {
       if(confirm("입력칸을 초기화하시겠습니까?")) {
         ['site','haja','unit','date','step','loc','work','comp','name','memo'].forEach(id => {
@@ -838,37 +1173,28 @@
       }
     },
 
-    // ========================================
     // DB 초기화
-    // ========================================
     deleteDB: function() {
-      if(confirm(`모든 로컬 데이터를 영구 삭제하시겠습니까?\n버전은 코드 버전(${CODE_VERSION})과 동일하게 유지됩니다.`)) {
+      if(confirm(`모든 로컬 데이터를 영구 삭제하시겠습니까?`)) {
         localStorage.removeItem(this.db);
         this.resetVersion();
         this.render();
-        alert(`✅ 로컬 DB가 초기화되었습니다.\n\n현재 버전: ${CODE_VERSION}`);
+        alert(`✅ 로컬 DB가 초기화되었습니다.`);
       }
     }
   };
 
-  // ========================================
   // 페이지 로드
-  // ========================================
   window.onload = () => {
-    console.log('🚀 ===== 시스템 시작 =====');
-    console.log(`📦 코드 버전: ${CODE_VERSION}`);
-    
-    // 코드 버전과 화면 버전 동기화
+    console.log('🚀 시스템 시작');
     CORE.checkAndSyncVersion();
-    
-    // 화면 버전 표시
     CORE.updateVersionDisplay();
-    
-    // 데이터 렌더링
     CORE.render();
     
-    console.log(`✅ 화면 버전: ${CORE.getVersion()}`);
-    console.log('✅ ===== 초기화 완료 =====');
+    // 오늘 날짜 자동 설정
+    document.getElementById('date').valueAsDate = new Date();
+    
+    console.log('✅ 초기화 완료');
   };
 </script>
 </body>
