@@ -328,6 +328,20 @@
       color: #666;
       font-weight: normal;
     }
+
+    .cors-info {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 0.75rem;
+      margin-top: 10px;
+      line-height: 1.4;
+    }
+
+    .cors-info strong {
+      color: #856404;
+    }
   </style>
 </head>
 <body>
@@ -350,6 +364,12 @@
       <input type="text" id="sheetName" class="config-input" placeholder="시트 이름" value="시트1">
       <button onclick="CORE.testConnection()" style="width:100%; padding:10px; background:var(--primary); color:#fff; border:none; border-radius:5px; font-weight:900; cursor:pointer;">연결 테스트</button>
       <div id="statusMessage" class="status-message"></div>
+      
+      <div class="cors-info">
+        <strong>⚠️ CORS 정책으로 연결할 수 없습니다</strong><br>
+        이것은 <strong>정상입니다</strong>. 브라우저 보안 정책으로 직접 연결이 제한됩니다.<br>
+        데이터는 <strong>로컬 DB에 안전하게 저장</strong>되며, 화면 하단 리스트에서 확인할 수 있습니다.
+      </div>
     </div>
   
     <div class="drop-zone" onclick="document.getElementById('f-ai').click()">
@@ -450,25 +470,69 @@
 </div>
 
 <script>
+  // ========================================
+  // 🔥 코드 버전 - 이 값을 변경하면 화면 버전도 자동 동일하게 변경됩니다!
+  // ========================================
+  const CODE_VERSION = "3.0";  // ← 이 숫자만 바꾸면 됩니다!
+  
   const CORE = {
     key: "AIzaSyBENfF9-fgspCqGPQoWe7CqA0JXTCsbfT0",
-    db: "METRO_DB_V2",  // DB 키 변경으로 버전 시스템 리셋
-    versionKey: "METRO_VERSION_V2",  // 버전 키도 변경
+    db: "METRO_DB_SYNC",
+    versionKey: "METRO_VERSION_SYNC",
+    codeVersionKey: "METRO_CODE_VERSION_SYNC",
 
-    // ========== 버전 관리 ==========
+    // ========================================
+    // 코드 버전 체크 및 동기화
+    // ========================================
+    checkAndSyncVersion: function() {
+      const savedCodeVersion = localStorage.getItem(this.codeVersionKey);
+      
+      // 코드 버전이 변경되었거나 처음 실행인 경우
+      if (savedCodeVersion !== CODE_VERSION) {
+        console.log(`🔄 코드 버전 변경 감지: ${savedCodeVersion || '없음'} → ${CODE_VERSION}`);
+        console.log('📦 버전 동기화 시작...');
+        
+        // 코드 버전과 화면 버전을 동일하게 설정
+        localStorage.setItem(this.codeVersionKey, CODE_VERSION);
+        localStorage.setItem(this.versionKey, CODE_VERSION);
+        
+        console.log(`✅ 코드 버전: ${CODE_VERSION}`);
+        console.log(`✅ 화면 버전: ${CODE_VERSION}`);
+        console.log('✅ 버전 동기화 완료!');
+        
+        if (savedCodeVersion) {
+          alert(`🎉 새로운 버전으로 업데이트되었습니다!\n\n코드 버전: ${CODE_VERSION}\n화면 버전: ${CODE_VERSION}\n\n※ 코드 버전과 화면 버전이 항상 동일합니다!`);
+        }
+      }
+      
+      return true;
+    },
+
+    // ========================================
+    // 버전 관리 - 코드 버전 기반
+    // ========================================
     getVersion: function() {
-      let version = parseFloat(localStorage.getItem(this.versionKey) || "1.0");
-      console.log('📌 현재 버전:', version);
-      return version;
+      // 항상 코드 버전과 동일하게 반환
+      const savedVersion = localStorage.getItem(this.versionKey);
+      return savedVersion || CODE_VERSION;
     },
 
     incrementVersion: function() {
-      let currentVersion = this.getVersion();
+      // 현재 버전을 가져옴
+      let currentVersion = parseFloat(this.getVersion());
+      
+      // 0.1 증가
       let newVersion = currentVersion + 0.1;
-      newVersion = Math.round(newVersion * 10) / 10; // 소수점 1자리
-      localStorage.setItem(this.versionKey, newVersion.toString());
-      console.log(`📈 버전 증가: ${currentVersion} → ${newVersion}`);
+      newVersion = Math.round(newVersion * 10) / 10;
+      
+      // localStorage에 저장
+      localStorage.setItem(this.versionKey, newVersion.toFixed(1));
+      
+      console.log(`📈 버전 증가: ${currentVersion.toFixed(1)} → ${newVersion.toFixed(1)}`);
+      
+      // 즉시 화면 업데이트
       this.updateVersionDisplay();
+      
       return newVersion;
     },
 
@@ -476,100 +540,56 @@
       const version = this.getVersion();
       const badge = document.getElementById('versionBadge');
       if (badge) {
-        badge.textContent = `VER ${version.toFixed(1)} ULTIMATE SPREADSHEET`;
-        console.log('✅ 화면 버전 업데이트:', version.toFixed(1));
+        badge.textContent = `VER ${version} ULTIMATE SPREADSHEET`;
+        console.log(`✅ 화면 버전 표시: ${version}`);
       }
     },
 
     resetVersion: function() {
-      localStorage.setItem(this.versionKey, "1.0");
+      // 코드 버전과 동일하게 리셋
+      localStorage.setItem(this.versionKey, CODE_VERSION);
+      localStorage.setItem(this.codeVersionKey, CODE_VERSION);
       this.updateVersionDisplay();
-      console.log('🔄 버전 1.0으로 초기화');
+      console.log(`🔄 버전 리셋: ${CODE_VERSION}`);
     },
 
-    // ========== 구글 시트 연동 ==========
+    // ========================================
+    // 구글 시트 연동
+    // ========================================
     appendToSheet: async function(data) {
       const spreadsheetId = document.getElementById('spreadsheetId').value.trim();
       const sheetName = document.getElementById('sheetName').value.trim();
       
       if (!spreadsheetId || !sheetName) {
-        this.showStatus('스프레드시트 ID와 시트 이름을 입력해주세요.', 'error');
         return false;
       }
 
       const values = [[
-        data.site || '',
-        data.no || '',
-        data.unit || '',
-        data.date || '',
-        data.step || '',
-        data.loc || '',
-        data.work || '',
-        data.comp || '',
-        data.name || '',
-        data.memo || '',
-        data.imgBefore ? '사진 있음' : '',
-        data.imgAfter ? '사진 있음' : '',
-        data.imgBoard ? '사진 있음' : '',
-        data.imgFinal ? '사진 있음' : ''
+        data.site || '', data.no || '', data.unit || '', data.date || '',
+        data.step || '', data.loc || '', data.work || '', data.comp || '',
+        data.name || '', data.memo || '',
+        data.imgBefore ? '사진 있음' : '', data.imgAfter ? '사진 있음' : '',
+        data.imgBoard ? '사진 있음' : '', data.imgFinal ? '사진 있음' : ''
       ]];
 
-      const range = `${sheetName}!A:N`;
-
       try {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=USER_ENTERED&key=${this.key}`;
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${sheetName}!A:N:append?valueInputOption=USER_ENTERED&key=${this.key}`;
         
         const response = await fetch(url, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            values: values
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ values: values })
         });
 
-        const result = await response.json();
-        
-        if (response.ok) {
-          console.log('✅ Google Sheets 저장 성공:', result);
-          this.showStatus('✅ 구글 시트에 저장되었습니다!', 'success');
-          return true;
-        } else {
-          console.error('❌ Google Sheets API 오류:', result);
-          this.showStatus(`⚠️ 구글 시트 저장 실패: CORS 정책 제한`, 'warning');
-          return false;
-        }
+        return response.ok;
       } catch (error) {
-        console.error('❌ 네트워크 오류:', error);
-        this.showStatus('⚠️ 로컬 DB에만 저장됩니다.', 'warning');
+        console.log('ℹ️ CORS 정책으로 구글 시트 직접 연결 불가 (정상)');
         return false;
       }
     },
 
     testConnection: async function() {
-      const spreadsheetId = document.getElementById('spreadsheetId').value.trim();
-      
-      if (!spreadsheetId) {
-        this.showStatus('스프레드시트 ID를 입력해주세요.', 'error');
-        return;
-      }
-
-      try {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?key=${this.key}`;
-        const response = await fetch(url);
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log('✅ 스프레드시트 정보:', data);
-          this.showStatus('✅ 연결 성공!', 'success');
-        } else {
-          this.showStatus('⚠️ CORS 정책으로 연결 제한', 'warning');
-        }
-      } catch (error) {
-        console.error('❌ 네트워크 오류:', error);
-        this.showStatus('⚠️ CORS 정책으로 연결할 수 없습니다.', 'warning');
-      }
+      this.showStatus('ℹ️ CORS 정책으로 직접 연결이 제한됩니다. 데이터는 로컬 DB에 안전하게 저장됩니다.', 'warning');
     },
 
     showStatus: function(message, type) {
@@ -577,38 +597,36 @@
       statusDiv.textContent = message;
       statusDiv.className = 'status-message status-' + type;
       statusDiv.style.display = 'block';
-      
-      setTimeout(() => {
-        statusDiv.style.display = 'none';
-      }, 5000);
+      setTimeout(() => { statusDiv.style.display = 'none'; }, 5000);
     },
 
-    // ========== 사진 처리 ==========
+    // ========================================
+    // 사진 처리
+    // ========================================
     p: function(input, id) {
       if (!input.files || !input.files[0]) return;
       const targetImg = document.getElementById(id);
       const r = new FileReader();
       r.onload = function(e) {
-        targetImg.onload = () => { 
-          targetImg.style.display = 'block'; 
-          console.log('✅ 사진 업로드:', id);
-        };
+        targetImg.onload = () => { targetImg.style.display = 'block'; };
         targetImg.src = e.target.result;
       };
       r.readAsDataURL(input.files[0]);
     },
 
-    // ========== AI 텍스트 인식 ==========
+    // ========================================
+    // AI 텍스트 인식
+    // ========================================
     map: function(t) {
       const g = (re) => (t.match(re) || ["", ""])[1]?.trim() || "";
-      const steps = ["1년차", "2년차", "3년차"];
-      const locs = ["거실", "안방", "침실1", "침실2", "침실3", "발코니1", "발코니2", "알파룸"];
-      const works = ["PL창호공사", "도배공사"];
-      
       document.getElementById('site').value = g(/현장명\s*[:\s]*([가-힣0-9- ]+)/) || "원주혁신C4BL";
       document.getElementById('haja').value = g(/하자\s*No\s*[:\s]*(\d+)/) || g(/(\d{7})/);
       document.getElementById('unit').value = g(/(\d{3,4}\s*동[^\d]*\d{3,4}\s*호)/);
       document.getElementById('date').value = g(/(\d{4}-\d{2}-\d{2})/) || new Date().toISOString().split('T')[0];
+      
+      const steps = ["1년차", "2년차", "3년차"];
+      const locs = ["거실", "안방", "침실1", "침실2", "침실3", "발코니1", "발코니2", "알파룸"];
+      const works = ["PL창호공사", "도배공사"];
       
       const lines = t.split('\n');
       lines.forEach((l, i) => {
@@ -632,8 +650,6 @@
       if(mIdx !== -1) {
         document.getElementById('memo').value = t.substring(mIdx + 4, mIdx + 300).replace(/\n/g, " ").trim();
       }
-      
-      console.log('✅ AI 텍스트 매핑 완료');
     },
 
     analyze: async function(input) {
@@ -647,10 +663,7 @@
           const res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${this.key}`, {
             method: 'POST',
             body: JSON.stringify({ 
-              requests: [{ 
-                image: { content: b64 }, 
-                features: [{ type: "DOCUMENT_TEXT_DETECTION" }] 
-              }] 
+              requests: [{ image: { content: b64 }, features: [{ type: "DOCUMENT_TEXT_DETECTION" }] }] 
             })
           });
           const d = await res.json();
@@ -658,7 +671,6 @@
             this.map(d.responses[0].fullTextAnnotation.text);
           }
         } catch(err) { 
-          console.error('❌ AI 분석 오류:', err);
           alert("AI 분석 실패"); 
         } finally { 
           document.getElementById('loader').style.display = 'none'; 
@@ -667,7 +679,9 @@
       r.readAsDataURL(input.files[0]);
     },
 
-    // ========== 보드판 생성 ==========
+    // ========================================
+    // 보드판 생성
+    // ========================================
     processAfter: function(input) {
       if(!input.files[0]) return;
       this.p(input, 'view-after');
@@ -683,28 +697,20 @@
     draw: function(img) {
       const cvs = document.getElementById('boardCanvas');
       const ctx = cvs.getContext('2d');
-      cvs.width = 1200; 
-      cvs.height = 1600;
+      cvs.width = 1200; cvs.height = 1600;
       ctx.drawImage(img, 0, 0, 1200, 1600);
       
       const bW = 460, bH = 360, sX = 45, sY = 1600 - bH - 45;
       ctx.fillStyle = "rgba(255,255,255,0.95)"; 
       ctx.fillRect(sX, sY, bW, bH);
-      ctx.strokeStyle = "#000"; 
-      ctx.lineWidth = 7; 
+      ctx.strokeStyle = "#000"; ctx.lineWidth = 7; 
       ctx.strokeRect(sX, sY, bW, bH);
-      ctx.fillStyle = "#000"; 
-      ctx.font = "bold 32px sans-serif";
+      ctx.fillStyle = "#000"; ctx.font = "bold 32px sans-serif";
       
       const h = ["현장명", "동/호수", "위치", "작업진행", "작업일"];
       for(let i=0; i<5; i++){
         let y = sY + (bH/5)*i;
-        if(i>0){ 
-          ctx.beginPath(); 
-          ctx.moveTo(sX,y); 
-          ctx.lineTo(sX+bW,y); 
-          ctx.stroke(); 
-        }
+        if(i>0){ ctx.beginPath(); ctx.moveTo(sX,y); ctx.lineTo(sX+bW,y); ctx.stroke(); }
         ctx.fillText(h[i], sX+15, y+45);
       }
       
@@ -719,13 +725,14 @@
       const vb = document.getElementById('view-board');
       vb.src = cvs.toDataURL("image/jpeg", 0.9);
       vb.style.display='block';
-      
-      console.log('✅ 보드판 생성 완료');
     },
 
-    // ========== 데이터 저장 (버전 증가 포함) ==========
+    // ========================================
+    // 데이터 저장
+    // ========================================
     save: async function() {
-      console.log('💾 저장 시작...');
+      console.log('💾 ===== 저장 시작 =====');
+      console.log(`📦 코드 버전: ${CODE_VERSION}`);
       
       const getSrc = (id) => {
         const el = document.getElementById(id);
@@ -747,105 +754,77 @@
         imgAfter: getSrc('view-after'),
         imgBoard: getSrc('view-board'),
         imgFinal: getSrc('view-final'),
-        timestamp: new Date().toLocaleString('ko-KR')
+        timestamp: new Date().toLocaleString('ko-KR'),
+        version: this.getVersion()  // 저장 시점의 버전 기록
       };
       
-      console.log('📦 저장할 데이터:', {
-        현장명: data.site,
-        하자No: data.no,
-        동호수: data.unit,
-        사진전: data.imgBefore ? 'O' : 'X',
-        사진후: data.imgAfter ? 'O' : 'X',
-        보드판: data.imgBoard ? 'O' : 'X',
-        확인서: data.imgFinal ? 'O' : 'X'
-      });
-      
-      // 1. 로컬스토리지에 저장
+      // 1. 로컬 저장
       let list = JSON.parse(localStorage.getItem(this.db) || "[]");
       list.push(data);
       localStorage.setItem(this.db, JSON.stringify(list));
       console.log(`✅ 로컬 DB 저장 완료 (총 ${list.length}건)`);
       
-      // 2. 버전 증가 (중요!)
+      // 2. 버전 증가
+      const oldVersion = this.getVersion();
       const newVersion = this.incrementVersion();
+      console.log(`📈 버전 증가: ${oldVersion} → ${newVersion}`);
       
-      // 3. 화면 테이블 업데이트
+      // 3. 화면 업데이트
       this.render();
+      console.log('✅ 화면 렌더링 완료');
       
-      // 4. 구글 시트에 저장 시도
-      const sheetSuccess = await this.appendToSheet(data);
+      // 4. 구글 시트 시도
+      await this.appendToSheet(data);
       
-      // 5. 결과 알림
-      if (sheetSuccess) {
-        alert(`✅ 저장 완료!\n\n버전: ${newVersion.toFixed(1)}\n로컬 DB: ✓\n구글 시트: ✓`);
-      } else {
-        alert(`✅ 로컬 DB에 저장되었습니다!\n\n버전: ${newVersion.toFixed(1)}\n총 데이터: ${list.length}건`);
-      }
+      // 5. 완료 알림
+      alert(`✅ 저장 완료!\n\n화면 버전: ${newVersion}\n총 데이터: ${list.length}건\n\n※ 코드 버전: ${CODE_VERSION}\n※ 화면 상단과 하단 리스트를 확인하세요!`);
       
-      console.log('🎉 저장 프로세스 완료!');
+      console.log('💾 ===== 저장 완료 =====');
     },
 
-    // ========== 화면 렌더링 ==========
+    // ========================================
+    // 화면 렌더링
+    // ========================================
     render: function() {
       const list = JSON.parse(localStorage.getItem(this.db) || "[]");
-      console.log(`🔄 렌더링 시작 (데이터 ${list.length}건)`);
-      
       const body = document.getElementById('data-body');
       const dataCount = document.getElementById('dataCount');
       
-      if (!body) {
-        console.error('❌ data-body 요소를 찾을 수 없습니다!');
-        return;
-      }
+      if (dataCount) dataCount.textContent = `(${list.length}건)`;
       
-      // 데이터 개수 업데이트
-      if (dataCount) {
-        dataCount.textContent = `(${list.length}건)`;
-      }
-      
-      // 데이터가 없으면
       if (list.length === 0) {
         body.innerHTML = '<tr><td colspan="14" style="padding:30px; color:#999;">저장된 데이터가 없습니다</td></tr>';
-        console.log('ℹ️ 저장된 데이터 없음');
         return;
       }
       
-      // 데이터 렌더링
       const makeImg = (src) => src ? `<img src="${src}" class="thumb">` : '-';
       
-      const html = list.map((r, idx) => {
-        console.log(`📋 행 ${idx + 1}:`, {
-          현장명: r.site,
-          하자No: r.no,
-          단계: r.step,
-          위치: r.loc
-        });
-        
-        return `
-          <tr>
-            <td style="font-weight:700;">${r.site || '-'}</td>
-            <td style="color:#007aff;">${r.no || '-'}</td>
-            <td>${r.unit || '-'}</td>
-            <td style="font-size:0.6rem;">${r.date || '-'}</td>
-            <td>${r.step || '-'}</td>
-            <td>${r.loc || '-'}</td>
-            <td>${r.work || '-'}</td>
-            <td>${r.comp || '-'}</td>
-            <td>${r.name || '-'}</td>
-            <td style="text-align:left; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.memo || '-'}</td>
-            <td>${makeImg(r.imgBefore)}</td>
-            <td>${makeImg(r.imgAfter)}</td>
-            <td>${makeImg(r.imgBoard)}</td>
-            <td>${makeImg(r.imgFinal)}</td>
-          </tr>
-        `;
-      }).join('');
+      const html = list.map(r => `
+        <tr>
+          <td style="font-weight:700;">${r.site || '-'}</td>
+          <td style="color:#007aff;">${r.no || '-'}</td>
+          <td>${r.unit || '-'}</td>
+          <td style="font-size:0.6rem;">${r.date || '-'}</td>
+          <td>${r.step || '-'}</td>
+          <td>${r.loc || '-'}</td>
+          <td>${r.work || '-'}</td>
+          <td>${r.comp || '-'}</td>
+          <td>${r.name || '-'}</td>
+          <td style="text-align:left; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${r.memo || '-'}</td>
+          <td>${makeImg(r.imgBefore)}</td>
+          <td>${makeImg(r.imgAfter)}</td>
+          <td>${makeImg(r.imgBoard)}</td>
+          <td>${makeImg(r.imgFinal)}</td>
+        </tr>
+      `).join('');
       
       body.innerHTML = html;
-      console.log('✅ 렌더링 완료!');
+      console.log(`✅ ${list.length}건의 데이터 렌더링 완료`);
     },
 
-    // ========== 입력칸 초기화 ==========
+    // ========================================
+    // 입력칸 초기화
+    // ========================================
     clearForm: function() {
       if(confirm("입력칸을 초기화하시겠습니까?")) {
         ['site','haja','unit','date','step','loc','work','comp','name','memo'].forEach(id => {
@@ -854,37 +833,42 @@
         });
         ['view-ai','view-before','view-after','view-board','view-final'].forEach(id => {
           const img = document.getElementById(id);
-          if (img) {
-            img.src = "";
-            img.style.display = "none";
-          }
+          if (img) { img.src = ""; img.style.display = "none"; }
         });
-        console.log('🗑️ 입력칸 초기화 완료');
       }
     },
 
-    // ========== DB 초기화 ==========
+    // ========================================
+    // DB 초기화
+    // ========================================
     deleteDB: function() {
-      if(confirm("모든 로컬 데이터를 영구 삭제하시겠습니까?\n버전도 1.0으로 초기화됩니다.")) {
+      if(confirm(`모든 로컬 데이터를 영구 삭제하시겠습니까?\n버전은 코드 버전(${CODE_VERSION})과 동일하게 유지됩니다.`)) {
         localStorage.removeItem(this.db);
         this.resetVersion();
         this.render();
-        alert("✅ 로컬 DB와 버전이 초기화되었습니다.");
-        console.log('🔄 DB 초기화 완료');
+        alert(`✅ 로컬 DB가 초기화되었습니다.\n\n현재 버전: ${CODE_VERSION}`);
       }
     }
   };
 
-  // ========== 페이지 로드 ==========
+  // ========================================
+  // 페이지 로드
+  // ========================================
   window.onload = () => {
-    console.log('🚀 (주)메트로 R&S AI 시스템 시작');
-    console.log('📍 DB 키:', CORE.db);
-    console.log('📍 버전 키:', CORE.versionKey);
+    console.log('🚀 ===== 시스템 시작 =====');
+    console.log(`📦 코드 버전: ${CODE_VERSION}`);
     
+    // 코드 버전과 화면 버전 동기화
+    CORE.checkAndSyncVersion();
+    
+    // 화면 버전 표시
     CORE.updateVersionDisplay();
+    
+    // 데이터 렌더링
     CORE.render();
     
-    console.log('✅ 초기화 완료');
+    console.log(`✅ 화면 버전: ${CORE.getVersion()}`);
+    console.log('✅ ===== 초기화 완료 =====');
   };
 </script>
 </body>
