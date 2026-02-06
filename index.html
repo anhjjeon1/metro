@@ -15,7 +15,6 @@
       --ai-gray: #444444;
     }
 
-    /* [SYSTEM RESET ENGINE] */
     * { 
       box-sizing: border-box; 
       -webkit-tap-highlight-color: transparent; 
@@ -69,7 +68,6 @@
       -webkit-overflow-scrolling: touch; 
     }
 
-    /* [PHOTO CARDS] */
     .drop-zone { 
       width: 100%; 
       aspect-ratio: 4/3; 
@@ -104,7 +102,6 @@
       z-index: 5; 
     }
 
-    /* [DATA TABLE] */
     .data-table { 
       width: 100%; 
       border-collapse: collapse; 
@@ -157,7 +154,6 @@
       line-height: 1.4; 
     }
 
-    /* [SPREADSHEET VIEW - 형식 가시성 수정] */
     .sheet-section { 
       margin-top: 25px; 
       margin-bottom: 40px; 
@@ -264,7 +260,6 @@
     .btn-save { background: var(--success); }
     .btn-refresh { background: var(--primary); }
     
-    /* 구글 시트 설정 섹션 */
     .config-section {
       background: #f8f9fa;
       padding: 15px;
@@ -323,11 +318,10 @@
   </header>
 
   <main class="content">
-    <!-- 구글 시트 설정 섹션 -->
     <div class="config-section">
       <h3>📊 구글 스프레드시트 연동 설정</h3>
-      <input type="text" id="spreadsheetId" class="config-input" placeholder="스프레드시트 ID (예: 1U915mN26A8E51BueKHWLZF105jcMn529kluYhqHlC8c)" value="1U915mN26A8E51BueKHWLZF105jcMn529kluYhqHlC8c">
-      <input type="text" id="sheetName" class="config-input" placeholder="시트 이름 (예: 시트1)" value="시트1">
+      <input type="text" id="spreadsheetId" class="config-input" placeholder="스프레드시트 ID" value="1U915mN26A8E51BueKHWLZF105jcMn529kluYhqHlC8c">
+      <input type="text" id="sheetName" class="config-input" placeholder="시트 이름" value="시트1">
       <button onclick="CORE.testConnection()" style="width:100%; padding:10px; background:var(--primary); color:#fff; border:none; border-radius:5px; font-weight:900; cursor:pointer;">연결 테스트</button>
       <div id="statusMessage" class="status-message"></div>
     </div>
@@ -391,7 +385,7 @@
     <section class="sheet-section">
       <div class="sheet-title">
         <span>📊 작업 무결성 데이터 리스트</span>
-        <button onclick="CORE.deleteDB()" style="font-size:0.6rem; padding:4px 8px; background:var(--danger); color:#fff; border:none; border-radius:5px;">DB 초기화</button>
+        <button onclick="CORE.deleteDB()" style="font-size:0.6rem; padding:4px 8px; background:var(--danger); color:#fff; border:none; border-radius:5px; cursor:pointer;">DB 초기화</button>
       </div>
       <div class="table-scroll">
         <table id="spreadsheet">
@@ -414,13 +408,14 @@
   </footer>
 </div>
 
+<script src="https://apis.google.com/js/api.js"></script>
 <script>
   const CORE = {
     key: "AIzaSyBENfF9-fgspCqGPQoWe7CqA0JXTCsbfT0",
     db: "METRO_V36_DB",
 
-    // 구글 시트에 데이터 추가
-    async appendToSheet(data) {
+    // 구글 시트에 데이터 추가 (수정된 버전 - API 키 방식)
+    appendToSheet: async function(data) {
       const spreadsheetId = document.getElementById('spreadsheetId').value.trim();
       const sheetName = document.getElementById('sheetName').value.trim();
       
@@ -429,82 +424,87 @@
         return false;
       }
 
-      const range = `${sheetName}!A:N`;
+      // 데이터 배열 생성
       const values = [[
-        data.site,
-        data.no,
-        data.unit,
-        data.date,
-        data.step,
-        data.loc,
-        data.work,
-        data.comp,
+        data.site || '',
+        data.no || '',
+        data.unit || '',
+        data.date || '',
+        data.step || '',
+        data.loc || '',
+        data.work || '',
+        data.comp || '',
         data.name || '',
-        data.memo,
+        data.memo || '',
         data.imgBefore ? '사진 있음' : '',
         data.imgAfter ? '사진 있음' : '',
         data.imgBoard ? '사진 있음' : '',
         data.imgFinal ? '사진 있음' : ''
       ]];
 
-      try {
-        // Google Sheets API 호출
-        const response = await fetch(
-          `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=RAW&key=${this.key}`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              values: values
-            })
-          }
-        );
+      const range = `${sheetName}!A:N`;
 
+      try {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=USER_ENTERED&key=${this.key}`;
+        
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            values: values
+          })
+        });
+
+        const result = await response.json();
+        
         if (response.ok) {
-          this.showStatus('구글 시트에 저장되었습니다!', 'success');
+          console.log('Google Sheets 저장 성공:', result);
+          this.showStatus('✅ 구글 시트에 저장되었습니다!', 'success');
           return true;
         } else {
-          const error = await response.json();
-          console.error('Google Sheets API Error:', error);
-          this.showStatus('구글 시트 저장 실패: ' + (error.error?.message || '권한을 확인해주세요'), 'error');
+          console.error('Google Sheets API 오류:', result);
+          this.showStatus(`❌ 구글 시트 저장 실패: ${result.error?.message || '권한을 확인해주세요'}`, 'error');
           return false;
         }
       } catch (error) {
-        console.error('Network Error:', error);
-        this.showStatus('네트워크 오류: ' + error.message, 'error');
+        console.error('네트워크 오류:', error);
+        this.showStatus('❌ 네트워크 오류: ' + error.message, 'error');
         return false;
       }
     },
 
     // 연결 테스트
-    async testConnection() {
+    testConnection: async function() {
       const spreadsheetId = document.getElementById('spreadsheetId').value.trim();
-      const sheetName = document.getElementById('sheetName').value.trim();
       
-      if (!spreadsheetId || !sheetName) {
-        this.showStatus('스프레드시트 ID와 시트 이름을 입력해주세요.', 'error');
+      if (!spreadsheetId) {
+        this.showStatus('스프레드시트 ID를 입력해주세요.', 'error');
         return;
       }
 
       try {
-        const response = await fetch(
-          `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?key=${this.key}`
-        );
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?key=${this.key}`;
+        const response = await fetch(url);
 
         if (response.ok) {
+          const data = await response.json();
+          console.log('스프레드시트 정보:', data);
           this.showStatus('✅ 연결 성공! 스프레드시트에 접근할 수 있습니다.', 'success');
         } else {
-          this.showStatus('❌ 연결 실패: 스프레드시트 ID를 확인하거나 공유 설정을 확인해주세요.', 'error');
+          const error = await response.json();
+          console.error('연결 실패:', error);
+          this.showStatus('❌ 연결 실패: 스프레드시트 ID를 확인하거나 공유 설정을 "링크가 있는 모든 사용자 - 편집자"로 변경해주세요.', 'error');
         }
       } catch (error) {
+        console.error('네트워크 오류:', error);
         this.showStatus('❌ 네트워크 오류: ' + error.message, 'error');
       }
     },
 
     // 상태 메시지 표시
-    showStatus(message, type) {
+    showStatus: function(message, type) {
       const statusDiv = document.getElementById('statusMessage');
       statusDiv.textContent = message;
       statusDiv.className = 'status-message status-' + type;
@@ -515,7 +515,7 @@
       }, 5000);
     },
 
-    // p 시작 (사진 업로드 보장)
+    // 사진 업로드
     p: function(input, id) {
       if (!input.files || !input.files[0]) return;
       const targetImg = document.getElementById(id);
@@ -527,7 +527,7 @@
       r.readAsDataURL(input.files[0]);
     },
 
-    // map 시작
+    // 텍스트 매핑
     map: function(t) {
       const g = (re) => (t.match(re) || ["", ""])[1]?.trim() || "";
       const steps = ["1년차", "2년차", "3년차"];
@@ -563,7 +563,7 @@
       }
     },
 
-    // analyze 시작
+    // AI 분석
     analyze: async function(input) {
       if(!input.files[0]) return;
       this.p(input, 'view-ai');
@@ -574,13 +574,19 @@
         try {
           const res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${this.key}`, {
             method: 'POST',
-            body: JSON.stringify({ requests: [{ image: { content: b64 }, features: [{ type: "DOCUMENT_TEXT_DETECTION" }] }] })
+            body: JSON.stringify({ 
+              requests: [{ 
+                image: { content: b64 }, 
+                features: [{ type: "DOCUMENT_TEXT_DETECTION" }] 
+              }] 
+            })
           });
           const d = await res.json();
           if (d.responses[0]?.fullTextAnnotation) {
             this.map(d.responses[0].fullTextAnnotation.text);
           }
         } catch(err) { 
+          console.error('AI 분석 오류:', err);
           alert("AI 분석 실패"); 
         } finally { 
           document.getElementById('loader').style.display = 'none'; 
@@ -589,7 +595,7 @@
       r.readAsDataURL(input.files[0]);
     },
 
-    // processAfter 시작
+    // 수리 후 사진 처리
     processAfter: function(input) {
       if(!input.files[0]) return;
       this.p(input, 'view-after');
@@ -602,12 +608,14 @@
       r.readAsDataURL(input.files[0]);
     },
 
-    // draw 시작
+    // 보드 그리기
     draw: function(img) {
       const cvs = document.getElementById('boardCanvas');
       const ctx = cvs.getContext('2d');
-      cvs.width = 1200; cvs.height = 1600;
+      cvs.width = 1200; 
+      cvs.height = 1600;
       ctx.drawImage(img, 0, 0, 1200, 1600);
+      
       const bW = 460, bH = 360, sX = 45, sY = 1600 - bH - 45;
       ctx.fillStyle = "rgba(255,255,255,0.95)"; 
       ctx.fillRect(sX, sY, bW, bH);
@@ -616,14 +624,19 @@
       ctx.strokeRect(sX, sY, bW, bH);
       ctx.fillStyle = "#000"; 
       ctx.font = "bold 32px sans-serif";
+      
       const h = ["현장명", "동/호수", "위치", "작업진행", "작업일"];
       for(let i=0; i<5; i++){
         let y = sY + (bH/5)*i;
         if(i>0){ 
-          ctx.beginPath(); ctx.moveTo(sX,y); ctx.lineTo(sX+bW,y); ctx.stroke(); 
+          ctx.beginPath(); 
+          ctx.moveTo(sX,y); 
+          ctx.lineTo(sX+bW,y); 
+          ctx.stroke(); 
         }
         ctx.fillText(h[i], sX+15, y+45);
       }
+      
       const v = (id) => document.getElementById(id).value || "-";
       ctx.font = "30px sans-serif";
       ctx.fillText(v('site'), sX+155, sY+45);
@@ -631,12 +644,13 @@
       ctx.fillText(v('loc'), sX+155, sY+(bH/5)*2+45);
       ctx.fillText("수리후", sX+155, sY+(bH/5)*3+45);
       ctx.fillText(v('date'), sX+155, sY+(bH/5)*4+45);
+      
       const vb = document.getElementById('view-board');
       vb.src = cvs.toDataURL("image/jpeg", 0.9);
       vb.style.display='block';
     },
 
-    // save 시작 (구글 시트 연동 추가)
+    // 데이터 저장 (로컬 + 구글 시트)
     save: async function() {
       const getSrc = (id) => {
         const el = document.getElementById(id);
@@ -660,16 +674,19 @@
         imgFinal: getSrc('view-final')
       };
       
+      console.log('저장할 데이터:', data);
+      
       // 로컬스토리지에 저장
       let list = JSON.parse(localStorage.getItem(this.db) || "[]");
       list.push(data);
       localStorage.setItem(this.db, JSON.stringify(list));
+      console.log('로컬스토리지 저장 완료. 총 데이터 수:', list.length);
+      
+      // 화면 테이블 업데이트 (먼저 실행)
+      this.render();
       
       // 구글 시트에 저장
       const sheetSuccess = await this.appendToSheet(data);
-      
-      // 화면 업데이트
-      this.render();
       
       if (sheetSuccess) {
         alert("✅ 데이터가 로컬 DB와 구글 시트에 모두 저장되었습니다!");
@@ -678,34 +695,44 @@
       }
     },
 
-    // render 시작 (입력칸 시각화 강화)
+    // 화면 렌더링
     render: function() {
       const list = JSON.parse(localStorage.getItem(this.db) || "[]");
-      const makeImg = (src) => src ? `<img src="${src}" class="thumb">` : "";
+      console.log('렌더링할 데이터 개수:', list.length);
+      
+      const makeImg = (src) => src ? `<img src="${src}" class="thumb">` : "-";
       const body = document.getElementById('data-body');
       
+      if (!body) {
+        console.error('data-body 요소를 찾을 수 없습니다!');
+        return;
+      }
+      
       // 실제 데이터 출력
-      let html = list.map(r => `
-        <tr>
-          <td>${r.site}</td>
-          <td>${r.no}</td>
-          <td>${r.unit}</td>
-          <td>${r.date}</td>
-          <td>${r.step}</td>
-          <td>${r.loc}</td>
-          <td>${r.work}</td>
-          <td>${r.comp}</td>
-          <td>${r.name || ''}</td>
-          <td style="text-align:left; min-width:200px;">${r.memo.substring(0,60)}</td>
-          <td>${makeImg(r.imgBefore)}</td>
-          <td>${makeImg(r.imgAfter)}</td>
-          <td>${makeImg(r.imgBoard)}</td>
-          <td>${makeImg(r.imgFinal)}</td>
-        </tr>
-      `).join('');
+      let html = list.map((r, idx) => {
+        console.log(`행 ${idx + 1} 데이터:`, r);
+        return `
+          <tr>
+            <td>${r.site || '-'}</td>
+            <td>${r.no || '-'}</td>
+            <td>${r.unit || '-'}</td>
+            <td>${r.date || '-'}</td>
+            <td>${r.step || '-'}</td>
+            <td>${r.loc || '-'}</td>
+            <td>${r.work || '-'}</td>
+            <td>${r.comp || '-'}</td>
+            <td>${r.name || '-'}</td>
+            <td style="text-align:left; min-width:200px;">${(r.memo || '-').substring(0,60)}</td>
+            <td>${makeImg(r.imgBefore)}</td>
+            <td>${makeImg(r.imgAfter)}</td>
+            <td>${makeImg(r.imgBoard)}</td>
+            <td>${makeImg(r.imgFinal)}</td>
+          </tr>
+        `;
+      }).join('');
 
-      // 데이터가 없어도 빈 입력칸(형식) 출력
-      const emptyRow = `<tr>${'<td></td>'.repeat(14)}</tr>`;
+      // 최소 5줄의 빈 행 추가
+      const emptyRow = `<tr>${'<td>-</td>'.repeat(14)}</tr>`;
       const minRows = 5;
       const currentRows = list.length;
       
@@ -716,31 +743,41 @@
       }
       
       body.innerHTML = html;
+      console.log('렌더링 완료');
     },
 
-    // clearForm 및 deleteDB
+    // 입력칸 초기화
     clearForm: function() {
       if(confirm("입력칸을 초기화하시겠습니까?")) {
         ['site','haja','unit','date','step','loc','work','comp','name','memo'].forEach(id => {
-          document.getElementById(id).value = "";
+          const el = document.getElementById(id);
+          if (el) el.value = "";
         });
         ['view-ai','view-before','view-after','view-board','view-final'].forEach(id => {
           const img = document.getElementById(id);
-          img.src = "";
-          img.style.display = "none";
+          if (img) {
+            img.src = "";
+            img.style.display = "none";
+          }
         });
       }
     },
 
+    // DB 초기화
     deleteDB: function() {
       if(confirm("모든 로컬 데이터를 영구 삭제하시겠습니까?\n(구글 시트의 데이터는 삭제되지 않습니다)")) {
         localStorage.removeItem(this.db);
         this.render();
+        alert("로컬 DB가 초기화되었습니다.");
       }
     }
   };
 
-  window.onload = () => CORE.render();
+  // 페이지 로드 시 실행
+  window.onload = () => {
+    console.log('페이지 로드 완료');
+    CORE.render();
+  };
 </script>
 </body>
 </html>
