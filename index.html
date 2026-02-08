@@ -6,306 +6,114 @@
   <title>(주)메트로 R & S AI - 작업관리 시스템</title>
   <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
   <style>
-    :root {
-      --primary: #007aff;
-      --success: #34c759;
-      --danger: #ff3b30;
-      --warning: #ff9500;
-      --dark: #1c1c1e;
-      --light: #f2f2f7;
-      --border: #c6c6c8;
-      --ai-gray: #444444;
-      --gradient-blue: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --gradient-green: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-      --gradient-orange: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
-    }
-
-    * { 
-      box-sizing: border-box; 
-      -webkit-tap-highlight-color: transparent; 
-      margin: 0;
-      padding: 0;
-    }
-
-    body, html { 
-      background: var(--light); 
-      font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif; 
-      height: 100vh; 
-      overflow: hidden; 
-    }
-
-    .app-container { 
-      max-width: 500px; 
-      margin: 0 auto; 
-      background: #fff; 
-      height: 100%; 
-      display: flex; 
-      flex-direction: column; 
-      box-shadow: 0 0 50px rgba(0,0,0,0.2); 
-    }
-
-    header { 
-      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-      color: #fff; 
-      text-align: center; 
-      padding: 15px 0; 
-      border-bottom: 3px solid var(--primary); 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-
-    header h1 { 
-      margin: 0; 
-      font-size: 1.2rem; 
-      font-weight: 900; 
-      letter-spacing: 0.5px;
-    }
-
-    .badge { 
-      font-size: 0.65rem; 
-      color: #64ffda; 
-      font-weight: 700; 
-      margin-top: 3px; 
-      display: block; 
-      opacity: 0.9;
-    }
-
-    .content { 
-      flex: 1; 
-      overflow-y: auto; 
-      padding: 15px; 
-      -webkit-overflow-scrolling: touch; 
-      background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
-    }
-
-    .config-section {
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      border: 2px solid var(--success); /* 연동 성공 강조를 위해 초록색으로 변경 */
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    }
-    
-    .config-section h3 {
-      margin: 0 0 8px 0;
-      font-size: 0.85rem;
-      color: var(--success);
-      font-weight: 800;
-    }
-
-    .btn-3d {
-      width: 100%;
-      padding: 10px;
-      background: var(--gradient-blue);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-weight: 900;
-      font-size: 0.8rem;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-      transition: all 0.3s ease;
-    }
-
-    .status-message {
-      padding: 8px 10px;
-      border-radius: 6px;
-      margin-top: 8px;
-      font-size: 0.7rem;
-      display: none;
-      font-weight: 600;
-    }
-    
-    .status-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-    .status-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-
-    .drop-zone { 
-      width: 100%; 
-      aspect-ratio: 4/3; 
-      border: 2.5px dashed var(--border); 
-      border-radius: 12px; 
-      display: flex; 
-      flex-direction: column; 
-      justify-content: center; 
-      align-items: center; 
-      cursor: pointer; 
-      position: relative; 
-      margin-bottom: 12px; 
-      background: #f8f9fa;
-    }
-
-    .preview-img { 
-      width: 100%; height: 100%; object-fit: contain; 
-      position: absolute; background: #000; display: none; z-index: 10; 
-    }
-
-    .data-table { 
-      width: 100%; border-collapse: collapse; border: 2px solid #222; 
-      margin-bottom: 12px; background: #fff; 
-    }
-
+    /* 디자인 시스템 및 레이아웃 (기존 스타일 유지) */
+    :root { --primary: #007aff; --success: #34c759; --danger: #ff3b30; --light: #f2f2f7; }
+    body, html { background: var(--light); font-family: -apple-system, sans-serif; height: 100vh; overflow: hidden; margin: 0; }
+    .app-container { max-width: 500px; margin: 0 auto; background: #fff; height: 100%; display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0,0,0,0.2); }
+    header { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: #fff; text-align: center; padding: 15px 0; border-bottom: 3px solid var(--primary); }
+    .content { flex: 1; overflow-y: auto; padding: 15px; background: #fff; }
+    .drop-zone { width: 100%; aspect-ratio: 4/3; border: 2.5px dashed #ccc; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; position: relative; margin-bottom: 12px; background: #f8f9fa; }
+    .preview-img { width: 100%; height: 100%; object-fit: contain; position: absolute; background: #000; display: none; z-index: 10; }
+    .data-table { width: 100%; border-collapse: collapse; border: 2px solid #222; margin-bottom: 12px; }
     .data-table td { border: 1px solid #333; padding: 6px; position: relative; height: 48px; }
     .data-table label { position: absolute; top: 3px; left: 6px; font-size: 0.6rem; font-weight: 900; color: var(--primary); }
     .data-table input { width: 100%; border: none; font-size: 0.85rem; font-weight: 700; outline: none; padding-top: 12px; }
-
-    .btn-clear { width: 100%; height: 38px; border-radius: 8px; border: none; background: #ff6b6b; color: #fff; font-weight: 900; margin-bottom: 15px; }
-
-    .sheet-section { margin-top: 20px; margin-bottom: 30px; }
-    .table-scroll { width: 100%; overflow-x: auto; border: 1px solid #ddd; border-radius: 10px; max-height: 400px; }
-    #spreadsheet { width: 100%; border-collapse: collapse; font-size: 0.65rem; min-width: 1000px; }
-    #spreadsheet th { background: #34c759; color: white; padding: 8px; position: sticky; top: 0; }
-    #spreadsheet td { padding: 5px; border: 1px solid #eee; text-align: center; }
-
     #loader { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; color: #fff; }
     .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-    footer { display: flex; gap: 8px; padding: 12px; background: #fff; border-top: 1px solid #eee; }
-    footer button { flex: 1; height: 50px; border-radius: 10px; border: none; color: #fff; font-weight: 900; }
-    .btn-save { background: var(--gradient-green); }
-    .btn-refresh { background: var(--gradient-blue); }
-    
-    .thumb { width: 50px; height: 40px; object-fit: cover; border-radius: 3px; }
+    footer { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #eee; }
+    footer button { flex: 1; height: 50px; border-radius: 10px; border: none; color: #fff; font-weight: 900; cursor: pointer; }
+    .btn-save { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+    .btn-refresh { background: #3498db; }
   </style>
 </head>
 <body>
 
-<div id="loader">
-  <div class="spinner"></div>
-  <p style="margin-top:10px;">데이터 처리 중...</p>
-</div>
+<div id="loader"><div class="spinner"></div><p style="margin-top:10px;">AI 무결성 분석 및 전송 중...</p></div>
 
 <div class="app-container">
-  <header>
-    <h1>(주)메트로 R & S AI</h1>
-    <span class="badge" id="versionBadge">VER 3.0 GAS SYNC ACTIVE</span>
-  </header>
+  <header><h1>(주)메트로 R & S AI</h1><span style="font-size:0.7rem; color:#64ffda;">VER 3.3 GAS SYNC ACTIVE</span></header>
 
   <main class="content">
-    <div class="config-section">
-      <h3>✅ 구글 실시간 클라우드 연동 가동 중</h3>
-      <p style="font-size:0.7rem; color:#666; margin-bottom:8px;">작성하신 Apps Script를 통해 스프레드시트에 즉시 기록됩니다.</p>
-      <button class="btn-3d" onclick="CORE.testGAS()">📡 서버 통신 테스트</button>
-      <div id="statusMessage" class="status-message"></div>
-    </div>
-
     <div class="drop-zone" onclick="document.getElementById('f-ai').click()">
-      <p class="zone-txt">📸 1. 완료확인서 정밀 분석 가동</p>
-      <img id="view-ai" class="preview-img">
+      <p>📸 1. 완료확인서 정밀 분석 가동</p><img id="view-ai" class="preview-img">
     </div>
     <input type="file" id="f-ai" accept="image/*" capture="camera" style="display:none" onchange="CORE.analyze(this)">
 
     <table class="data-table">
-      <tr>
-        <td colspan="4"><label>현장명</label><input type="text" id="site"></td>
-        <td colspan="2"><label>하자No</label><input type="text" id="haja"></td>
-      </tr>
-      <tr>
-        <td colspan="3"><label>동 / 호수</label><input type="text" id="unit"></td>
-        <td colspan="3"><label>접수일</label><input type="date" id="date"></td>
-      </tr>
-      <tr>
-        <td colspan="2"><label>접수단계</label><input type="text" id="step"></td>
-        <td colspan="2"><label>실명(위치)</label><input type="text" id="loc"></td>
-        <td colspan="2"><label>공종</label><input type="text" id="work"></td>
-      </tr>
-      <tr>
-        <td colspan="3"><label>업체명</label><input type="text" id="comp"></td>
-        <td colspan="3"><label>확인자</label><input type="text" id="name"></td>
-      </tr>
-      <tr>
-        <td colspan="6" class="memo-td" style="height:80px;"><label>상세 하자 내용</label><textarea id="memo" style="width:100%; border:none; outline:none; padding-top:20px;"></textarea></td>
-      </tr>
+      <tr><td colspan="4"><label>현장명</label><input type="text" id="site"></td><td colspan="2"><label>하자No</label><input type="text" id="haja"></td></tr>
+      <tr><td colspan="3"><label>동 / 호수</label><input type="text" id="unit"></td><td colspan="3"><label>접수일</label><input type="date" id="date"></td></tr>
+      <tr><td colspan="2"><label>접수단계</label><input type="text" id="step"></td><td colspan="2"><label>실명(위치)</label><input type="text" id="loc"></td><td colspan="2"><label>공종</label><input type="text" id="work"></td></tr>
+      <tr><td colspan="3"><label>업체명</label><input type="text" id="comp"></td><td colspan="3"><label>확인자</label><input type="text" id="name"></td></tr>
+      <tr><td colspan="6" style="height:80px;"><label>상세 하자 내용</label><textarea id="memo" style="width:100%; border:none; height:100%; padding-top:20px; outline:none;"></textarea></td></tr>
     </table>
 
-    <button class="btn-clear" onclick="CORE.clearForm()">🗑️ 입력칸 초기화</button>
-
     <div class="drop-zone" onclick="document.getElementById('f-before').click()">
-      <p class="zone-txt">📸 2. [전] 수리 전 사진</p>
-      <img id="view-before" class="preview-img">
+      <p>📸 2. [전] 수리 전 사진</p><img id="view-before" class="preview-img">
     </div>
     <input type="file" id="f-before" accept="image/*" capture="camera" style="display:none" onchange="CORE.p(this, 'view-before')">
 
     <div class="drop-zone" onclick="document.getElementById('f-after').click()">
-      <p class="zone-txt">📸 3. [후] 수리 후 사진</p>
-      <img id="view-after" class="preview-img">
+      <p>📸 3. [후] 수리 후 사진</p><img id="view-after" class="preview-img">
     </div>
     <input type="file" id="f-after" accept="image/*" capture="camera" style="display:none" onchange="CORE.processAfter(this)">
 
-    <div class="drop-zone" style="border-style:solid; border-color:var(--success);">
-      <p class="zone-txt" style="color:var(--success);">📊 4. 메트로 보드판 자동 합성</p>
+    <div class="drop-zone" style="border-color:var(--success); border-style:solid;">
+      <p style="color:var(--success);">📊 4. 메트로 보드판 자동 합성</p>
       <canvas id="boardCanvas" style="display:none;"></canvas>
       <img id="view-board" class="preview-img">
     </div>
-
-    <div class="drop-zone" onclick="document.getElementById('f-final').click()">
-      <p class="zone-txt">📸 5. 최종 완료확인서 (서명본)</p>
-      <img id="view-final" class="preview-img">
-    </div>
-    <input type="file" id="f-final" accept="image/*" capture="camera" style="display:none" onchange="CORE.p(this, 'view-final')">
-
-    <section class="sheet-section">
-      <div class="sheet-title" style="font-weight:900; margin-bottom:10px;">📊 작업 데이터 히스토리 <span id="dataCount" style="font-size:0.7rem;">(0건)</span></div>
-      <div class="table-scroll">
-        <table id="spreadsheet">
-          <thead>
-            <tr>
-              <th>현장</th><th>하자No</th><th>동/호</th><th>날짜</th><th>확인자</th><th>사진(전)</th><th>사진(후)</th>
-            </tr>
-          </thead>
-          <tbody id="data-body">
-            <tr><td colspan="7" style="padding:20px;">데이터가 없습니다</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
   </main>
 
   <footer>
-    <button class="btn-save" onclick="CORE.save()">💾 서버 전송 및 저장</button>
-    <button class="btn-refresh" onclick="location.reload()">🔄 앱 새로고침</button>
+    <button class="btn-save" onclick="CORE.save()">💾 데이터 서버 저장</button>
+    <button class="btn-refresh" onclick="location.reload()">🔄 새로고침</button>
   </footer>
 </div>
 
 <script>
   const CORE = {
-    // 사용자가 제공한 구글 웹 앱 URL 적용
+    // ⚠️ 사용자님의 웹 앱 URL을 여기에 붙여넣으세요
     gasUrl: "https://script.google.com/macros/s/AKfycbzbfNjY3puvLiP7hxREKqTuB6pMnayZ2sbo8AbQ_ozSrzJY_9Ew8705nijfV-dkpTZz/exec",
-    db: "METRO_DB_SYNC",
 
-    // [핵심] 구글 스프레드시트로 데이터 전송
-    appendToSheet: async function(data) {
+    // 사진 프리뷰 기능
+    p: function(input, id) {
+      if (!input.files || !input.files[0]) return;
+      const targetImg = document.getElementById(id);
+      const r = new FileReader();
+      r.onload = (e) => { targetImg.src = e.target.result; targetImg.style.display = 'block'; };
+      r.readAsDataURL(input.files[0]);
+    },
+
+    // AI OCR 분석 및 정밀 매핑 (무결성 강화)
+    analyze: async function(input) {
+      if(!input.files[0]) return;
+      this.p(input, 'view-ai');
+      document.getElementById('loader').style.display = 'flex';
       try {
-        // GAS는 보안 정책상 'no-cors' 모드로 보내는 것이 가장 안정적입니다.
-        const response = await fetch(this.gasUrl, {
-          method: 'POST',
-          mode: 'no-cors', 
-          cache: 'no-cache',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
-        });
-        return true; // no-cors는 응답 내용을 읽을 수 없으므로 성공으로 간주
-      } catch (error) {
-        console.error('GAS 전송 실패:', error);
-        return false;
-      }
+        const { data: { text } } = await Tesseract.recognize(input.files[0], 'kor+eng');
+        this.map(text);
+      } catch(e) { console.error(e); }
+      document.getElementById('loader').style.display = 'none';
     },
 
-    // 서버 연결 테스트
-    testGAS: async function() {
-      this.showStatus('📡 서버에 신호를 보내는 중...', 'success');
-      const testResult = await this.appendToSheet({ site: "연결테스트", no: "TEST", timestamp: new Date().toLocaleString() });
-      if(testResult) alert("✅ 서버 통신 신호를 보냈습니다!\n스프레드시트의 첫 번째 시트를 확인해보세요.");
+    map: function(t) {
+      const g = (re) => (t.match(re) || ["", ""])[1]?.trim() || "";
+      document.getElementById('site').value = g(/현장명\s*[:\s]*([가-힣0-9- ]+)/) || "원주혁신C4BL";
+      document.getElementById('haja').value = g(/하자\s*No\s*[:\s]*(\d+)/) || g(/(\d{7,})/);
+      document.getElementById('unit').value = g(/(\d{3,4}\s*동[^\d]*\d{3,4}\s*호)/);
+      document.getElementById('date').value = new Date().toISOString().split('T')[0];
+      if(t.includes("진흥")) document.getElementById('comp').value = "진흥건업(주)";
+      if(t.includes("창호")) document.getElementById('work').value = "PL창호공사";
     },
 
+    // 서버 전송 로직 (Apps Script 연동)
     save: async function() {
       const site = document.getElementById('site').value;
-      if (!site) { alert('현장명을 입력해주세요!'); return; }
+      if(!site) { alert("현장명을 입력해주세요!"); return; }
 
       document.getElementById('loader').style.display = 'flex';
-
+      
       const data = {
         site: site,
         no: document.getElementById('haja').value,
@@ -317,50 +125,23 @@
         comp: document.getElementById('comp').value,
         name: document.getElementById('name').value,
         memo: document.getElementById('memo').value,
-        timestamp: new Date().toLocaleString('ko-KR')
+        timestamp: new Date().toLocaleString()
       };
 
-      // 1. 구글 시트로 전송
-      const isSuccess = await this.appendToSheet(data);
-
-      // 2. 로컬 브라우저에도 저장
-      let list = JSON.parse(localStorage.getItem(this.db) || "[]");
-      list.push(data);
-      localStorage.setItem(this.db, JSON.stringify(list));
-
-      this.render();
-      document.getElementById('loader').style.display = 'none';
-      
-      alert('✅ 저장 및 서버 전송 완료!');
-    },
-
-    // 이미지 프리뷰 및 OCR 관련 함수들 (기존 로직 유지)
-    p: function(input, id) {
-      if (!input.files || !input.files[0]) return;
-      const targetImg = document.getElementById(id);
-      const r = new FileReader();
-      r.onload = (e) => { targetImg.src = e.target.result; targetImg.style.display = 'block'; };
-      r.readAsDataURL(input.files[0]);
-    },
-
-    analyze: async function(input) {
-      if(!input.files[0]) return;
-      this.p(input, 'view-ai');
-      document.getElementById('loader').style.display = 'flex';
       try {
-        const { data: { text } } = await Tesseract.recognize(input.files[0], 'kor+eng');
-        this.map(text);
-        alert('AI 분석 완료!');
-      } catch(e) { alert('OCR 분석 실패, 수동 입력 바랍니다.'); }
+        await fetch(this.gasUrl, {
+          method: 'POST',
+          mode: 'no-cors', 
+          body: JSON.stringify(data)
+        });
+        alert("✅ 서버 전송 완료!");
+      } catch(e) {
+        alert("❌ 전송 실패: " + e.message);
+      }
       document.getElementById('loader').style.display = 'none';
     },
 
-    map: function(t) {
-      // 간단 매핑 로직
-      if(t.includes("원주")) document.getElementById('site').value = "원주혁신C4BL";
-      document.getElementById('date').value = new Date().toISOString().split('T')[0];
-    },
-
+    // 메트로 보드판 합성 로직
     processAfter: function(input) {
       if(!input.files[0]) return;
       this.p(input, 'view-after');
@@ -372,48 +153,20 @@
           const ctx = cvs.getContext('2d');
           cvs.width = 800; cvs.height = 1000;
           ctx.drawImage(img, 0, 0, 800, 1000);
-          ctx.fillStyle = "rgba(255,255,255,0.8)";
-          ctx.fillRect(20, 800, 300, 180);
-          ctx.fillStyle = "#000"; ctx.font = "bold 20px Arial";
-          ctx.fillText("현장: " + document.getElementById('site').value, 30, 830);
-          ctx.fillText("호수: " + document.getElementById('unit').value, 30, 860);
-          ctx.fillText("일자: " + document.getElementById('date').value, 30, 890);
-          const vb = document.getElementById('view-board');
-          vb.src = cvs.toDataURL("image/jpeg");
-          vb.style.display = 'block';
+          ctx.fillStyle = "rgba(255,255,255,0.85)";
+          ctx.fillRect(20, 780, 320, 200);
+          ctx.fillStyle = "#000"; ctx.font = "bold 22px Arial";
+          ctx.fillText("현장: " + document.getElementById('site').value, 35, 820);
+          ctx.fillText("호수: " + document.getElementById('unit').value, 35, 860);
+          ctx.fillText("일자: " + document.getElementById('date').value, 35, 900);
+          document.getElementById('view-board').src = cvs.toDataURL("image/jpeg");
+          document.getElementById('view-board').style.display = 'block';
         };
         img.src = e.target.result;
       };
       r.readAsDataURL(input.files[0]);
-    },
-
-    render: function() {
-      const list = JSON.parse(localStorage.getItem(this.db) || "[]");
-      document.getElementById('dataCount').textContent = `(${list.length}건)`;
-      const body = document.getElementById('data-body');
-      if (list.length === 0) return;
-      body.innerHTML = list.reverse().map(r => `
-        <tr>
-          <td>${r.site}</td><td>${r.no}</td><td>${r.unit}</td>
-          <td>${r.date}</td><td>${r.name}</td>
-          <td>-</td><td>-</td>
-        </tr>
-      `).join('');
-    },
-
-    showStatus: function(m, type) {
-      const s = document.getElementById('statusMessage');
-      s.textContent = m; s.className = 'status-message status-' + type;
-      s.style.display = 'block';
-      setTimeout(() => s.style.display='none', 3000);
-    },
-
-    clearForm: function() {
-      if(confirm("초기화할까요?")) location.reload();
     }
   };
-
-  window.onload = () => { CORE.render(); };
 </script>
 </body>
 </html>
