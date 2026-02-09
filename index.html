@@ -3,41 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI</title>
-  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>(주)메트로 R & S AI v5.1</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     :root {
       --navy: #0c1929;
-      --navy-light: #132238;
-      --navy-mid: #1a2d45;
+      --navy-light: #162d4a;
+      --navy-mid: #1e3a5f;
       --gold: #c8a45e;
       --gold-light: #dbb978;
       --gold-dim: #8a7340;
-      --cream: #f5f0e8;
-      --cream-dark: #e8e0d0;
+      --gold-pale: #f5edd8;
+      --cream: #faf7f0;
       --white: #fefcf9;
       --red: #c0392b;
+      --red-light: #fdf0ee;
       --green: #1a8a5c;
-      --green-light: #22b573;
+      --green-light: #eef8f3;
       --blue: #2c6fbb;
+      --blue-light: #eef4fb;
       --text: #1a1a1a;
-      --text-dim: #666;
-      --text-muted: #999;
-      --border: #d4cfc5;
+      --text-sub: #555;
+      --text-dim: #888;
+      --text-muted: #bbb;
+      --border: #e0dbd0;
+      --border-light: #eee9df;
       --shadow: 0 2px 12px rgba(12,25,41,0.08);
       --shadow-lg: 0 8px 32px rgba(12,25,41,0.12);
-      --radius: 6px;
+      --r: 8px;
+      --r-sm: 5px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body, html { height: 100vh; overflow: hidden; background: var(--cream); }
-
-    body {
-      font-family: 'Noto Sans KR', 'Outfit', sans-serif;
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
-    }
+    body, html { height: 100vh; overflow: hidden; background: #e8e3d8; }
+    body { font-family: 'Noto Sans KR', 'Outfit', sans-serif; color: var(--text); -webkit-font-smoothing: antialiased; }
 
     .app {
       max-width: 520px;
@@ -45,1123 +45,711 @@
       height: 100%;
       display: flex;
       flex-direction: column;
-      background: var(--white);
+      background: var(--cream);
       box-shadow: var(--shadow-lg);
     }
 
-    /* ── HEADER ── */
+    /* ═══ HEADER ═══ */
     header {
       background: var(--navy);
       color: var(--cream);
       text-align: center;
-      padding: 14px 16px;
+      padding: 11px 16px;
       position: relative;
-      overflow: hidden;
-    }
-
-    header::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-dim));
-    }
-
-    header h1 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.15rem;
-      font-weight: 800;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--cream);
-    }
-
-    header .ver {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.6rem;
-      color: var(--gold);
-      letter-spacing: 3px;
-      margin-top: 2px;
-      font-weight: 500;
-    }
-
-    /* ── CONTENT ── */
-    .content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    /* ── SECTION CARDS ── */
-    .section {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 14px;
-      box-shadow: var(--shadow);
-    }
-
-    .section-head {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #eee;
-    }
-
-    .section-head .badge {
-      width: 28px;
-      height: 28px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
       flex-shrink: 0;
     }
+    header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); }
+    header h1 { font-family:'Outfit',sans-serif; font-size:1.1rem; font-weight:800; letter-spacing:2.5px; text-transform:uppercase; }
+    header .ver { font-family:'JetBrains Mono',monospace; font-size:0.55rem; color:var(--gold); letter-spacing:3px; margin-top:1px; }
+    .settings-toggle { position:absolute; top:10px; right:12px; background:none; border:none; color:var(--gold-dim); font-size:18px; cursor:pointer; z-index:5; }
 
-    .badge-navy { background: var(--navy); color: var(--gold); }
-    .badge-gold { background: var(--gold); color: var(--navy); }
-    .badge-green { background: var(--green); color: white; }
+    /* ═══ SETTINGS ═══ */
+    .settings-panel { display:none; padding:12px 16px; background:var(--navy-light); border-bottom:1px solid var(--navy-mid); }
+    .settings-panel.open { display:block; }
+    .settings-panel label { display:block; font-size:0.58rem; color:var(--gold-dim); margin-bottom:2px; font-weight:600; letter-spacing:0.5px; }
+    .settings-panel input { width:100%; padding:7px 10px; border:1px solid var(--navy-mid); border-radius:var(--r-sm); background:var(--navy); color:var(--cream); font-size:0.7rem; font-family:'JetBrains Mono',monospace; margin-bottom:6px; outline:none; }
+    .settings-panel input:focus { border-color:var(--gold); }
+    .settings-panel input::placeholder { color:#445566; }
+    .settings-row { display:grid; grid-template-columns:2fr 1fr; gap:6px; }
 
-    .section-head h3 {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--navy);
-      letter-spacing: 0.3px;
-    }
+    /* ═══ SUMMARY BAR ═══ */
+    .summary-bar { display:none; background:var(--navy); padding:5px 16px; font-size:0.6rem; color:var(--gold-dim); font-weight:500; flex-shrink:0; }
+    .summary-bar.visible { display:flex; justify-content:space-between; }
+    .summary-bar span { color:var(--gold); font-weight:700; }
 
-    .section-head .sub {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      font-weight: 400;
-    }
+    /* ═══ CONTENT ═══ */
+    .content { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 
-    /* ── INPUTS ── */
-    .field {
-      margin-bottom: 8px;
-    }
+    .phase { padding:12px 16px; border-bottom:1px solid var(--border-light); }
+    .phase-head { display:flex; align-items:center; gap:7px; margin-bottom:8px; }
+    .phase-num { width:22px; height:22px; border-radius:50%; background:var(--navy); color:var(--gold); font-family:'Outfit'; font-size:0.65rem; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .phase-title { font-size:0.8rem; font-weight:800; color:var(--navy); }
+    .phase-sub { font-size:0.6rem; color:var(--text-dim); font-weight:400; margin-left:4px; }
 
-    .field input, .field select, .field textarea {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 0.8rem;
-      font-family: 'Noto Sans KR', sans-serif;
+    /* ═══ UPLOAD ═══ */
+    .upload-area { border:2px dashed var(--border); border-radius:var(--r); padding:18px; text-align:center; cursor:pointer; background:var(--white); transition:all 0.2s; }
+    .upload-area:active { background:var(--gold-pale); border-color:var(--gold); }
+    .upload-area.loaded { border-style:solid; border-color:var(--green); background:var(--green-light); }
+    .upload-icon { font-size:26px; margin-bottom:4px; }
+    .upload-text { font-size:0.73rem; color:var(--text-sub); font-weight:600; }
+    .upload-hint { font-size:0.6rem; color:var(--text-dim); margin-top:2px; }
+    .loaded-info { display:none; font-size:0.72rem; font-weight:700; color:var(--green); }
+    .upload-area.loaded .loaded-info { display:block; }
+    .upload-area.loaded .upload-icon, .upload-area.loaded .upload-text, .upload-area.loaded .upload-hint { display:none; }
+
+    /* ═══ SEARCH ═══ */
+    .search-bar { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-bottom:4px; }
+    .search-col label { display:block; font-size:0.55rem; font-weight:700; color:var(--gold-dim); margin-bottom:2px; text-transform:uppercase; letter-spacing:0.5px; }
+    .search-col input { width:100%; padding:9px 10px; border:1.5px solid var(--border); border-radius:var(--r-sm); font-size:0.82rem; font-family:'Noto Sans KR'; font-weight:600; background:var(--white); color:var(--text); outline:none; transition:border-color 0.2s; }
+    .search-col input:focus { border-color:var(--navy); }
+    .search-col input::placeholder { color:var(--text-muted); font-weight:400; }
+    .search-hint { font-size:0.58rem; color:var(--text-muted); margin-bottom:6px; }
+
+    /* ═══ RESULTS (자동표시 카드형) ═══ */
+    .results-area { display:flex; flex-direction:column; gap:10px; }
+
+    .result-count { font-size:0.65rem; color:var(--text-dim); font-weight:500; margin-bottom:2px; }
+
+    /* ─── 개별 작업 카드 ─── */
+    .work-card {
       background: var(--white);
-      color: var(--text);
-      transition: border-color 0.2s;
-      outline: none;
-    }
-
-    .field input:focus, .field select:focus, .field textarea:focus {
-      border-color: var(--navy);
-    }
-
-    .field input::placeholder { color: var(--text-muted); }
-
-    .field label {
-      display: block;
-      font-size: 0.65rem;
-      font-weight: 700;
-      color: var(--gold-dim);
-      margin-bottom: 3px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .field textarea {
-      height: 80px;
-      resize: none;
-      line-height: 1.5;
-    }
-
-    .field-row {
-      display: grid;
-      gap: 8px;
-    }
-
-    .field-row.c2 { grid-template-columns: 1fr 1fr; }
-    .field-row.c3 { grid-template-columns: 1fr 1fr 1fr; }
-    .field-row.c4-2 { grid-template-columns: 2fr 1fr; }
-
-    /* ── BUTTONS ── */
-    .btn {
-      width: 100%;
-      padding: 11px;
-      border: none;
-      border-radius: var(--radius);
-      font-family: 'Noto Sans KR', sans-serif;
-      font-weight: 800;
-      font-size: 0.78rem;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      letter-spacing: 0.3px;
-    }
-
-    .btn:active { transform: scale(0.98); }
-
-    .btn-navy {
-      background: var(--navy);
-      color: var(--gold);
-    }
-
-    .btn-gold {
-      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-      color: var(--navy);
-    }
-
-    .btn-green {
-      background: var(--green);
-      color: white;
-    }
-
-    .btn-red {
-      background: var(--red);
-      color: white;
-    }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--text-dim);
       border: 1.5px solid var(--border);
-    }
-
-    .btn-sm {
-      padding: 6px 12px;
-      font-size: 0.65rem;
-      width: auto;
-    }
-
-    /* ── DROPZONE ── */
-    .dropzone {
-      width: 100%;
-      aspect-ratio: 4/3;
-      border: 2px dashed var(--border);
-      border-radius: var(--radius);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      position: relative;
+      border-radius: var(--r);
       overflow: hidden;
-      margin-bottom: 12px;
-      background: var(--cream);
+      box-shadow: var(--shadow);
       transition: all 0.2s;
     }
+    .work-card.active { border-color: var(--navy); border-width: 2px; }
 
-    .dropzone:active { background: var(--cream-dark); }
-
-    .dropzone .label {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--text-dim);
-      text-align: center;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    .dropzone .label .num {
-      display: inline-flex;
-      width: 22px;
-      height: 22px;
-      align-items: center;
-      justify-content: center;
+    .wc-header {
       background: var(--navy);
-      color: var(--gold);
-      border-radius: 50%;
-      font-size: 0.65rem;
-      margin-right: 4px;
-      vertical-align: middle;
-    }
-
-    .dropzone img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background: #111;
-      display: none;
-      z-index: 5;
-    }
-
-    /* ── DATA TABLE (input form) ── */
-    .form-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    /* ── NOTICE BOX ── */
-    .notice {
-      background: var(--cream);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 10px 12px;
-      font-size: 0.7rem;
-      line-height: 1.6;
-      color: var(--text-dim);
-      margin-bottom: 12px;
-    }
-
-    .notice strong { color: var(--navy); }
-
-    .notice details summary {
-      cursor: pointer;
-      font-weight: 700;
-      color: var(--navy);
-      margin-top: 6px;
-    }
-
-    .notice details div {
-      margin-top: 6px;
-      padding-left: 10px;
-      border-left: 2px solid var(--gold);
-      font-size: 0.65rem;
-    }
-
-    /* ── OCR ENGINE TOGGLE ── */
-    .ocr-toggle {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 10px;
-    }
-
-    .ocr-toggle button {
-      flex: 1;
-      padding: 8px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--white);
-      font-size: 0.68rem;
-      font-weight: 600;
-      color: var(--text-dim);
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: 'Noto Sans KR', sans-serif;
-    }
-
-    .ocr-toggle button.active {
-      background: var(--navy);
-      color: var(--gold);
-      border-color: var(--navy);
-    }
-
-    /* ── SPREADSHEET TABLE ── */
-    .sheet-section {
-      margin-top: 20px;
-      margin-bottom: 30px;
-    }
-
-    .sheet-head {
+      color: var(--cream);
+      padding: 8px 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    .wc-title { font-size:0.78rem; font-weight:800; }
+    .wc-no { font-family:'JetBrains Mono'; font-size:0.6rem; color:var(--gold); }
+    .wc-status { font-size:0.55rem; padding:2px 8px; border-radius:20px; font-weight:700; margin-left:6px; }
+    .wc-status.empty { background:rgba(192,57,43,0.2); color:#ff6b5e; }
+    .wc-status.done { background:rgba(26,138,92,0.2); color:#5cdb95; }
+
+    .wc-body { padding:10px 12px; }
+
+    .wc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 4px;
+      margin-bottom: 10px;
     }
 
-    .sheet-head h3 {
-      font-size: 0.85rem;
-      font-weight: 800;
-      color: var(--navy);
-      display: flex;
-      align-items: center;
+    .wc-field {
+      background: var(--cream);
+      border-radius: var(--r-sm);
+      padding: 5px 7px;
+    }
+    .wc-field.full { grid-column: 1 / -1; }
+    .wc-field.half { grid-column: span 2; }
+    .wc-lbl { font-size:0.5rem; color:var(--gold-dim); font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
+    .wc-val { font-size:0.73rem; font-weight:700; color:var(--text); margin-top:1px; }
+    .wc-val.memo { font-size:0.65rem; font-weight:500; color:var(--text-sub); line-height:1.4; }
+
+    /* ─── 사진 그리드 (카드 내부) ─── */
+    .wc-photos { margin-top:8px; }
+    .wc-photos-label { font-size:0.62rem; font-weight:700; color:var(--navy); margin-bottom:5px; display:flex; align-items:center; gap:4px; }
+
+    .photo-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 6px;
     }
 
-    .sheet-head h3 .count {
-      font-size: 0.65rem;
-      font-weight: 400;
-      color: var(--text-muted);
-    }
-
-    .sheet-actions {
+    .photo-slot {
+      border: 2px dashed var(--border);
+      border-radius: var(--r-sm);
+      aspect-ratio: 3/4;
       display: flex;
-      gap: 4px;
-    }
-
-    .table-wrap {
-      width: 100%;
-      overflow-x: auto;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--white);
-      -webkit-overflow-scrolling: touch;
-      max-height: 500px;
-      overflow-y: auto;
-      box-shadow: var(--shadow);
-    }
-
-    #spreadsheet {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.62rem;
-      min-width: 1100px;
-    }
-
-    #spreadsheet th {
-      background: var(--navy);
-      color: var(--gold);
-      padding: 10px 6px;
-      border: 1px solid var(--navy-light);
-      font-weight: 700;
-      white-space: nowrap;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-size: 0.6rem;
-    }
-
-    #spreadsheet td {
-      padding: 8px 6px;
-      border: 1px solid #eee;
-      text-align: center;
-      vertical-align: middle;
-      font-size: 0.62rem;
-      color: var(--text);
-    }
-
-    #spreadsheet tbody tr:nth-child(even) { background: var(--cream); }
-    #spreadsheet tbody tr:hover { background: #e8e4d8; }
-
-    .thumb {
-      width: 50px;
-      height: 38px;
-      object-fit: cover;
-      border-radius: 3px;
-      border: 1px solid var(--border);
-      display: block;
-      margin: 0 auto;
-    }
-
-    .empty-row td {
-      padding: 30px;
-      color: var(--text-muted);
-      font-size: 0.75rem;
-    }
-
-    /* ── LOADER ── */
-    #loader {
-      position: fixed;
-      inset: 0;
-      background: rgba(12, 25, 41, 0.95);
-      z-index: 9999;
-      display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      color: var(--cream);
-    }
-
-    .spinner {
-      width: 44px;
-      height: 44px;
-      border: 3px solid var(--navy-mid);
-      border-top-color: var(--gold);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    #loader p {
-      margin-top: 14px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      color: var(--gold);
-      letter-spacing: 0.5px;
-    }
-
-    #loader .progress {
-      width: 200px;
-      height: 3px;
-      background: var(--navy-mid);
-      border-radius: 2px;
-      margin-top: 12px;
-      overflow: hidden;
-    }
-
-    #loader .progress-fill {
-      height: 100%;
-      background: var(--gold);
-      width: 0%;
-      transition: width 0.3s;
-      border-radius: 2px;
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      display: flex;
-      gap: 8px;
-      padding: 12px 16px;
-      border-top: 1px solid var(--border);
-      background: var(--white);
-      padding-bottom: calc(12px + env(safe-area-inset-bottom));
-    }
-
-    footer button {
-      flex: 1;
-      height: 50px;
-      border-radius: var(--radius);
-      border: none;
-      font-weight: 800;
-      font-size: 0.9rem;
       cursor: pointer;
-      font-family: 'Noto Sans KR', sans-serif;
-      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+      background: var(--cream);
       transition: all 0.15s;
     }
+    .photo-slot:active { background:var(--gold-pale); border-color:var(--gold); }
+    .photo-slot.filled { border-style:solid; border-color:var(--green); }
+    .photo-slot .ps-icon { font-size:20px; }
+    .photo-slot .ps-label { font-size:0.55rem; font-weight:700; color:var(--text-dim); margin-top:3px; text-align:center; }
+    .photo-slot img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none; z-index:5; }
+    .photo-slot.filled .ps-icon, .photo-slot.filled .ps-label { display:none; }
+    .photo-slot.filled img { display:block; }
+    .photo-delete { display:none; position:absolute; top:3px; right:3px; width:18px; height:18px; border-radius:50%; background:var(--red); color:white; border:none; font-size:10px; font-weight:900; cursor:pointer; z-index:10; line-height:1; align-items:center; justify-content:center; }
+    .photo-slot.filled .photo-delete { display:flex; }
 
-    footer button:active { transform: scale(0.97); }
-
-    .btn-save-main {
-      background: var(--navy);
-      color: var(--gold);
+    /* ─── 카드 내 저장 버튼 ─── */
+    .wc-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
     }
-
-    .btn-refresh-main {
-      background: var(--cream);
-      color: var(--navy);
-      border: 1.5px solid var(--border);
-    }
-
-    /* ── STATUS TOAST ── */
-    .toast {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      padding: 10px 20px;
-      border-radius: var(--radius);
+    .wc-actions button {
+      flex: 1;
+      padding: 9px;
+      border: none;
+      border-radius: var(--r-sm);
+      font-family: 'Noto Sans KR';
+      font-weight: 800;
       font-size: 0.75rem;
-      font-weight: 600;
-      z-index: 10000;
-      opacity: 0;
-      transition: all 0.3s ease;
-      pointer-events: none;
-      max-width: 90%;
-      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .wc-actions button:active { transform:scale(0.97); }
+    .wc-save { background:var(--navy); color:var(--gold); }
+    .wc-saved { background:var(--green); color:white; }
+
+    /* ═══ EMPTY ═══ */
+    .empty-state { text-align:center; padding:24px 16px; color:var(--text-dim); }
+    .empty-state .es-icon { font-size:32px; margin-bottom:6px; }
+    .empty-state .es-text { font-size:0.72rem; font-weight:500; line-height:1.6; }
+
+    /* ═══ FOOTER ═══ */
+    footer {
+      display:flex; gap:8px; padding:10px 16px; border-top:1px solid var(--border);
+      background:var(--white); padding-bottom:calc(10px + env(safe-area-inset-bottom)); flex-shrink:0;
+    }
+    footer button {
+      flex:1; height:46px; border-radius:var(--r); border:none; font-weight:800;
+      font-size:0.85rem; cursor:pointer; font-family:'Noto Sans KR'; letter-spacing:0.5px; transition:all 0.15s;
+    }
+    footer button:active { transform:scale(0.97); }
+    .btn-new-main { background:var(--gold); color:var(--navy); }
+    .btn-export-main { background:var(--navy); color:var(--gold); }
+
+    /* ═══ TOAST ═══ */
+    .toast { position:fixed; bottom:68px; left:50%; transform:translateX(-50%) translateY(20px); padding:9px 20px; border-radius:var(--r); font-size:0.72rem; font-weight:700; z-index:10000; opacity:0; transition:all 0.3s; pointer-events:none; max-width:90%; text-align:center; white-space:nowrap; }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    .toast.success { background:var(--green); color:white; }
+    .toast.error { background:var(--red); color:white; }
+    .toast.info { background:var(--navy); color:var(--gold); }
+
+    /* ═══ LOADER ═══ */
+    #loader { position:fixed; inset:0; background:rgba(12,25,41,0.92); z-index:9999; display:none; flex-direction:column; justify-content:center; align-items:center; color:var(--cream); }
+    .spinner { width:38px; height:38px; border:3px solid var(--navy-mid); border-top-color:var(--gold); border-radius:50%; animation:spin 0.7s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    #loader p { margin-top:10px; font-weight:700; font-size:0.8rem; color:var(--gold); }
+
+    /* ═══ BTN ═══ */
+    .btn { padding:9px 14px; border:none; border-radius:var(--r-sm); font-family:'Noto Sans KR'; font-weight:800; font-size:0.72rem; cursor:pointer; transition:all 0.15s; letter-spacing:0.3px; }
+    .btn:active { transform:scale(0.97); }
+    .btn-outline { background:transparent; color:var(--text-dim); border:1.5px solid var(--border); }
+    .btn-gold { background:var(--gold); color:var(--navy); }
+    .btn-full { width:100%; }
+    .btn-sm { padding:6px 10px; font-size:0.63rem; }
+
+    /* scrollbar */
+    .content::-webkit-scrollbar { width:3px; }
+    .content::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+    @media (max-width:380px) {
+      .search-bar { grid-template-columns:1fr 1fr; }
+      .photo-row { grid-template-columns:1fr 1fr; }
     }
 
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .toast.success { background: var(--green); color: white; }
-    .toast.error { background: var(--red); color: white; }
-    .toast.info { background: var(--navy); color: var(--gold); }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 480px) {
-      .content { padding: 12px; }
-      header h1 { font-size: 1.05rem; }
-    }
+    /* hidden file inputs */
+    .hidden-inputs { position:absolute; width:0; height:0; overflow:hidden; }
   </style>
 </head>
 <body>
 
-<!-- LOADER -->
-<div id="loader">
-  <div class="spinner"></div>
-  <p id="loaderText">OCR 분석 중...</p>
-  <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
-</div>
-
-<!-- TOAST -->
+<div id="loader"><div class="spinner"></div><p id="loaderText">처리 중...</p></div>
 <div class="toast" id="toast"></div>
 
 <div class="app">
-  <!-- HEADER -->
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 4.0 · ULTIMATE SPREADSHEET</div>
+    <div class="ver">VER 5.1 · FIELD WORK SYSTEM</div>
+    <button class="settings-toggle" onclick="App.toggleSettings()">⚙️</button>
   </header>
+
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-row">
+      <div><label>스프레드시트 ID</label><input type="text" id="cfgSpreadsheetId" placeholder="Google 스프레드시트 ID"></div>
+      <div><label>시트 이름</label><input type="text" id="cfgSheetName" placeholder="시트1" value="시트1"></div>
+    </div>
+    <label>Apps Script 웹앱 URL</label>
+    <input type="text" id="cfgWebAppUrl" placeholder="https://script.google.com/macros/s/.../exec">
+    <button class="btn btn-gold btn-sm btn-full" onclick="App.saveSettings()" style="margin-top:2px;">💾 설정 저장</button>
+  </div>
+
+  <div class="summary-bar" id="summaryBar">
+    <div>📊 전체: <span id="totalCount">0</span>건</div>
+    <div>📸 미완료: <span id="incompleteCount">0</span>건</div>
+    <div>✅ 완료: <span id="completeCount">0</span>건</div>
+  </div>
 
   <main class="content">
 
-    <!-- ① 스프레드시트 연동 설정 -->
-    <div class="section">
-      <div class="section-head">
-        <span class="badge badge-navy">📊</span>
-        <div>
-          <h3>구글 스프레드시트 연동</h3>
-          <span class="sub">Apps Script 웹앱 URL 입력</span>
-        </div>
+    <!-- ① 데이터 불러오기 -->
+    <div class="phase" id="phase1">
+      <div class="phase-head">
+        <span class="phase-num">1</span>
+        <span class="phase-title">하자 리스트 불러오기</span>
       </div>
-      <div class="field">
-        <label>스프레드시트 ID</label>
-        <input type="text" id="spreadsheetId" placeholder="스프레드시트 ID" value="1U915mN26A8E51BueKHWLZF105jcMn529kluYhqHlC8c">
+      <div class="upload-area" id="uploadArea" onclick="$('fileInput').click()">
+        <div class="upload-icon">📂</div>
+        <div class="upload-text">엑셀 파일 업로드 (.xlsx .xls .csv)</div>
+        <div class="upload-hint">구글 스프레드시트에서 다운받은 파일도 가능</div>
+        <div class="loaded-info" id="loadedInfo">✅ <span id="loadedFileName"></span> · <span id="loadedRowCount"></span>건</div>
       </div>
-      <div class="field">
-        <label>시트 이름</label>
-        <input type="text" id="sheetName" placeholder="시트1" value="시트1">
-      </div>
-      <div class="notice" style="margin-top:8px;">
-        <strong>ℹ️ 참고:</strong> CORS 정책으로 브라우저에서 직접 연결이 제한됩니다.<br>
-        데이터는 <strong>로컬 DB에 안전하게 저장</strong>되며 하단 리스트에서 확인 가능합니다.
+      <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden onchange="App.loadFile(this)">
+      <div style="display:flex; gap:6px; margin-top:6px;">
+        <button class="btn btn-outline btn-full" onclick="App.loadSample()" style="font-size:0.65rem;">📋 샘플 데이터</button>
+        <button class="btn btn-outline btn-full" onclick="App.clearAll()" style="font-size:0.65rem; color:var(--red);">🗑️ 전체 초기화</button>
       </div>
     </div>
 
-    <!-- ② OCR 엔진 설정 -->
-    <div class="section">
-      <div class="section-head">
-        <span class="badge badge-gold">🔑</span>
-        <div>
-          <h3>OCR 엔진 설정</h3>
-          <span class="sub">텍스트 인식 방법 선택</span>
-        </div>
+    <!-- ② 검색 → 자동 결과 표시 -->
+    <div class="phase" id="phase2">
+      <div class="phase-head">
+        <span class="phase-num">2</span>
+        <span class="phase-title">작업 검색</span>
+        <span class="phase-sub">입력 시 자동 검색</span>
       </div>
 
-      <div class="ocr-toggle" id="ocrToggle">
-        <button class="active" data-engine="tesseract" onclick="App.setOcrEngine('tesseract')">
-          🆓 Tesseract.js<br><small style="font-weight:400;">무료 · 로컬 처리</small>
-        </button>
-        <button data-engine="vision" onclick="App.setOcrEngine('vision')">
-          ☁️ Google Vision<br><small style="font-weight:400;">고정밀 · API 키 필요</small>
-        </button>
+      <div class="search-bar">
+        <div class="search-col"><label>동</label><input type="text" id="sDong" placeholder="101" inputmode="numeric" oninput="App.autoSearch()"></div>
+        <div class="search-col"><label>호</label><input type="text" id="sHo" placeholder="1001" inputmode="numeric" oninput="App.autoSearch()"></div>
+        <div class="search-col"><label>위치</label><input type="text" id="sLoc" placeholder="발코니2" oninput="App.autoSearch()"></div>
       </div>
+      <div class="search-hint">동/호/위치를 입력하면 해당 항목이 아래에 자동으로 표시됩니다</div>
 
-      <div id="visionKeySection" style="display:none;">
-        <div class="field">
-          <label>Google Vision API 키</label>
-          <input type="text" id="visionApiKey" placeholder="API 키 입력">
-        </div>
-        <button class="btn btn-gold btn-sm" onclick="App.saveApiKey()" style="width:100%; margin-top:4px;">💾 API 키 저장</button>
-        <div class="notice" style="margin-top:8px;">
-          <details>
-            <summary>📖 API 키 발급 방법</summary>
-            <div>
-              <strong>1.</strong> <a href="https://console.cloud.google.com" target="_blank" style="color:var(--blue);">Google Cloud Console</a> 접속<br>
-              <strong>2.</strong> 프로젝트 생성 → API 및 서비스 → 라이브러리<br>
-              <strong>3.</strong> "Cloud Vision API" 사용 설정<br>
-              <strong>4.</strong> 사용자 인증 정보 → API 키 생성 → 복사
-            </div>
-          </details>
+      <div class="result-count" id="resultCount"></div>
+
+      <!-- 검색 결과 = 자동으로 전체 내용 + 사진 입력 카드 표시 -->
+      <div class="results-area" id="resultsArea">
+        <div class="empty-state" id="emptyHint">
+          <div class="es-icon">🔍</div>
+          <div class="es-text">동/호/위치를 입력하면<br>해당 라인 전체 내용이 표시됩니다</div>
         </div>
       </div>
     </div>
-
-    <!-- ③ 완료확인서 OCR -->
-    <div class="dropzone" onclick="$('f-ai').click()">
-      <div class="label"><span class="num">1</span> 완료확인서 촬영 · OCR 분석</div>
-      <img id="view-ai">
-    </div>
-    <input type="file" id="f-ai" accept="image/*" capture="camera" hidden onchange="App.analyze(this)">
-
-    <button class="btn btn-navy" onclick="App.retryOCR()" style="margin-bottom:14px;">🔄 OCR 재시도</button>
-
-    <!-- ④ 데이터 입력 폼 -->
-    <div class="section">
-      <div class="section-head">
-        <span class="badge badge-navy">📝</span>
-        <h3>작업 데이터 입력</h3>
-      </div>
-      <div class="form-grid">
-        <div class="field-row c4-2">
-          <div class="field"><label>현장명</label><input type="text" id="site"></div>
-          <div class="field"><label>하자No</label><input type="text" id="haja"></div>
-        </div>
-        <div class="field-row c2">
-          <div class="field"><label>동 / 호수</label><input type="text" id="unit"></div>
-          <div class="field"><label>접수일</label><input type="date" id="date"></div>
-        </div>
-        <div class="field-row c3">
-          <div class="field"><label>접수단계</label><input type="text" id="step"></div>
-          <div class="field"><label>실명(위치)</label><input type="text" id="loc"></div>
-          <div class="field"><label>공종</label><input type="text" id="work"></div>
-        </div>
-        <div class="field-row c2">
-          <div class="field"><label>업체명</label><input type="text" id="comp"></div>
-          <div class="field"><label>확인자</label><input type="text" id="name"></div>
-        </div>
-        <div class="field">
-          <label>상세 하자 내용</label>
-          <textarea id="memo" placeholder="하자 내용을 입력하세요"></textarea>
-        </div>
-      </div>
-      <button class="btn btn-outline" onclick="App.clearForm()" style="margin-top:10px;">🗑️ 입력칸 전체 초기화</button>
-    </div>
-
-    <!-- ⑤ 수리 전 사진 -->
-    <div class="dropzone" onclick="$('f-before').click()">
-      <div class="label"><span class="num">2</span> 수리 전 사진</div>
-      <img id="view-before">
-    </div>
-    <input type="file" id="f-before" accept="image/*" capture="camera" hidden onchange="App.preview(this,'view-before')">
-
-    <!-- ⑥ 수리 후 사진 -->
-    <div class="dropzone" onclick="$('f-after').click()">
-      <div class="label"><span class="num">3</span> 수리 후 사진</div>
-      <img id="view-after">
-    </div>
-    <input type="file" id="f-after" accept="image/*" capture="camera" hidden onchange="App.processAfter(this)">
-
-    <!-- ⑦ 메트로 보드판 -->
-    <div class="dropzone" style="border-style:solid; border-color:var(--green);">
-      <div class="label" style="color:var(--green);"><span class="num" style="background:var(--green);color:white;">4</span> 메트로 보드판 자동 합성</div>
-      <canvas id="boardCanvas" style="display:none;"></canvas>
-      <img id="view-board">
-    </div>
-
-    <!-- ⑧ 최종 완료확인서 -->
-    <div class="dropzone" onclick="$('f-final').click()">
-      <div class="label"><span class="num">5</span> 최종 완료확인서 (서명본)</div>
-      <img id="view-final">
-    </div>
-    <input type="file" id="f-final" accept="image/*" capture="camera" hidden onchange="App.preview(this,'view-final')">
-
-    <!-- ⑨ 데이터 리스트 -->
-    <section class="sheet-section">
-      <div class="sheet-head">
-        <h3>📊 작업 데이터 리스트 <span class="count" id="dataCount">(0건)</span></h3>
-        <div class="sheet-actions">
-          <button class="btn btn-sm btn-outline" onclick="App.render()">새로고침</button>
-          <button class="btn btn-sm btn-red" onclick="App.deleteDB()">DB 초기화</button>
-        </div>
-      </div>
-      <div class="table-wrap">
-        <table id="spreadsheet">
-          <thead>
-            <tr>
-              <th>현장명</th><th>하자No</th><th>동/호수</th><th>접수일</th>
-              <th>단계</th><th>위치</th><th>공종</th><th>업체명</th>
-              <th>확인자</th><th>하자내용</th><th>전</th><th>후</th>
-              <th>보드판</th><th>확인서</th>
-            </tr>
-          </thead>
-          <tbody id="data-body">
-            <tr class="empty-row"><td colspan="14">저장된 데이터가 없습니다</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
 
   </main>
 
-  <!-- FOOTER -->
   <footer>
-    <button class="btn-save-main" onclick="App.save()">💾 저장</button>
-    <button class="btn-refresh-main" onclick="location.reload()">🔄 새로고침</button>
+    <button class="btn-new-main" onclick="App.newEntry()">🔄 새로입력</button>
+    <button class="btn-export-main" onclick="App.exportExcel()">📥 엑셀 내보내기</button>
   </footer>
 </div>
 
+<!-- 숨겨진 파일 인풋들 (각 카드마다 동적으로 사용) -->
+<div class="hidden-inputs">
+  <input type="file" id="fCapture" accept="image/*" capture="environment" onchange="App.onPhoto(this)">
+</div>
+
 <script>
-// ─── UTILS ───
 const $ = id => document.getElementById(id);
-const DB_KEY = 'METRO_DB_V4';
-const API_KEY_STORE = 'METRO_VISION_KEY';
+const STORAGE = { DATA:'METRO_V51_DATA', SETTINGS:'METRO_V51_SET', PHOTOS:'METRO_V51_PHOTOS' };
 
-// ─── APP MODULE ───
 const App = {
-  ocrEngine: 'tesseract',
+  allData: [],
+  colMap: {},
+  photos: {},        // { rowIdx: { before:'base64', after:'base64', confirm:'base64' } }
+  pendingPhoto: null, // { rowIdx, type }
 
-  // ── 초기화 ──
+  // ── Init ──
   init() {
-    this.loadApiKey();
-    this.render();
-    $('date').valueAsDate = new Date();
+    this.loadSettings();
+    this.loadSaved();
+    this.updateSummary();
   },
 
-  // ── TOAST 알림 ──
-  toast(msg, type = 'info', ms = 3000) {
-    const el = $('toast');
-    el.textContent = msg;
-    el.className = `toast ${type} show`;
-    clearTimeout(el._timer);
-    el._timer = setTimeout(() => el.classList.remove('show'), ms);
+  toast(msg, type='info', ms=2500) {
+    const el=$('toast'); el.textContent=msg; el.className=`toast ${type} show`;
+    clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),ms);
   },
 
-  // ── LOADER ──
-  showLoader(text = 'OCR 분석 중...') {
-    $('loaderText').textContent = text;
-    $('progressFill').style.width = '0%';
+  // ── Settings ──
+  toggleSettings() { $('settingsPanel').classList.toggle('open'); },
+  saveSettings() {
+    const s = { id:$('cfgSpreadsheetId').value.trim(), sheet:$('cfgSheetName').value.trim(), url:$('cfgWebAppUrl').value.trim() };
+    localStorage.setItem(STORAGE.SETTINGS, JSON.stringify(s));
+    this.toast('✅ 설정 저장', 'success');
+    this.toggleSettings();
+  },
+  loadSettings() {
+    try { const s=JSON.parse(localStorage.getItem(STORAGE.SETTINGS)||'{}'); if(s.id)$('cfgSpreadsheetId').value=s.id; if(s.sheet)$('cfgSheetName').value=s.sheet; if(s.url)$('cfgWebAppUrl').value=s.url; } catch(e){}
+  },
+  getSettings() { try{return JSON.parse(localStorage.getItem(STORAGE.SETTINGS)||'{}');}catch{return{};} },
+
+  // ── File Load ──
+  async loadFile(input) {
+    const file = input.files?.[0];
+    if (!file) return;
+    $('loaderText').textContent = '파일 읽는 중...';
     $('loader').style.display = 'flex';
-  },
-
-  hideLoader() {
+    try {
+      const data = await file.arrayBuffer();
+      const wb = XLSX.read(data, { type:'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(ws, { defval:'' });
+      if (!json.length) throw new Error('빈 파일');
+      this.allData = json.map((r,i) => ({...r, _idx:i}));
+      this.detectCols(json[0]);
+      this.saveData();
+      $('uploadArea').classList.add('loaded');
+      $('loadedFileName').textContent = file.name;
+      $('loadedRowCount').textContent = json.length;
+      this.updateSummary();
+      this.toast(`✅ ${json.length}건 로드!`, 'success');
+    } catch(err) { this.toast('❌ 파일 오류: '+err.message, 'error', 4000); }
     $('loader').style.display = 'none';
   },
 
-  setProgress(pct) {
-    $('progressFill').style.width = pct + '%';
-  },
-
-  // ── OCR 엔진 선택 ──
-  setOcrEngine(engine) {
-    this.ocrEngine = engine;
-    document.querySelectorAll('#ocrToggle button').forEach(b => {
-      b.classList.toggle('active', b.dataset.engine === engine);
-    });
-    $('visionKeySection').style.display = engine === 'vision' ? 'block' : 'none';
-  },
-
-  // ── API 키 ──
-  saveApiKey() {
-    const key = $('visionApiKey').value.trim();
-    if (!key) return this.toast('API 키를 입력해주세요.', 'error');
-    localStorage.setItem(API_KEY_STORE, key);
-    this.toast('✅ API 키 저장 완료!', 'success');
-  },
-
-  loadApiKey() {
-    const key = localStorage.getItem(API_KEY_STORE);
-    if (key) {
-      $('visionApiKey').value = key;
-    }
-  },
-
-  getApiKey() {
-    return localStorage.getItem(API_KEY_STORE) || '';
-  },
-
-  // ── 사진 미리보기 ──
-  preview(input, imgId) {
-    const file = input.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = $(imgId);
-      img.src = e.target.result;
-      img.style.display = 'block';
+  detectCols(row) {
+    const keys = Object.keys(row);
+    const find = (...kw) => keys.find(k => kw.some(w => k.replace(/\s/g,'').includes(w))) || '';
+    this.colMap = {
+      site: find('현장명','현장','site'),
+      no: find('하자No','하자번호','No','no','NO','번호'),
+      dong: find('동','dong'),
+      ho: find('호','ho','호수'),
+      unit: find('동호','동/호','unit','세대'),
+      loc: find('위치','실명','location','loc'),
+      work: find('공종','work','공사'),
+      step: find('접수단계','단계','step','년차'),
+      comp: find('업체명','업체','company'),
+      name: find('확인자','담당자','name'),
+      memo: find('하자내용','내용','memo','비고','상세'),
+      date: find('접수일','날짜','date'),
+      imgBefore: find('사진전','수리전','before'),
+      imgAfter: find('사진후','수리후','after'),
+      imgConfirm: find('완료확인서','확인서','confirm','서명')
     };
-    reader.readAsDataURL(file);
   },
 
-  // ── OCR 분석 (메인) ──
-  async analyze(input) {
-    const file = input.files?.[0];
-    if (!file) return;
-    this.preview(input, 'view-ai');
-    this.showLoader('OCR 분석 중...');
+  v(row, f) { const c=this.colMap[f]; return c ? String(row[c]||'').trim() : ''; },
 
-    try {
-      let text = null;
-
-      if (this.ocrEngine === 'vision' && this.getApiKey()) {
-        this.setProgress(20);
-        text = await this.ocrVision(file);
-      }
-
-      if (!text) {
-        this.setProgress(20);
-        text = await this.ocrTesseract(file);
-      }
-
-      if (text && text.length > 5) {
-        this.mapOcrText(text);
-        this.hideLoader();
-        this.toast('✅ OCR 분석 완료!', 'success');
-      } else {
-        throw new Error('텍스트 인식 실패');
-      }
-    } catch (err) {
-      console.warn('OCR 실패:', err.message);
-      this.fillSample();
-      this.hideLoader();
-      this.toast('⚠️ OCR 실패 → 샘플 데이터 입력됨', 'error', 4000);
+  parseDH(row) {
+    let d=this.v(row,'dong'), h=this.v(row,'ho');
+    if (!d && !h) {
+      const u=this.v(row,'unit');
+      const m=u.match(/(\d+)\s*동?\s*[-/]?\s*(\d+)\s*호?/);
+      if(m){d=m[1];h=m[2];}
     }
+    return {dong:d, ho:h};
   },
 
-  // ── Google Vision OCR ──
-  async ocrVision(file) {
-    const key = this.getApiKey();
-    if (!key) return null;
+  // ── 자동 검색 (입력할 때마다 실행) ──
+  autoSearch() {
+    if (!this.allData.length) return;
 
-    const b64 = await this.fileToBase64(file);
-    const res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${key}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        requests: [{ image: { content: b64 }, features: [{ type: 'DOCUMENT_TEXT_DETECTION' }] }]
-      })
-    });
+    const qD = $('sDong').value.trim();
+    const qH = $('sHo').value.trim();
+    const qL = $('sLoc').value.trim();
 
-    if (!res.ok) throw new Error(`Vision API ${res.status}`);
-    const data = await res.json();
-    this.setProgress(80);
-    return data.responses?.[0]?.fullTextAnnotation?.text || null;
-  },
-
-  // ── Tesseract.js OCR ──
-  async ocrTesseract(file) {
-    if (typeof Tesseract === 'undefined') throw new Error('Tesseract 미로드');
-
-    const result = await Tesseract.recognize(file, 'kor+eng', {
-      logger: m => {
-        if (m.status === 'recognizing text') {
-          this.setProgress(20 + Math.round(m.progress * 60));
-        }
-      }
-    });
-
-    this.setProgress(90);
-    return result.data?.text || null;
-  },
-
-  // ── OCR 재시도 ──
-  retryOCR() {
-    const input = $('f-ai');
-    if (!input.files?.length) return this.toast('먼저 완료확인서 사진을 선택해주세요.', 'error');
-    this.analyze(input);
-  },
-
-  // ── File → Base64 ──
-  fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = e => resolve(e.target.result.split(',')[1]);
-      reader.onerror = () => reject(new Error('파일 읽기 실패'));
-      reader.readAsDataURL(file);
-    });
-  },
-
-  // ── OCR 텍스트 매핑 ──
-  mapOcrText(t) {
-    const extract = re => (t.match(re) || ['', ''])[1]?.trim() || '';
-
-    $('site').value = extract(/현장명\s*[:\s]*([가-힣0-9A-Za-z\- ]+)/) || '';
-    $('haja').value = extract(/하자\s*No\s*[:\s]*(\d+)/) || extract(/(\d{7})/);
-    $('unit').value = extract(/(\d{3,4}\s*동[^\d]*\d{3,4}\s*호)/) || '';
-    $('date').value = extract(/(\d{4}-\d{2}-\d{2})/) || new Date().toISOString().split('T')[0];
-
-    const STEPS = ['1년차', '2년차', '3년차'];
-    const LOCS = ['거실', '안방', '침실1', '침실2', '침실3', '발코니1', '발코니2', '알파룸'];
-    const WORKS = ['PL창호공사', '도배공사', '타일공사', '바닥공사'];
-
-    const lines = t.split('\n');
-    lines.forEach((line, i) => {
-      const c = line.replace(/\s/g, '');
-      const nextLine = lines[i + 1]?.trim() || '';
-
-      if (c.includes('접수단계')) {
-        const v = line.split(/[:\s]/).filter(x => x && !x.includes('접수단계')).pop() || nextLine;
-        $('step').value = STEPS.find(s => v?.includes(s)) || v || '';
-      }
-      if (c.includes('실명') || (c.includes('위치') && !c.includes('상세'))) {
-        const v = line.split(/[:\s]/).filter(x => x && !x.includes('실명') && !x.includes('위치')).pop() || nextLine;
-        $('loc').value = LOCS.find(s => v?.includes(s)) || v || '';
-      }
-      if (c.includes('공종')) {
-        const v = line.split(/[:\s]/).filter(x => x && !x.includes('공종')).pop() || nextLine;
-        $('work').value = WORKS.find(s => v?.includes(s)) || v || '';
-      }
-      if (c.includes('업체명') || c.includes('업체')) {
-        const v = line.split(/[:\s]/).filter(x => x && !x.includes('업체명') && !x.includes('업체')).pop() || nextLine;
-        $('comp').value = v || '';
-      }
-      if (c.includes('확인자') || c.includes('담당자')) {
-        const v = line.split(/[:\s]/).filter(x => x && !x.includes('확인자') && !x.includes('담당자')).pop() || nextLine;
-        $('name').value = v || '';
-      }
-    });
-
-    const memoIdx = t.indexOf('하자내용');
-    if (memoIdx !== -1) {
-      $('memo').value = t.substring(memoIdx + 4, memoIdx + 300).replace(/\n/g, ' ').trim();
+    // 아무것도 안 입력했으면 힌트
+    if (!qD && !qH && !qL) {
+      $('resultCount').textContent = '';
+      $('resultsArea').innerHTML = `<div class="empty-state" id="emptyHint"><div class="es-icon">🔍</div><div class="es-text">동/호/위치를 입력하면<br>해당 라인 전체 내용이 표시됩니다</div></div>`;
+      return;
     }
+
+    const filtered = this.allData.filter(row => {
+      const {dong, ho} = this.parseDH(row);
+      const loc = this.v(row,'loc');
+      let ok = true;
+      if (qD) ok = ok && dong.includes(qD);
+      if (qH) ok = ok && ho.includes(qH);
+      if (qL) ok = ok && loc.includes(qL);
+      return ok;
+    });
+
+    $('resultCount').textContent = `검색 결과: ${filtered.length}건`;
+
+    if (!filtered.length) {
+      $('resultsArea').innerHTML = `<div class="empty-state"><div class="es-icon">😕</div><div class="es-text">검색 결과가 없습니다</div></div>`;
+      return;
+    }
+
+    // ── 각 항목을 전체 내용 카드로 렌더링 ──
+    $('resultsArea').innerHTML = filtered.map(row => this.renderCard(row)).join('');
   },
 
-  // ── 샘플 데이터 ──
-  fillSample() {
-    const d = { site: '원주혁신C4BL', haja: '2024001', unit: '101동 1001호', step: '1년차', loc: '거실', work: 'PL창호공사', comp: '진흥건업(주)', name: '', memo: '' };
-    Object.entries(d).forEach(([k, v]) => { if ($(k)) $(k).value = v; });
-    $('date').value = new Date().toISOString().split('T')[0];
+  // ── 카드 렌더링 (전체 내용 + 사진 입력) ──
+  renderCard(row) {
+    const idx = row._idx;
+    const {dong, ho} = this.parseDH(row);
+    const p = this.photos[idx] || {};
+    const photoCount = [p.before, p.after, p.confirm].filter(Boolean).length;
+    const isDone = photoCount === 3;
+    const statusHtml = isDone
+      ? `<span class="wc-status done">✅ 완료</span>`
+      : `<span class="wc-status empty">📷 ${photoCount}/3</span>`;
+
+    const photoSlot = (type, label, icon) => {
+      const src = p[type] || '';
+      const filled = src ? 'filled' : '';
+      return `
+        <div class="photo-slot ${filled}" onclick="App.capturePhoto(${idx},'${type}')">
+          <span class="ps-icon">${icon}</span>
+          <span class="ps-label">${label}</span>
+          <img src="${src}" ${src?'style="display:block"':''}>
+          <button class="photo-delete" onclick="event.stopPropagation();App.delPhoto(${idx},'${type}')">✕</button>
+        </div>`;
+    };
+
+    return `
+    <div class="work-card ${isDone?'':'active'}" id="card-${idx}">
+      <div class="wc-header">
+        <div>
+          <span class="wc-title">${dong?dong+'동 ':''}${ho?ho+'호 ':''}${this.v(row,'loc')}</span>
+          ${statusHtml}
+        </div>
+        <span class="wc-no">${this.v(row,'no')?'No.'+this.v(row,'no'):''}</span>
+      </div>
+      <div class="wc-body">
+        <div class="wc-grid">
+          <div class="wc-field"><div class="wc-lbl">현장명</div><div class="wc-val">${this.v(row,'site')||'-'}</div></div>
+          <div class="wc-field"><div class="wc-lbl">동/호수</div><div class="wc-val">${dong||'-'}동 ${ho||'-'}호</div></div>
+          <div class="wc-field"><div class="wc-lbl">위치</div><div class="wc-val">${this.v(row,'loc')||'-'}</div></div>
+          <div class="wc-field"><div class="wc-lbl">공종</div><div class="wc-val">${this.v(row,'work')||'-'}</div></div>
+          <div class="wc-field"><div class="wc-lbl">접수단계</div><div class="wc-val">${this.v(row,'step')||'-'}</div></div>
+          <div class="wc-field"><div class="wc-lbl">업체명</div><div class="wc-val">${this.v(row,'comp')||'-'}</div></div>
+          <div class="wc-field"><div class="wc-lbl">접수일</div><div class="wc-val">${this.v(row,'date')||'-'}</div></div>
+          <div class="wc-field"><div class="wc-lbl">확인자</div><div class="wc-val">${this.v(row,'name')||'-'}</div></div>
+          <div class="wc-field"><div class="wc-lbl">하자No</div><div class="wc-val">${this.v(row,'no')||'-'}</div></div>
+          <div class="wc-field full"><div class="wc-lbl">하자내용</div><div class="wc-val memo">${this.v(row,'memo')||'-'}</div></div>
+        </div>
+
+        <div class="wc-photos">
+          <div class="wc-photos-label">📸 사진 입력 (터치하여 촬영/갤러리)</div>
+          <div class="photo-row">
+            ${photoSlot('before','수리 전','📷')}
+            ${photoSlot('after','수리 후','📷')}
+            ${photoSlot('confirm','완료확인서','📋')}
+          </div>
+        </div>
+
+        <div class="wc-actions">
+          <button class="${isDone?'wc-saved':'wc-save'}" onclick="App.saveCard(${idx})">
+            ${isDone?'✅ 저장 완료':'💾 이 항목 저장'}
+          </button>
+        </div>
+      </div>
+    </div>`;
   },
 
-  // ── 수리 후 사진 → 보드판 생성 ──
-  processAfter(input) {
+  // ── 사진 촬영 ──
+  capturePhoto(rowIdx, type) {
+    this.pendingPhoto = { rowIdx, type };
+    $('fCapture').value = '';
+    $('fCapture').click();
+  },
+
+  onPhoto(input) {
     const file = input.files?.[0];
-    if (!file) return;
-    this.preview(input, 'view-after');
+    if (!file || !this.pendingPhoto) return;
+    const { rowIdx, type } = this.pendingPhoto;
 
     const reader = new FileReader();
     reader.onload = e => {
       const img = new Image();
-      img.onload = () => this.drawBoard(img);
+      img.onload = () => {
+        const maxW = 1200;
+        const scale = img.width > maxW ? maxW / img.width : 1;
+        const cvs = document.createElement('canvas');
+        cvs.width = img.width * scale;
+        cvs.height = img.height * scale;
+        cvs.getContext('2d').drawImage(img, 0, 0, cvs.width, cvs.height);
+        const b64 = cvs.toDataURL('image/jpeg', 0.8);
+
+        if (!this.photos[rowIdx]) this.photos[rowIdx] = {};
+        this.photos[rowIdx][type] = b64;
+        this.savePhotos();
+        this.updateSummary();
+
+        // 해당 카드만 업데이트
+        this.refreshCard(rowIdx);
+        this.toast('✅ 사진 저장', 'success', 1500);
+      };
       img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   },
 
-  drawBoard(img) {
-    const cvs = $('boardCanvas');
-    const ctx = cvs.getContext('2d');
-    cvs.width = 1200;
-    cvs.height = 1600;
-    ctx.drawImage(img, 0, 0, 1200, 1600);
-
-    const bW = 460, bH = 360, sX = 45, sY = 1600 - bH - 45;
-
-    // 배경
-    ctx.fillStyle = 'rgba(255,255,255,0.95)';
-    ctx.fillRect(sX, sY, bW, bH);
-    ctx.strokeStyle = '#0c1929';
-    ctx.lineWidth = 5;
-    ctx.strokeRect(sX, sY, bW, bH);
-
-    // 헤더
-    const headers = ['현장명', '동/호수', '위치', '작업진행', '작업일'];
-    ctx.fillStyle = '#0c1929';
-    ctx.font = 'bold 28px sans-serif';
-
-    const rowH = bH / 5;
-    headers.forEach((h, i) => {
-      const y = sY + rowH * i;
-      if (i > 0) {
-        ctx.beginPath();
-        ctx.moveTo(sX, y);
-        ctx.lineTo(sX + bW, y);
-        ctx.stroke();
-      }
-      ctx.fillText(h, sX + 15, y + 42);
-    });
-
-    // 값
-    const val = id => $(id).value || '-';
-    ctx.font = '26px sans-serif';
-    ctx.fillStyle = '#333';
-    ctx.fillText(val('site'), sX + 155, sY + 42);
-    ctx.fillText(val('unit'), sX + 155, sY + rowH + 42);
-    ctx.fillText(val('loc'), sX + 155, sY + rowH * 2 + 42);
-    ctx.fillText('수리후', sX + 155, sY + rowH * 3 + 42);
-    ctx.fillText(val('date'), sX + 155, sY + rowH * 4 + 42);
-
-    const boardImg = $('view-board');
-    boardImg.src = cvs.toDataURL('image/jpeg', 0.9);
-    boardImg.style.display = 'block';
-
-    this.toast('✅ 보드판 자동 합성 완료', 'success');
+  delPhoto(rowIdx, type) {
+    if (this.photos[rowIdx]) {
+      delete this.photos[rowIdx][type];
+      if (!Object.keys(this.photos[rowIdx]).length) delete this.photos[rowIdx];
+      this.savePhotos();
+    }
+    this.refreshCard(rowIdx);
+    this.updateSummary();
   },
 
-  // ── 폼 초기화 ──
-  clearForm() {
-    if (!confirm('입력칸을 초기화하시겠습니까?')) return;
-    ['site', 'haja', 'unit', 'date', 'step', 'loc', 'work', 'comp', 'name', 'memo'].forEach(id => {
-      if ($(id)) $(id).value = '';
-    });
-    ['view-ai', 'view-before', 'view-after', 'view-board', 'view-final'].forEach(id => {
-      const img = $(id);
-      if (img) { img.src = ''; img.style.display = 'none'; }
-    });
-    $('date').valueAsDate = new Date();
-    this.toast('초기화 완료', 'info');
+  // ── 개별 카드 새로고침 ──
+  refreshCard(rowIdx) {
+    const cardEl = document.getElementById(`card-${rowIdx}`);
+    if (!cardEl) return;
+    const row = this.allData[rowIdx];
+    if (!row) return;
+    const tmp = document.createElement('div');
+    tmp.innerHTML = this.renderCard(row);
+    cardEl.replaceWith(tmp.firstElementChild);
   },
 
-  // ── 데이터 저장 ──
-  async save() {
-    const site = $('site').value;
-    const haja = $('haja').value;
-    if (!site && !haja) return this.toast('현장명 또는 하자번호를 입력하세요.', 'error');
+  // ── 개별 저장 ──
+  async saveCard(rowIdx) {
+    const p = this.photos[rowIdx];
+    if (!p || !Object.keys(p).length) return this.toast('최소 1장의 사진을 입력하세요', 'error');
 
-    const getSrc = id => {
-      const el = $(id);
-      return (el?.src && el.style.display !== 'none') ? el.src : '';
-    };
+    const row = this.allData[rowIdx];
+    const cm = this.colMap;
+    if (cm.imgBefore) row[cm.imgBefore] = p.before ? '✅' : '';
+    if (cm.imgAfter) row[cm.imgAfter] = p.after ? '✅' : '';
+    if (cm.imgConfirm) row[cm.imgConfirm] = p.confirm ? '✅' : '';
+    this.saveData();
 
-    const data = {
-      site: site,
-      no: haja || '0000',
-      unit: $('unit').value,
-      date: $('date').value,
-      step: $('step').value,
-      loc: $('loc').value,
-      work: $('work').value,
-      comp: $('comp').value,
-      name: $('name').value,
-      memo: $('memo').value,
-      imgBefore: getSrc('view-before'),
-      imgAfter: getSrc('view-after'),
-      imgBoard: getSrc('view-board'),
-      imgFinal: getSrc('view-final'),
-      timestamp: new Date().toLocaleString('ko-KR')
-    };
+    // 서버 전송 시도
+    const settings = this.getSettings();
+    if (settings.url) {
+      try {
+        await fetch(settings.url, {
+          method: 'POST', mode: 'no-cors',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ action:'update', rowIndex:rowIdx+2, data:row, photos:p })
+        });
+      } catch(e) {}
+    }
 
-    // 로컬 DB 저장
-    const list = this.loadDB();
-    list.push(data);
-    this.saveDB(list);
-
-    // 렌더링
-    this.render();
-
-    // 스프레드시트로 스크롤
-    this.toast(`✅ 저장 완료! (총 ${list.length}건)`, 'success', 4000);
-    setTimeout(() => {
-      document.querySelector('.sheet-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 400);
+    this.refreshCard(rowIdx);
+    this.updateSummary();
+    this.toast('✅ 저장 완료!', 'success');
   },
 
-  // ── DB 헬퍼 ──
-  loadDB() {
+  // ── 새로입력 ──
+  newEntry() {
+    $('sDong').value = '';
+    $('sHo').value = '';
+    $('sLoc').value = '';
+    $('resultCount').textContent = '';
+    $('resultsArea').innerHTML = `<div class="empty-state"><div class="es-icon">🔍</div><div class="es-text">동/호/위치를 입력하면<br>해당 라인 전체 내용이 표시됩니다</div></div>`;
+    document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
+    $('sDong').focus();
+    this.toast('새 작업을 검색하세요', 'info');
+  },
+
+  // ── 엑셀 내보내기 ──
+  exportExcel() {
+    if (!this.allData.length) return this.toast('내보낼 데이터가 없습니다', 'error');
     try {
-      return JSON.parse(localStorage.getItem(DB_KEY) || '[]');
-    } catch {
-      return [];
+      const clean = this.allData.map(r => { const c={...r}; delete c._idx; return c; });
+      const ws = XLSX.utils.json_to_sheet(clean);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, '하자리스트');
+      XLSX.writeFile(wb, `메트로_하자리스트_${new Date().toISOString().slice(0,10)}.xlsx`);
+      this.toast('✅ 엑셀 다운로드 완료', 'success');
+    } catch(e) { this.toast('❌ 내보내기 실패', 'error'); }
+  },
+
+  // ── Summary ──
+  updateSummary() {
+    if (!this.allData.length) { $('summaryBar').classList.remove('visible'); return; }
+    $('summaryBar').classList.add('visible');
+    $('totalCount').textContent = this.allData.length;
+    let done=0, inc=0;
+    this.allData.forEach((_,i) => {
+      const p=this.photos[i];
+      if(p&&p.before&&p.after&&p.confirm) done++; else inc++;
+    });
+    $('incompleteCount').textContent = inc;
+    $('completeCount').textContent = done;
+  },
+
+  // ── Storage ──
+  saveData() {
+    try {
+      const clean = this.allData.map(r => { const c={...r}; return c; });
+      localStorage.setItem(STORAGE.DATA, JSON.stringify({data:clean, colMap:this.colMap}));
+    } catch(e) {}
+  },
+  savePhotos() {
+    try { localStorage.setItem(STORAGE.PHOTOS, JSON.stringify(this.photos)); }
+    catch(e) {
+      // 용량 초과 시 가장 오래된 것 제거
+      const keys = Object.keys(this.photos).sort((a,b)=>a-b);
+      if(keys.length>3){ delete this.photos[keys[0]]; this.savePhotos(); }
     }
   },
-
-  saveDB(list) {
-    localStorage.setItem(DB_KEY, JSON.stringify(list));
+  loadSaved() {
+    try {
+      const s = JSON.parse(localStorage.getItem(STORAGE.DATA)||'null');
+      if(s?.data?.length) {
+        this.allData = s.data.map((r,i)=>({...r,_idx:i}));
+        this.colMap = s.colMap||{};
+        $('uploadArea').classList.add('loaded');
+        $('loadedFileName').textContent = '이전 데이터';
+        $('loadedRowCount').textContent = this.allData.length;
+      }
+      this.photos = JSON.parse(localStorage.getItem(STORAGE.PHOTOS)||'{}');
+    } catch(e){}
   },
 
-  // ── 렌더링 ──
-  render() {
-    const list = this.loadDB();
-    const body = $('data-body');
-    const count = $('dataCount');
-    if (!body) return;
+  // ── 전체 초기화 ──
+  clearAll() {
+    if(!confirm('모든 데이터와 사진을 삭제하시겠습니까?')) return;
+    localStorage.removeItem(STORAGE.DATA);
+    localStorage.removeItem(STORAGE.PHOTOS);
+    location.reload();
+  },
 
-    count.textContent = `(${list.length}건)`;
+  // ── 샘플 ──
+  loadSample() {
+    const sample=[];
+    const locs=['거실','안방','침실1','침실2','발코니1','발코니2','알파룸','주방','현관'];
+    const works=['PL창호공사','도배공사','타일공사','바닥공사','설비공사'];
+    const memos=['창문 틈새 보수','벽지 들뜸 수리','타일 깨짐 교체','바닥 긁힘 보수','배수 불량 수리','도배 곰팡이','문짝 경첩 교체','실리콘 재시공'];
 
-    if (!list.length) {
-      body.innerHTML = '<tr class="empty-row"><td colspan="14">저장된 데이터가 없습니다</td></tr>';
-      return;
+    for(let d=101;d<=103;d++) {
+      for(let h=1;h<=4;h++) {
+        const ho=`${d}${String(h).padStart(2,'0')}`;
+        const cnt=1+Math.floor(Math.random()*3);
+        for(let c=0;c<cnt;c++) {
+          sample.push({
+            '현장명':'원주혁신C4BL',
+            '하자No':`H${String(sample.length+1).padStart(4,'0')}`,
+            '동':String(d),
+            '호':ho,
+            '위치':locs[Math.floor(Math.random()*locs.length)],
+            '공종':works[Math.floor(Math.random()*works.length)],
+            '접수단계':Math.random()>0.5?'1년차':'2년차',
+            '업체명':'진흥건업(주)',
+            '확인자':'',
+            '하자내용':memos[Math.floor(Math.random()*memos.length)],
+            '접수일':'2025-02-09',
+            '사진전':'','사진후':'','완료확인서':''
+          });
+        }
+      }
     }
-
-    const thumbHtml = src => src ? `<img src="${src}" class="thumb" alt="사진">` : '-';
-
-    // ⚠️ FIX: .slice().reverse() → 원본 배열 변경 방지
-    body.innerHTML = list.slice().reverse().map(r => `
-      <tr>
-        <td style="font-weight:700;">${r.site || '-'}</td>
-        <td style="color:var(--blue);">${r.no || '-'}</td>
-        <td>${r.unit || '-'}</td>
-        <td style="font-size:0.58rem;">${r.date || '-'}</td>
-        <td>${r.step || '-'}</td>
-        <td>${r.loc || '-'}</td>
-        <td>${r.work || '-'}</td>
-        <td>${r.comp || '-'}</td>
-        <td>${r.name || '-'}</td>
-        <td style="text-align:left;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.memo || '-'}</td>
-        <td>${thumbHtml(r.imgBefore)}</td>
-        <td>${thumbHtml(r.imgAfter)}</td>
-        <td>${thumbHtml(r.imgBoard)}</td>
-        <td>${thumbHtml(r.imgFinal)}</td>
-      </tr>
-    `).join('');
-  },
-
-  // ── DB 초기화 ──
-  deleteDB() {
-    if (!confirm('모든 로컬 데이터를 삭제하시겠습니까?')) return;
-    localStorage.removeItem(DB_KEY);
-    this.render();
-    this.toast('DB 초기화 완료', 'info');
+    this.allData=sample.map((r,i)=>({...r,_idx:i}));
+    this.detectCols(sample[0]);
+    this.photos={};
+    this.saveData();
+    localStorage.removeItem(STORAGE.PHOTOS);
+    $('uploadArea').classList.add('loaded');
+    $('loadedFileName').textContent='샘플';
+    $('loadedRowCount').textContent=sample.length;
+    this.updateSummary();
+    this.toast(`✅ 샘플 ${sample.length}건 로드!`,'success');
   }
 };
 
-// ── 페이지 로드 ──
 window.onload = () => App.init();
 </script>
 </body>
