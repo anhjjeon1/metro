@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v6.5</title>
+  <title>(주)메트로 R & S AI v6.6</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -31,7 +31,7 @@
     header h1{font-family:'Outfit';font-size:1.05rem;font-weight:800;letter-spacing:2.5px;text-transform:uppercase}
     header .ver{font-family:'JetBrains Mono';font-size:.53rem;color:var(--gold);letter-spacing:3px;margin-top:1px}
 
-    .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:10px}
+    .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:20px}
     .content::-webkit-scrollbar{width:3px}
     .content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
@@ -130,11 +130,11 @@
     .log-table .btn-del-log{padding:3px 5px;border:none;border-radius:3px;background:var(--red);color:white;font-size:.45rem;font-weight:800;cursor:pointer}
     .log-empty{text-align:center;padding:16px;color:var(--text-muted);font-size:.65rem}
 
-    footer{display:flex;gap:8px;padding:10px 16px;border-top:1px solid var(--border);background:var(--white);padding-bottom:calc(10px + env(safe-area-inset-bottom));flex-shrink:0}
-    footer button{flex:1;height:46px;border-radius:var(--r);border:none;font-weight:800;font-size:.85rem;cursor:pointer;font-family:'Noto Sans KR';letter-spacing:.5px;transition:all .15s}
+    footer{display:flex;gap:8px;padding:10px 16px;border-top:2px solid var(--gold);background:var(--navy);padding-bottom:calc(14px + env(safe-area-inset-bottom));flex-shrink:0;position:sticky;bottom:0;z-index:100}
+    footer button{flex:1;height:50px;border-radius:var(--r);border:none;font-weight:800;font-size:.9rem;cursor:pointer;font-family:'Noto Sans KR';letter-spacing:.5px;transition:all .15s}
     footer button:active{transform:scale(.97)}
-    .btn-send{background:var(--navy);color:var(--gold)}
-    .btn-new{background:var(--gold);color:var(--navy)}
+    .btn-send{background:var(--gold);color:var(--navy)}
+    .btn-new{background:var(--white);color:var(--navy)}
 
     .toast{position:fixed;bottom:68px;left:50%;transform:translateX(-50%) translateY(20px);padding:9px 20px;border-radius:var(--r);font-size:.7rem;font-weight:700;z-index:10000;opacity:0;transition:all .3s;pointer-events:none;max-width:90%;text-align:center;white-space:nowrap}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -156,7 +156,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 6.5 · FIELD WORK SYSTEM</div>
+    <div class="ver">VER 6.6 · FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">⚙️</button>
   </header>
 
