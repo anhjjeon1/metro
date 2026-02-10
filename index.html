@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v6.3</title>
+  <title>(주)메트로 R & S AI v6.5</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -156,7 +156,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 6.4 · FIELD WORK SYSTEM</div>
+    <div class="ver">VER 6.5 · FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">⚙️</button>
   </header>
 
@@ -597,7 +597,6 @@ var App={
       // CORS 때문에 에러가 나도 실제로는 전송됐을 수 있음
       self.toast('📤 구글시트 전송됨 (확인 필요)','info',3000);
     });
-  },    },100);
   },
 
   // ═══ Storage ═══
