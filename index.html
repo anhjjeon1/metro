@@ -156,8 +156,21 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 6.3 · FIELD WORK SYSTEM</div>
+    <div class="ver">VER 6.4 · FIELD WORK SYSTEM</div>
+    <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">⚙️</button>
   </header>
+
+  <!-- 설정 패널 -->
+  <div id="settingsPanel" style="display:none;padding:10px 16px;background:var(--navy-light);border-bottom:1px solid var(--navy-mid)">
+    <div style="font-size:.55rem;font-weight:700;color:var(--gold-dim);margin-bottom:3px">📡 구글 스프레드시트 연동</div>
+    <div style="font-size:.5rem;color:var(--gold-dim);margin-bottom:6px;line-height:1.4">Apps Script 웹앱 URL을 입력하면<br>파일전송 시 구글시트에 자동 저장됩니다</div>
+    <input type="text" id="cfgUrl" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%;padding:7px 10px;border:1px solid var(--navy-mid);border-radius:4px;background:var(--navy);color:var(--cream);font-size:.65rem;font-family:'JetBrains Mono';outline:none;margin-bottom:6px">
+    <div style="display:flex;gap:6px">
+      <button onclick="App.saveSettings()" style="flex:1;padding:7px;border:none;border-radius:4px;background:var(--gold);color:var(--navy);font-size:.6rem;font-weight:800;cursor:pointer;font-family:'Noto Sans KR'">💾 설정 저장</button>
+      <button onclick="App.testConnection()" style="flex:1;padding:7px;border:none;border-radius:4px;background:var(--navy-mid);color:var(--gold);font-size:.6rem;font-weight:800;cursor:pointer;font-family:'Noto Sans KR'">🔗 연결 테스트</button>
+    </div>
+    <div id="connStatus" style="margin-top:4px;font-size:.52rem;color:var(--gold-dim);text-align:center"></div>
+  </div>
 
   <main class="content">
 
@@ -259,6 +272,7 @@
 
 <script>
 var STORAGE={LOG:'METRO_V64_LOG',SOURCE:'METRO_V64_SRC'};
+var DEFAULT_SCRIPT_URL='https://script.google.com/macros/s/AKfycbydZJopPr6vCcohtbzjyJeUMjPtlIeuviaAS2z_8i7jVPMA8Q5Jmgte4bmJs4B9K0tM/exec';
 
 var App={
   sourceData:[],colMap:{},savedLog:[],
@@ -273,9 +287,25 @@ var App={
     this.loadSource();this.loadLog();this.renderLog();
     var s=localStorage.getItem('METRO_SITE')||'';
     if(s){document.getElementById('fSite').value=s;this.lockSite();}
+    // 설정 복원
+    var url=localStorage.getItem('METRO_SCRIPT_URL')||DEFAULT_SCRIPT_URL;
+    if(url) document.getElementById('cfgUrl').value=url;
   },
 
   toast:function(m,t,d){t=t||'info';d=d||2500;var e=document.getElementById('toast');e.textContent=m;e.className='toast '+t+' show';clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show');},d);},
+
+  // ═══ 설정 ═══
+  toggleSettings:function(){var p=document.getElementById('settingsPanel');p.style.display=p.style.display==='none'?'block':'none';},
+  saveSettings:function(){var url=document.getElementById('cfgUrl').value.trim();localStorage.setItem('METRO_SCRIPT_URL',url);this.toast('✅ 설정 저장','success');this.toggleSettings();},
+  testConnection:function(){
+    var url=document.getElementById('cfgUrl').value.trim();
+    if(!url){this.toast('URL을 입력하세요','error');return;}
+    var st=document.getElementById('connStatus');st.textContent='연결 중...';st.style.color='var(--gold)';
+    fetch(url).then(function(r){return r.json();}).then(function(d){
+      if(d.status==='ok'){st.textContent='✅ 연결 성공! '+d.message;st.style.color='#5cdb95';}
+      else{st.textContent='❌ '+d.message;st.style.color='#ff6b5e';}
+    }).catch(function(e){st.textContent='❌ 연결 실패: '+e.message;st.style.color='#ff6b5e';});
+  },
 
   // ═══ 현장명 ═══
   lockSite:function(){var v=document.getElementById('fSite').value.trim();if(!v)return;this.siteLocked=true;document.getElementById('fSite').readOnly=true;document.getElementById('siteField').classList.add('locked');document.getElementById('siteLock').style.display='inline';localStorage.setItem('METRO_SITE',v);},
@@ -502,7 +532,18 @@ var App={
   // ═══ 엑셀 내보내기 ═══
   exportExcel:function(){
     if(!this.savedLog.length){this.toast('데이터 없음','error');return;}
-    var self=this;document.getElementById('loaderText').textContent='엑셀 생성 중...';document.getElementById('loader').style.display='flex';
+    var self=this;
+    var scriptUrl=localStorage.getItem('METRO_SCRIPT_URL')||DEFAULT_SCRIPT_URL;
+
+    document.getElementById('loaderText').textContent=scriptUrl?'구글시트 전송 + 엑셀 생성 중...':'엑셀 생성 중...';
+    document.getElementById('loader').style.display='flex';
+
+    // ① 구글 스프레드시트 전송 (설정되어 있으면)
+    if(scriptUrl){
+      self.sendToGoogleSheet(scriptUrl);
+    }
+
+    // ② 엑셀 파일 다운로드
     setTimeout(function(){
       try{
         var wb=new ExcelJS.Workbook();wb.creator='(주)메트로 R&S AI';
@@ -522,9 +563,41 @@ var App={
           var pm=[{k:'before',c:9},{k:'after',c:10},{k:'confirm',c:11}];
           for(var p=0;p<pm.length;p++){var pd=it[pm[p].k];if(pd&&pd.indexOf('data:image')===0){try{var b64=pd.split(',')[1];var ext=pd.indexOf('png')>=0?'png':'jpeg';var imgId=wb.addImage({base64:b64,extension:ext});ws.addImage(imgId,{tl:{col:pm[p].c,row:rn-1},br:{col:pm[p].c+1,row:rn},editAs:'oneCell'});}catch(ie){dr.getCell(pm[p].c+1).value='(실패)';}}else{dr.getCell(pm[p].c+1).value='-';dr.getCell(pm[p].c+1).font={size:9,color:{argb:'FF999999'}};}}
         }
-        wb.xlsx.writeBuffer().then(function(buf){var blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});var fn='메트로_작업완료_'+new Date().toISOString().slice(0,10)+'.xlsx';if(typeof saveAs!=='undefined')saveAs(blob,fn);else{var u=URL.createObjectURL(blob);var a=document.createElement('a');a.href=u;a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}document.getElementById('loader').style.display='none';self.toast('✅ 엑셀 전송! ('+self.savedLog.length+'건)','success',4000);}).catch(function(err){document.getElementById('loader').style.display='none';self.toast('❌ '+err.message,'error');});
+        wb.xlsx.writeBuffer().then(function(buf){var blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});var fn='메트로_작업완료_'+new Date().toISOString().slice(0,10)+'.xlsx';if(typeof saveAs!=='undefined')saveAs(blob,fn);else{var u=URL.createObjectURL(blob);var a=document.createElement('a');a.href=u;a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}document.getElementById('loader').style.display='none';self.toast('✅ 엑셀 다운로드 완료!','success',3000);}).catch(function(err){document.getElementById('loader').style.display='none';self.toast('❌ '+err.message,'error');});
       }catch(e){document.getElementById('loader').style.display='none';self.toast('❌ '+e.message,'error');}
     },100);
+  },
+
+  // ═══ 구글 스프레드시트 전송 ═══
+  sendToGoogleSheet:function(url){
+    var self=this;
+    // 사진 데이터 포함하여 전송
+    var rows=[];
+    for(var i=0;i<this.savedLog.length;i++){
+      var it=this.savedLog[i];
+      rows.push({
+        no:it.no, site:it.site, dong:it.dong, ho:it.ho,
+        loc:it.loc, work:it.work, type:it.type, comp:it.comp,
+        memo:it.memo, date:it.date,
+        before:it.before||'', after:it.after||'', confirm:it.confirm||''
+      });
+    }
+
+    fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'sync', rows:rows})
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.status==='ok'){
+        self.toast('📊 구글시트 동기화 완료! ('+d.count+'건)','success',4000);
+      }else{
+        self.toast('⚠️ 시트 오류: '+d.message,'error',4000);
+      }
+    }).catch(function(e){
+      // CORS 때문에 에러가 나도 실제로는 전송됐을 수 있음
+      self.toast('📤 구글시트 전송됨 (확인 필요)','info',3000);
+    });
+  },    },100);
   },
 
   // ═══ Storage ═══
