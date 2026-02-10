@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v6.1</title>
+  <title>(주)메트로 R & S AI v6.2</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -11,7 +11,7 @@
   <style>
     :root{
       --navy:#0c1929;--navy-light:#162d4a;--navy-mid:#1e3a5f;
-      --gold:#c8a45e;--gold-light:#dbb978;--gold-dim:#8a7340;--gold-pale:#f5edd8;
+      --gold:#c8a45e;--gold-dim:#8a7340;--gold-pale:#f5edd8;
       --cream:#faf7f0;--white:#fefcf9;
       --red:#c0392b;--red-light:#fdf0ee;
       --green:#1a8a5c;--green-light:#eef8f3;
@@ -41,14 +41,13 @@
     .sec-title{font-size:.8rem;font-weight:800;color:var(--navy)}
     .sec-sub{font-size:.58rem;color:var(--text-dim);margin-left:4px}
 
-    /* UPLOAD */
-    .upload-area{border:2px dashed var(--border);border-radius:var(--r);padding:16px;text-align:center;cursor:pointer;background:var(--white);transition:all .2s}
+    .upload-area{border:2px dashed var(--border);border-radius:var(--r);padding:14px;text-align:center;cursor:pointer;background:var(--white);transition:all .2s}
     .upload-area:active{background:var(--gold-pale);border-color:var(--gold)}
     .upload-area.loaded{border-style:solid;border-color:var(--green);background:var(--green-light)}
-    .upload-icon{font-size:24px;margin-bottom:3px}
-    .upload-text{font-size:.72rem;color:var(--text-sub);font-weight:600}
-    .upload-hint{font-size:.58rem;color:var(--text-dim);margin-top:2px}
-    .loaded-info{display:none;font-size:.7rem;font-weight:700;color:var(--green)}
+    .upload-icon{font-size:22px;margin-bottom:2px}
+    .upload-text{font-size:.7rem;color:var(--text-sub);font-weight:600}
+    .upload-hint{font-size:.56rem;color:var(--text-dim);margin-top:2px}
+    .loaded-info{display:none;font-size:.68rem;font-weight:700;color:var(--green)}
     .upload-area.loaded .loaded-info{display:block}
     .upload-area.loaded .upload-icon,.upload-area.loaded .upload-text,.upload-area.loaded .upload-hint{display:none}
 
@@ -56,79 +55,71 @@
     .form-grid{display:flex;flex-direction:column;gap:6px}
     .form-row{display:grid;gap:6px}
     .form-row.c2{grid-template-columns:1fr 1fr}
-    .form-row.c3{grid-template-columns:1fr 1fr 1fr}
     .form-row.c2-1{grid-template-columns:2fr 1fr}
 
     .field label{display:block;font-size:.52rem;font-weight:700;color:var(--gold-dim);margin-bottom:2px;text-transform:uppercase;letter-spacing:.5px}
-    .field input,.field select,.field textarea{
+    .field input,.field textarea{
       width:100%;padding:9px 10px;border:1.5px solid var(--border);border-radius:var(--r-sm);
       font-size:.8rem;font-family:'Noto Sans KR';font-weight:600;background:var(--white);
-      color:var(--text);outline:none;transition:border-color .2s;appearance:none;-webkit-appearance:none;
+      color:var(--text);outline:none;transition:border-color .2s;
     }
-    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--navy)}
+    .field input:focus,.field textarea:focus{border-color:var(--navy)}
     .field input::placeholder,.field textarea::placeholder{color:var(--text-muted);font-weight:400}
-    .field textarea{height:55px;resize:none;line-height:1.4;font-size:.75rem}
+    .field textarea{height:50px;resize:none;line-height:1.4;font-size:.72rem}
 
-    /* 자동입력 필드 스타일 */
     .field.auto input,.field.auto textarea{background:#eef4fb;border-color:#b8d4f0;color:var(--blue)}
     .field.auto label{color:var(--blue)}
-    .field.auto label::after{content:' (자동)';font-weight:400;color:var(--text-muted)}
+    .field.auto label::after{content:' ⚡자동';font-weight:400;color:var(--text-muted);font-size:.45rem}
 
-    .select-wrap{position:relative}
-    .select-wrap::after{content:'▼';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:.5rem;color:var(--text-dim);pointer-events:none}
-    .select-wrap select{padding-right:24px;cursor:pointer}
+    .field.locked input{background:#e8f5e9;border-color:#4caf50;color:var(--green)}
 
-    /* MATCH INFO */
-    .match-info{
-      padding:6px 10px;border-radius:var(--r-sm);font-size:.6rem;font-weight:600;
-      margin-bottom:6px;display:none;
-    }
+    .match-info{padding:6px 10px;border-radius:var(--r-sm);font-size:.58rem;font-weight:600;margin-bottom:4px;display:none}
     .match-info.found{display:block;background:var(--green-light);color:var(--green);border:1px solid #b8e6d0}
     .match-info.notfound{display:block;background:var(--red-light);color:var(--red);border:1px solid #f0c8c4}
 
-    /* PHOTOS */
+    /* PHOTOS - 한 줄 가로 배치 */
     .photo-section{margin-top:6px}
-    .photo-section-label{font-size:.6rem;font-weight:700;color:var(--navy);margin-bottom:4px}
-    .photo-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-    .photo-slot{border:2px dashed var(--border);border-radius:var(--r-sm);aspect-ratio:3/4;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:pointer;position:relative;overflow:hidden;background:var(--cream);transition:all .15s}
+    .photo-section-label{font-size:.58rem;font-weight:700;color:var(--navy);margin-bottom:4px}
+    .photo-strip{display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+    .photo-strip::-webkit-scrollbar{height:2px}
+    .photo-strip::-webkit-scrollbar-thumb{background:var(--border)}
+    .photo-item{flex:0 0 auto;width:100px;text-align:center}
+    .photo-item-label{font-size:.5rem;font-weight:700;color:var(--text-dim);margin-bottom:3px}
+    .photo-slot{
+      width:100px;height:75px;border:2px dashed var(--border);border-radius:var(--r-sm);
+      display:flex;flex-direction:column;justify-content:center;align-items:center;
+      cursor:pointer;position:relative;overflow:hidden;background:var(--cream);transition:all .15s;
+    }
     .photo-slot:active{background:var(--gold-pale);border-color:var(--gold)}
     .photo-slot.filled{border-style:solid;border-color:var(--green)}
-    .photo-slot .ps-icon{font-size:18px}
-    .photo-slot .ps-label{font-size:.52rem;font-weight:700;color:var(--text-dim);margin-top:2px;text-align:center}
+    .photo-slot .ps-icon{font-size:16px}
+    .photo-slot .ps-sub{font-size:.45rem;color:var(--text-muted)}
     .photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;z-index:5}
-    .photo-slot.filled .ps-icon,.photo-slot.filled .ps-label{display:none}
+    .photo-slot.filled .ps-icon,.photo-slot.filled .ps-sub{display:none}
     .photo-slot.filled img{display:block}
     .photo-del{display:none;position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:var(--red);color:white;border:none;font-size:9px;font-weight:900;cursor:pointer;z-index:10;align-items:center;justify-content:center}
     .photo-slot.filled .photo-del{display:flex}
 
-    /* BUTTONS */
-    .btn-del-row{padding:9px;border:1.5px solid var(--red);border-radius:var(--r-sm);background:var(--red-light);color:var(--red);font-size:.7rem;font-weight:800;cursor:pointer;font-family:'Noto Sans KR';transition:all .15s;width:100%}
+    /* BTN */
+    .btn-del-row{padding:9px;border:1.5px solid var(--red);border-radius:var(--r-sm);background:var(--red-light);color:var(--red);font-size:.65rem;font-weight:800;cursor:pointer;font-family:'Noto Sans KR';width:100%}
     .btn-del-row:active{background:var(--red);color:white}
-    .btn-save-entry{width:100%;padding:11px;margin-top:8px;border:none;border-radius:var(--r-sm);background:var(--navy);color:var(--gold);font-size:.82rem;font-weight:800;cursor:pointer;font-family:'Noto Sans KR';letter-spacing:.5px;transition:all .15s}
-    .btn-save-entry:active{transform:scale(.97)}
-    .btn{padding:9px 14px;border:none;border-radius:var(--r-sm);font-family:'Noto Sans KR';font-weight:800;font-size:.72rem;cursor:pointer;transition:all .15s}
-    .btn:active{transform:scale(.97)}
-    .btn-outline{background:transparent;color:var(--text-dim);border:1.5px solid var(--border)}
-    .btn-full{width:100%}
 
-    /* LOG TABLE */
+    /* LOG */
     .log-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-    .log-head h3{font-size:.8rem;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:6px}
-    .log-count{font-size:.6rem;font-weight:400;color:var(--text-dim)}
-    .btn-log-clear{padding:5px 10px;border:none;border-radius:var(--r-sm);font-size:.6rem;font-weight:800;cursor:pointer;font-family:'Noto Sans KR';background:var(--red);color:white}
+    .log-head h3{font-size:.78rem;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:6px}
+    .log-count{font-size:.58rem;font-weight:400;color:var(--text-dim)}
+    .btn-log-clear{padding:5px 10px;border:none;border-radius:var(--r-sm);font-size:.58rem;font-weight:800;cursor:pointer;font-family:'Noto Sans KR';background:var(--red);color:white}
 
     .table-wrap{width:100%;overflow-x:auto;border:1px solid var(--border);border-radius:var(--r);background:var(--white);-webkit-overflow-scrolling:touch;max-height:500px;overflow-y:auto;box-shadow:var(--shadow)}
-    .log-table{width:100%;border-collapse:collapse;font-size:.55rem;min-width:1050px}
-    .log-table th{background:var(--navy);color:var(--gold);padding:8px 4px;border:1px solid var(--navy-light);font-weight:700;white-space:nowrap;position:sticky;top:0;z-index:10;font-size:.52rem;letter-spacing:.5px}
-    .log-table td{padding:5px 4px;border:1px solid #eee;text-align:center;vertical-align:middle;font-size:.55rem}
+    .log-table{width:100%;border-collapse:collapse;font-size:.52rem;min-width:1050px}
+    .log-table th{background:var(--navy);color:var(--gold);padding:7px 3px;border:1px solid var(--navy-light);font-weight:700;white-space:nowrap;position:sticky;top:0;z-index:10;font-size:.5rem}
+    .log-table td{padding:4px 3px;border:1px solid #eee;text-align:center;vertical-align:middle;font-size:.52rem}
     .log-table tbody tr:nth-child(even){background:var(--cream)}
-    .log-table tbody tr:hover{background:var(--blue-light)}
-    .log-table .thumb{width:42px;height:32px;object-fit:cover;border-radius:3px;border:1px solid var(--border);display:block;margin:0 auto}
-    .log-table .order-num{font-weight:800;color:var(--navy);font-size:.62rem}
-    .log-table .btn-del-log{padding:3px 6px;border:none;border-radius:3px;background:var(--red);color:white;font-size:.5rem;font-weight:800;cursor:pointer}
-    .log-empty{text-align:center;padding:20px;color:var(--text-muted);font-size:.7rem}
+    .log-table .thumb{width:40px;height:30px;object-fit:cover;border-radius:3px;border:1px solid var(--border);display:block;margin:0 auto}
+    .log-table .order-num{font-weight:800;color:var(--navy);font-size:.6rem}
+    .log-table .btn-del-log{padding:3px 5px;border:none;border-radius:3px;background:var(--red);color:white;font-size:.48rem;font-weight:800;cursor:pointer}
+    .log-empty{text-align:center;padding:20px;color:var(--text-muted);font-size:.68rem}
 
-    /* FOOTER */
     footer{display:flex;gap:8px;padding:10px 16px;border-top:1px solid var(--border);background:var(--white);padding-bottom:calc(10px + env(safe-area-inset-bottom));flex-shrink:0}
     footer button{flex:1;height:46px;border-radius:var(--r);border:none;font-weight:800;font-size:.85rem;cursor:pointer;font-family:'Noto Sans KR';letter-spacing:.5px;transition:all .15s}
     footer button:active{transform:scale(.97)}
@@ -145,9 +136,7 @@
     .spinner{width:38px;height:38px;border:3px solid var(--navy-mid);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
     #loader p{margin-top:10px;font-weight:700;font-size:.8rem;color:var(--gold)}
-
     .hidden-inputs{position:absolute;width:0;height:0;overflow:hidden}
-    @media(max-width:380px){.form-row.c3{grid-template-columns:1fr 1fr}.photo-row{grid-template-columns:1fr 1fr}}
   </style>
 </head>
 <body>
@@ -158,121 +147,101 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 6.1 · FIELD WORK SYSTEM</div>
+    <div class="ver">VER 6.2 · FIELD WORK SYSTEM</div>
   </header>
 
   <main class="content">
 
-    <!-- ═══ ① 하자 리스트 불러오기 ═══ -->
+    <!-- ① 하자 리스트 불러오기 -->
     <div class="sec">
       <div class="sec-head">
         <span class="sec-num">1</span>
         <span class="sec-title">하자 리스트 불러오기</span>
-        <span class="sec-sub">유형·업체·내용 자동입력용</span>
+        <span class="sec-sub">자동입력용</span>
       </div>
       <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
         <div class="upload-icon">📂</div>
-        <div class="upload-text">엑셀 파일 업로드 (.xlsx .xls .csv)</div>
-        <div class="upload-hint">구글 스프레드시트에서 다운받은 파일도 가능</div>
-        <div class="loaded-info" id="loadedInfo">✅ <span id="loadedFileName"></span> · <span id="loadedRowCount"></span>건 로드</div>
+        <div class="upload-text">파일 업로드 (엑셀/CSV)</div>
+        <div class="upload-hint">원드라이브 · 구글드라이브 · 내 파일에서 선택</div>
+        <div class="loaded-info" id="loadedInfo">✅ <span id="loadedFileName"></span> · <span id="loadedRowCount"></span>건</div>
       </div>
-      <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden onchange="App.loadFile(this)">
-      <button class="btn btn-outline btn-full" onclick="App.loadSample()" style="margin-top:6px;font-size:.63rem;">📋 샘플 데이터로 테스트</button>
+      <input type="file" id="fileInput" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,*/*" hidden onchange="App.loadFile(this)">
+      <button style="width:100%;margin-top:6px;padding:7px;border:1.5px solid var(--border);border-radius:var(--r-sm);background:var(--white);font-size:.6rem;font-weight:700;color:var(--text-dim);cursor:pointer;font-family:'Noto Sans KR'" onclick="App.loadSample()">📋 샘플 데이터로 테스트</button>
     </div>
 
-    <!-- ═══ ② 현장 입력 ═══ -->
+    <!-- ② 현장 입력 -->
     <div class="sec">
       <div class="sec-head">
         <span class="sec-num">2</span>
         <span class="sec-title">현장 입력</span>
+        <span class="sec-sub">동/호 입력 시 자동매칭</span>
       </div>
 
       <div class="form-grid">
-        <!-- 현장명 (고정 입력) -->
+        <!-- 현장명 (고정) -->
         <div class="form-row c2-1">
-          <div class="field">
-            <label>현장명 <span id="siteLockLabel" style="font-size:.48rem;color:var(--green);font-weight:400;display:none;">🔒 고정됨</span></label>
-            <input type="text" id="fSite" placeholder="현장명 입력 (입력 후 고정)" onblur="App.lockSite()">
-          </div>
-          <div style="display:flex;align-items:end;gap:4px">
-            <button class="btn-del-row" onclick="App.unlockSite()" style="font-size:.6rem;padding:6px">✏️ 현장변경</button>
-          </div>
+          <div class="field" id="siteField"><label>현장명 <span id="siteLock" style="display:none;color:var(--green);font-size:.45rem">🔒고정</span></label><input type="text" id="fSite" placeholder="현장명 입력" onblur="App.lockSite()"></div>
+          <div style="display:flex;align-items:end"><button class="btn-del-row" onclick="App.unlockSite()" style="font-size:.58rem;padding:7px">✏️ 변경</button></div>
         </div>
 
-        <!-- 동 / 호 (수동) -->
+        <!-- 동 / 호 (수동 → 자동매칭 트리거) -->
         <div class="form-row c2">
-          <div class="field"><label>동</label><input type="text" id="fDong" placeholder="101" inputmode="numeric" oninput="App.tryAutoFill()"></div>
-          <div class="field"><label>호</label><input type="text" id="fHo" placeholder="101" inputmode="numeric" oninput="App.tryAutoFill()"></div>
+          <div class="field"><label>동</label><input type="text" id="fDong" placeholder="101" inputmode="numeric" oninput="App.doMatch()"></div>
+          <div class="field"><label>호</label><input type="text" id="fHo" placeholder="101" inputmode="numeric" oninput="App.doMatch()"></div>
         </div>
 
-        <!-- 위치 / 공종 (자동입력) -->
-        <div class="form-row c2">
-          <div class="field auto">
-            <label>위치</label>
-            <div class="select-wrap">
-              <select id="fLoc" onchange="App.onLocChange()">
-                <option value="">선택</option>
-                <option value="거실">거실</option>
-                <option value="발코니1">발코니1</option>
-                <option value="안방">안방</option>
-                <option value="침실1">침실1</option>
-                <option value="침실2">침실2</option>
-                <option value="침실3">침실3</option>
-                <option value="알파룸">알파룸</option>
-                <option value="다용도">다용도</option>
-                <option value="발코니2">발코니2</option>
-              </select>
-            </div>
-          </div>
-          <div class="field auto"><label>공종</label><input type="text" id="fWork" placeholder="자동입력됨"></div>
-        </div>
-
-        <!-- 자동 매칭 안내 -->
+        <!-- 매칭 결과 -->
         <div class="match-info" id="matchInfo"></div>
 
-        <!-- 유형 / 시공업체 (자동입력) -->
+        <!-- 위치 / 공종 (자동) -->
         <div class="form-row c2">
-          <div class="field auto"><label>유형</label><input type="text" id="fType" placeholder="자동입력됨"></div>
-          <div class="field auto"><label>시공업체</label><input type="text" id="fComp" placeholder="자동입력됨"></div>
+          <div class="field auto"><label>위치</label><input type="text" id="fLoc" placeholder="자동 / 직접입력"></div>
+          <div class="field auto"><label>공종</label><input type="text" id="fWork" placeholder="자동 / 직접입력"></div>
         </div>
 
-        <!-- 하자내용 (자동입력) -->
-        <div class="field auto">
-          <label>하자내용</label>
-          <textarea id="fMemo" placeholder="하자 리스트에서 자동입력됨"></textarea>
+        <!-- 유형 / 시공업체 (자동) -->
+        <div class="form-row c2">
+          <div class="field auto"><label>유형</label><input type="text" id="fType" placeholder="자동 / 직접입력"></div>
+          <div class="field auto"><label>시공업체</label><input type="text" id="fComp" placeholder="자동 / 직접입력"></div>
         </div>
 
-        <!-- 사진 3장 -->
+        <!-- 하자내용 (자동) -->
+        <div class="field auto"><label>하자내용</label><textarea id="fMemo" placeholder="자동 / 직접입력"></textarea></div>
+
+        <!-- 사진 한 줄 가로 배치 -->
         <div class="photo-section">
-          <div class="photo-section-label">📸 사진 입력 (터치하여 촬영/갤러리)</div>
-          <div class="photo-row">
-            <div class="photo-slot" onclick="App.takePhoto('before')">
-              <span class="ps-icon">📷</span><span class="ps-label">수리 전</span>
-              <img id="imgBefore"><button class="photo-del" onclick="event.stopPropagation();App.delPhoto('before')">✕</button>
+          <div class="photo-section-label">📸 사진 입력</div>
+          <div class="photo-strip">
+            <div class="photo-item">
+              <div class="photo-item-label">수리 전</div>
+              <div class="photo-slot" onclick="App.takePhoto('before')">
+                <span class="ps-icon">📷</span><span class="ps-sub">촬영</span>
+                <img id="imgBefore"><button class="photo-del" onclick="event.stopPropagation();App.delPhoto('before')">✕</button>
+              </div>
             </div>
-            <div class="photo-slot" onclick="App.takePhoto('after')">
-              <span class="ps-icon">📷</span><span class="ps-label">수리 후</span>
-              <img id="imgAfter"><button class="photo-del" onclick="event.stopPropagation();App.delPhoto('after')">✕</button>
+            <div class="photo-item">
+              <div class="photo-item-label">수리 후</div>
+              <div class="photo-slot" onclick="App.takePhoto('after')">
+                <span class="ps-icon">📷</span><span class="ps-sub">촬영</span>
+                <img id="imgAfter"><button class="photo-del" onclick="event.stopPropagation();App.delPhoto('after')">✕</button>
+              </div>
             </div>
-            <div class="photo-slot" onclick="App.takePhoto('confirm')">
-              <span class="ps-icon">📋</span><span class="ps-label">완료확인서</span>
-              <img id="imgConfirm"><button class="photo-del" onclick="event.stopPropagation();App.delPhoto('confirm')">✕</button>
+            <div class="photo-item">
+              <div class="photo-item-label">완료확인서</div>
+              <div class="photo-slot" onclick="App.takePhoto('confirm')">
+                <span class="ps-icon">📋</span><span class="ps-sub">촬영</span>
+                <img id="imgConfirm"><button class="photo-del" onclick="event.stopPropagation();App.delPhoto('confirm')">✕</button>
+              </div>
             </div>
           </div>
-        </div>
-
-        <!-- 완료일 + 저장 -->
-        <div class="form-row c2">
-          <div class="field"><label>완료일</label><input type="date" id="fDate"></div>
-          <div style="display:flex;align-items:end"><button class="btn-save-entry" onclick="App.save()">💾 저장</button></div>
         </div>
       </div>
     </div>
 
-    <!-- ═══ ③ 저장 완료 리스트 ═══ -->
+    <!-- ③ 저장 완료 리스트 -->
     <div class="sec" id="secLog">
       <div class="log-head">
-        <h3><span class="sec-num" style="background:var(--green)">3</span> 저장 완료 리스트 <span class="log-count" id="logCount">(0건)</span></h3>
+        <h3><span class="sec-num" style="background:var(--green)">3</span> 저장 완료 <span class="log-count" id="logCount">(0건)</span></h3>
         <button class="btn-log-clear" onclick="App.clearLog()">🗑️ 전체삭제</button>
       </div>
       <div class="table-wrap">
@@ -291,7 +260,7 @@
 
   <footer>
     <button class="btn-send" onclick="App.exportExcel()">📤 파일전송</button>
-    <button class="btn-new" onclick="App.newEntry()">🔄 새로입력</button>
+    <button class="btn-new" onclick="App.save()">💾 저장</button>
   </footer>
 </div>
 
@@ -300,311 +269,208 @@
 </div>
 
 <script>
-var STORAGE = { LOG:'METRO_V62_LOG', SOURCE:'METRO_V62_SRC' };
-var VALID_LOCATIONS = ['거실','발코니1','안방','침실1','침실2','침실3','알파룸','다용도','발코니2'];
+var STORAGE = {LOG:'METRO_V63_LOG', SOURCE:'METRO_V63_SRC'};
 
 var App = {
-  sourceData: [],   // 불러온 하자 리스트 원본
-  colMap: {},       // 컬럼 매핑
-  savedLog: [],     // 저장 완료 리스트
+  sourceData: [],
+  colMap: {},
+  savedLog: [],
   photos: {before:'',after:'',confirm:''},
   pendingType: '',
-  matchedIdx: -1,   // 현재 매칭된 원본 행 인덱스
-  currentMatches: [], // 동/호 매칭 결과 (위치별 구분용)
+  matchedRow: null,
   siteLocked: false,
 
   init: function() {
     this.loadSource();
     this.loadLog();
     this.renderLog();
-    document.getElementById('fDate').valueAsDate = new Date();
-    // 현장명 복원
-    var savedSite = localStorage.getItem('METRO_SITE') || '';
-    if (savedSite) {
-      document.getElementById('fSite').value = savedSite;
-      this.lockSite();
-    }
+    var s = localStorage.getItem('METRO_SITE')||'';
+    if (s) { document.getElementById('fSite').value=s; this.lockSite(); }
   },
 
-  // ═══ 현장명 고정/해제 ═══
+  toast: function(m,t,d) {
+    t=t||'info';d=d||2500;
+    var e=document.getElementById('toast');
+    e.textContent=m;e.className='toast '+t+' show';
+    clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show');},d);
+  },
+
+  // ═══ 현장명 고정 ═══
   lockSite: function() {
-    var v = document.getElementById('fSite').value.trim();
-    if (!v) return;
-    this.siteLocked = true;
-    document.getElementById('fSite').readOnly = true;
-    document.getElementById('fSite').style.background = '#e8f5e9';
-    document.getElementById('fSite').style.borderColor = '#4caf50';
-    document.getElementById('siteLockLabel').style.display = 'inline';
-    localStorage.setItem('METRO_SITE', v);
+    var v=document.getElementById('fSite').value.trim();
+    if(!v) return;
+    this.siteLocked=true;
+    document.getElementById('fSite').readOnly=true;
+    document.getElementById('siteField').classList.add('locked');
+    document.getElementById('siteLock').style.display='inline';
+    localStorage.setItem('METRO_SITE',v);
   },
-
   unlockSite: function() {
-    this.siteLocked = false;
-    document.getElementById('fSite').readOnly = false;
-    document.getElementById('fSite').style.background = '';
-    document.getElementById('fSite').style.borderColor = '';
-    document.getElementById('siteLockLabel').style.display = 'none';
+    this.siteLocked=false;
+    document.getElementById('fSite').readOnly=false;
+    document.getElementById('siteField').classList.remove('locked');
+    document.getElementById('siteLock').style.display='none';
     document.getElementById('fSite').focus();
-    this.toast('현장명 수정 가능', 'info');
-  },
-
-  toast: function(msg,type,ms) {
-    type=type||'info';ms=ms||2500;
-    var el=document.getElementById('toast');
-    el.textContent=msg;el.className='toast '+type+' show';
-    clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},ms);
+    this.toast('현장명 수정 가능','info');
   },
 
   // ═══ 파일 불러오기 ═══
   loadFile: function(input) {
-    var file = input.files && input.files[0];
-    if (!file) return;
-    var self = this;
-    document.getElementById('loaderText').textContent = '파일 읽는 중...';
-    document.getElementById('loader').style.display = 'flex';
-
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        var data = new Uint8Array(e.target.result);
-        var wb = XLSX.read(data, {type:'array'});
-        var ws = wb.Sheets[wb.SheetNames[0]];
-        var json = XLSX.utils.sheet_to_json(ws, {defval:''});
-        if (!json.length) throw new Error('빈 파일');
-
-        self.sourceData = [];
-        for (var i=0; i<json.length; i++) { json[i]._idx=i; self.sourceData.push(json[i]); }
+    var file=input.files&&input.files[0]; if(!file) return;
+    var name=file.name.toLowerCase();
+    if(name.indexOf('.xlsx')<0&&name.indexOf('.xls')<0&&name.indexOf('.csv')<0){this.toast('엑셀/CSV 파일만 가능','error');return;}
+    var self=this;
+    document.getElementById('loaderText').textContent='파일 읽는 중...';
+    document.getElementById('loader').style.display='flex';
+    var reader=new FileReader();
+    reader.onload=function(e){
+      try{
+        var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+        var json=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+        if(!json.length) throw new Error('빈 파일');
+        self.sourceData=[];
+        for(var i=0;i<json.length;i++){json[i]._idx=i;self.sourceData.push(json[i]);}
         self.detectCols(json[0]);
         self.saveSource();
-
         document.getElementById('uploadArea').classList.add('loaded');
-        document.getElementById('loadedFileName').textContent = file.name;
-        document.getElementById('loadedRowCount').textContent = json.length;
-        self.toast('✅ '+json.length+'건 로드! 동/호/위치 입력 시 자동매칭됩니다','success',4000);
-      } catch(err) { self.toast('❌ 파일 오류: '+err.message,'error',4000); }
-      document.getElementById('loader').style.display = 'none';
+        document.getElementById('loadedFileName').textContent=file.name;
+        document.getElementById('loadedRowCount').textContent=json.length;
+        self.toast('✅ '+json.length+'건 로드!','success',3000);
+      }catch(err){self.toast('❌ '+err.message,'error',4000);}
+      document.getElementById('loader').style.display='none';
     };
     reader.readAsArrayBuffer(file);
   },
 
+  // ═══ 컬럼 감지 ═══
   detectCols: function(row) {
-    var keys = Object.keys(row);
-    var used = {}; // 이미 매핑된 컬럼은 중복 사용 방지
-
-    function find() {
-      var kws = Array.prototype.slice.call(arguments);
-      // 1차: 정확히 일치
-      for (var i = 0; i < keys.length; i++) {
-        if (used[keys[i]]) continue;
-        var k = keys[i].replace(/\s/g, '');
-        for (var j = 0; j < kws.length; j++) {
-          if (k === kws[j]) { used[keys[i]] = true; return keys[i]; }
-        }
-      }
-      // 2차: 포함 일치
-      for (var i2 = 0; i2 < keys.length; i2++) {
-        if (used[keys[i2]]) continue;
-        var k2 = keys[i2].replace(/\s/g, '');
-        for (var j2 = 0; j2 < kws.length; j2++) {
-          if (k2.indexOf(kws[j2]) >= 0) { used[keys[i2]] = true; return keys[i2]; }
-        }
-      }
+    var keys=Object.keys(row);
+    var used={};
+    function find(){
+      var kws=Array.prototype.slice.call(arguments);
+      for(var i=0;i<keys.length;i++){if(used[keys[i]])continue;var k=keys[i].replace(/\s/g,'');for(var j=0;j<kws.length;j++){if(k===kws[j]){used[keys[i]]=true;return keys[i];}}}
+      for(var i2=0;i2<keys.length;i2++){if(used[keys[i2]])continue;var k2=keys[i2].replace(/\s/g,'');for(var j2=0;j2<kws.length;j2++){if(k2.indexOf(kws[j2])>=0){used[keys[i2]]=true;return keys[i2];}}}
       return '';
     }
-
-    // 매핑 순서 중요! 동/호를 먼저 찾고, 그 다음 동호(합쳐진 것)
-    this.colMap = {
-      dong: find('동','dong','Dong'),
-      ho: find('호','호수','ho','Ho'),
-      unit: find('동호','동/호','세대','unit'),
-      site: find('현장명','현장','site'),
-      no: find('하자No','하자번호','No','NO','번호'),
-      loc: find('위치','실명','location'),
-      work: find('공종','공사','work'),
-      type: find('유형','하자유형','type','Type'),
-      step: find('접수단계','단계','step'),
-      comp: find('업체명','업체','시공업체','시공','company'),
-      name: find('확인자','담당자','name'),
-      memo: find('하자내용','내용','비고','상세','memo'),
-      date: find('접수일','날짜','완료일','date')
+    this.colMap={
+      dong:find('동','dong','Dong'),
+      ho:find('호','호수','ho','Ho'),
+      unit:find('동호','동/호','세대'),
+      site:find('현장명','현장'),
+      no:find('하자No','하자번호','No','NO','번호'),
+      loc:find('위치','실명','location'),
+      work:find('공종','공사'),
+      type:find('유형','하자유형','type'),
+      step:find('접수단계','단계'),
+      comp:find('업체명','업체','시공업체','시공'),
+      memo:find('하자내용','내용','비고','상세'),
+      date:find('접수일','날짜','완료일')
     };
-
-    console.log('📋 컬럼 키:', keys);
-    console.log('📋 컬럼 매핑:', JSON.stringify(this.colMap));
+    console.log('컬럼매핑:', JSON.stringify(this.colMap));
+    console.log('키목록:', keys.join(', '));
   },
 
-  gv: function(row,f) { var c=this.colMap[f]; return c ? String(row[c]||'').trim() : ''; },
+  gv: function(row,f){var c=this.colMap[f];return c?String(row[c]||'').trim():'';},
 
-  parseDH: function(row) {
+  parseDH: function(row){
     var d=this.gv(row,'dong'),h=this.gv(row,'ho');
     if(!d&&!h){var u=this.gv(row,'unit');var m=u.match(/(\d+)\s*동?\s*[-\/]?\s*(\d+)\s*호?/);if(m){d=m[1];h=m[2];}}
-    return {dong:d.replace(/[^0-9]/g,''), ho:h.replace(/[^0-9]/g,'')};
+    return{dong:d.replace(/[^0-9]/g,''),ho:h.replace(/[^0-9]/g,'')};
   },
 
-  // ═══ 동/호 입력 시 자동 매칭 → 위치, 공종, 유형, 시공업체, 하자내용 채움 ═══
-  tryAutoFill: function() {
-    var qD = document.getElementById('fDong').value.trim();
-    var qH = document.getElementById('fHo').value.trim();
-    var info = document.getElementById('matchInfo');
+  // ═══ 동/호 입력 → 자동매칭 ═══
+  doMatch: function() {
+    var qD=document.getElementById('fDong').value.trim();
+    var qH=document.getElementById('fHo').value.trim();
+    var info=document.getElementById('matchInfo');
 
-    if (!this.sourceData.length) {
-      info.className = 'match-info'; info.style.display = 'none'; return;
-    }
-    if (!qD) {
-      info.className = 'match-info'; info.style.display = 'none'; this.matchedIdx = -1; return;
-    }
+    if(!this.sourceData.length){info.style.display='none';return;}
+    if(!qD){info.style.display='none';this.matchedRow=null;return;}
 
-    // 동+호로 매칭 (위치는 자동입력 대상이므로 필터에서 제외)
-    var matches = [];
-    for (var i = 0; i < this.sourceData.length; i++) {
-      var row = this.sourceData[i];
-      var dh = this.parseDH(row);
-      var dongMatch = dh.dong === qD;
-      if (!dongMatch) continue;
-      if (qH) { if (dh.ho !== qH) continue; }
+    // 검색
+    var matches=[];
+    for(var i=0;i<this.sourceData.length;i++){
+      var row=this.sourceData[i];
+      var dh=this.parseDH(row);
+      if(dh.dong!==qD) continue;
+      if(qH && dh.ho!==qH) continue;
       matches.push(row);
     }
 
-    console.log('🔍 검색:', {동:qD, 호:qH}, '→', matches.length + '건');
+    if(matches.length>0){
+      var m=matches[0];
+      this.matchedRow=m;
 
-    if (matches.length > 0) {
-      var match = matches[0];
-      this.matchedIdx = match._idx;
-      this.currentMatches = matches; // 여러 건일 때 참조용
+      // ★ 자동입력: 위치, 공종, 유형, 시공업체, 하자내용
+      document.getElementById('fLoc').value  = this.gv(m,'loc')||'';
+      document.getElementById('fWork').value = this.gv(m,'work')||'';
+      document.getElementById('fType').value = this.gv(m,'type')||this.gv(m,'step')||'';
+      document.getElementById('fComp').value = this.gv(m,'comp')||'';
+      document.getElementById('fMemo').value = this.gv(m,'memo')||'';
 
-      // ★ 위치 자동 선택 (select option에 있는 값이면)
-      var locVal = this.gv(match, 'loc') || '';
-      var locSelect = document.getElementById('fLoc');
-      var locFound = false;
-      for (var o = 0; o < locSelect.options.length; o++) {
-        if (locSelect.options[o].value === locVal) { locSelect.value = locVal; locFound = true; break; }
-      }
-      if (!locFound) locSelect.value = '';
-
-      // ★ 공종 자동입력
-      document.getElementById('fWork').value = this.gv(match, 'work') || '';
-
-      // 유형, 시공업체, 하자내용 자동입력
-      document.getElementById('fType').value = this.gv(match, 'type') || this.gv(match, 'step') || '';
-      document.getElementById('fComp').value = this.gv(match, 'comp') || '';
-      document.getElementById('fMemo').value = this.gv(match, 'memo') || '';
-
-      // 현장명 비어있으면 채우기
-      if (!document.getElementById('fSite').value.trim()) {
-        var siteVal = this.gv(match, 'site') || '';
-        if (siteVal) { document.getElementById('fSite').value = siteVal; this.lockSite(); }
+      // 현장명 비었으면 채우기
+      if(!document.getElementById('fSite').value.trim()){
+        var sv=this.gv(m,'site')||'';
+        if(sv){document.getElementById('fSite').value=sv;this.lockSite();}
       }
 
-      var detail = (this.gv(match,'dong')||'?') + '동 ' + (this.gv(match,'ho')||'?') + '호 ' + locVal;
-      info.textContent = '✅ 매칭! (' + matches.length + '건) ' + detail + ' → 위치·공종·유형·업체·내용 자동입력';
-      info.className = 'match-info found';
+      var loc=this.gv(m,'loc')||'';
+      info.textContent='✅ 매칭! '+this.gv(m,'dong')+'동 '+this.gv(m,'ho')+'호 '+loc+' ('+matches.length+'건)';
+      if(matches.length>1) info.textContent+=' — 첫번째 표시중';
+      info.className='match-info found';
+    }else{
+      this.matchedRow=null;
+      document.getElementById('fLoc').value='';
+      document.getElementById('fWork').value='';
+      document.getElementById('fType').value='';
+      document.getElementById('fComp').value='';
+      document.getElementById('fMemo').value='';
 
-      // 매칭 건이 여러 개면 알림
-      if (matches.length > 1) {
-        info.textContent += ' (동일 동호 ' + matches.length + '건 — 위치 선택으로 구분)';
+      var hint='';
+      if(this.sourceData.length>0){
+        var ex=[];
+        for(var s=0;s<Math.min(3,this.sourceData.length);s++){var sd=this.parseDH(this.sourceData[s]);ex.push(sd.dong+'동'+sd.ho+'호');}
+        hint=' (예: '+ex.join(', ')+')';
       }
-    } else {
-      this.matchedIdx = -1;
-      this.currentMatches = [];
-      document.getElementById('fLoc').value = '';
-      document.getElementById('fWork').value = '';
-      document.getElementById('fType').value = '';
-      document.getElementById('fComp').value = '';
-      document.getElementById('fMemo').value = '';
-
-      var hint = '';
-      if (this.sourceData.length > 0) {
-        var samples = [];
-        for (var s = 0; s < Math.min(3, this.sourceData.length); s++) {
-          var sdh = this.parseDH(this.sourceData[s]);
-          samples.push(sdh.dong + '동' + sdh.ho + '호');
-        }
-        hint = ' (예: ' + samples.join(', ') + ')';
-      }
-      info.textContent = '❌ 매칭 없음 (동:' + qD + (qH ? ' 호:' + qH : '') + ')' + hint;
-      info.className = 'match-info notfound';
-    }
-  },
-
-  // 위치 선택 변경 시 → 동일 동호 내에서 해당 위치 항목으로 재매칭
-  onLocChange: function() {
-    var qL = document.getElementById('fLoc').value;
-    if (!this.currentMatches || !this.currentMatches.length || !qL) return;
-
-    for (var i = 0; i < this.currentMatches.length; i++) {
-      var row = this.currentMatches[i];
-      if (this.gv(row, 'loc') === qL) {
-        this.matchedIdx = row._idx;
-        document.getElementById('fWork').value = this.gv(row, 'work') || '';
-        document.getElementById('fType').value = this.gv(row, 'type') || this.gv(row, 'step') || '';
-        document.getElementById('fComp').value = this.gv(row, 'comp') || '';
-        document.getElementById('fMemo').value = this.gv(row, 'memo') || '';
-
-        var info = document.getElementById('matchInfo');
-        info.textContent = '✅ 위치 매칭! ' + this.gv(row,'dong') + '동 ' + this.gv(row,'ho') + '호 ' + qL + ' → 자동입력 갱신';
-        info.className = 'match-info found';
-        return;
-      }
+      info.textContent='❌ 매칭없음 (동:'+qD+(qH?' 호:'+qH:'')+')'+hint;
+      info.className='match-info notfound';
     }
   },
 
   // ═══ 사진 ═══
-  takePhoto: function(type) {
-    this.pendingType = type;
-    var fc = document.getElementById('fCapture');
-    fc.value = ''; fc.click();
+  takePhoto: function(type){
+    this.pendingType=type;
+    var f=document.getElementById('fCapture');f.value='';f.click();
   },
-
-  onPhoto: function(input) {
-    var file = input.files && input.files[0];
-    if (!file || !this.pendingType) return;
-    var type = this.pendingType;
-    var self = this;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var img = new Image();
-      img.onload = function() {
-        var maxW=1200; var scale=img.width>maxW?maxW/img.width:1;
-        var cvs=document.createElement('canvas'); cvs.width=img.width*scale; cvs.height=img.height*scale;
-        cvs.getContext('2d').drawImage(img,0,0,cvs.width,cvs.height);
-        var b64=cvs.toDataURL('image/jpeg',0.8);
-        self.photos[type]=b64;
-        self.updateSlot(type,b64);
+  onPhoto: function(input){
+    var file=input.files&&input.files[0];
+    if(!file||!this.pendingType) return;
+    var type=this.pendingType,self=this;
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var img=new Image();
+      img.onload=function(){
+        var mW=1200,sc=img.width>mW?mW/img.width:1;
+        var c=document.createElement('canvas');c.width=img.width*sc;c.height=img.height*sc;
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        var b=c.toDataURL('image/jpeg',0.8);
+        self.photos[type]=b;self.updateSlot(type,b);
         self.toast('✅ 사진 저장','success',1500);
       };
       img.src=e.target.result;
     };
     reader.readAsDataURL(file);
   },
-
-  delPhoto: function(type) { this.photos[type]=''; this.updateSlot(type,''); },
-
-  updateSlot: function(type,src) {
-    var id = type==='before'?'imgBefore':type==='after'?'imgAfter':'imgConfirm';
-    var el=document.getElementById(id); var slot=el.closest('.photo-slot');
+  delPhoto: function(type){this.photos[type]='';this.updateSlot(type,'');},
+  updateSlot: function(type,src){
+    var id=type==='before'?'imgBefore':type==='after'?'imgAfter':'imgConfirm';
+    var el=document.getElementById(id),slot=el.closest('.photo-slot');
     if(src){el.src=src;el.style.display='block';slot.classList.add('filled');}
     else{el.src='';el.style.display='none';slot.classList.remove('filled');}
   },
 
-  // ═══ 폼 초기화 ═══
-  clearForm: function() {
-    // 현장명은 고정 상태면 유지
-    var ids = this.siteLocked ? ['fDong','fHo','fWork','fType','fComp','fMemo'] : ['fSite','fDong','fHo','fWork','fType','fComp','fMemo'];
-    for(var i=0;i<ids.length;i++) document.getElementById(ids[i]).value='';
-    document.getElementById('fLoc').value='';
-    document.getElementById('fDate').valueAsDate=new Date();
-    this.photos={before:'',after:'',confirm:''};
-    var t=['before','after','confirm'];
-    for(var j=0;j<t.length;j++) this.updateSlot(t[j],'');
-    document.getElementById('matchInfo').className='match-info';
-    document.getElementById('matchInfo').style.display='none';
-    this.matchedIdx=-1;
-    this.currentMatches=[];
-    this.toast(this.siteLocked ? '입력칸 초기화 (현장명 유지)' : '전체 초기화','info');
-  },
-
-  // ═══ 저장 ═══
-  save: function() {
+  // ═══ 저장 (완료일 = 오늘 자동) ═══
+  save: function(){
     var site=document.getElementById('fSite').value.trim();
     var dong=document.getElementById('fDong').value.trim();
     var ho=document.getElementById('fHo').value.trim();
@@ -612,57 +478,53 @@ var App = {
     if(!dong){this.toast('동을 입력하세요','error');return;}
     if(!ho){this.toast('호를 입력하세요','error');return;}
 
-    var entry = {
-      no: this.savedLog.length+1,
-      site: site,
-      dong: dong,
-      ho: ho,
-      loc: document.getElementById('fLoc').value,
-      work: document.getElementById('fWork').value.trim(),
-      type: document.getElementById('fType').value.trim(),
-      comp: document.getElementById('fComp').value.trim(),
-      memo: document.getElementById('fMemo').value.trim(),
-      before: this.photos.before||'',
-      after: this.photos.after||'',
-      confirm: this.photos.confirm||'',
-      date: document.getElementById('fDate').value,
-      savedAt: new Date().toLocaleString('ko-KR'),
-      sourceIdx: this.matchedIdx // 원본 인덱스 참조
+    // 완료일 = 오늘 자동
+    var today=new Date();
+    var dateStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+
+    var entry={
+      no:this.savedLog.length+1,
+      site:site,
+      dong:dong,
+      ho:ho,
+      loc:document.getElementById('fLoc').value.trim(),
+      work:document.getElementById('fWork').value.trim(),
+      type:document.getElementById('fType').value.trim(),
+      comp:document.getElementById('fComp').value.trim(),
+      memo:document.getElementById('fMemo').value.trim(),
+      before:this.photos.before||'',
+      after:this.photos.after||'',
+      confirm:this.photos.confirm||'',
+      date:dateStr
     };
 
     this.savedLog.push(entry);
     this.saveLog();
     this.renderLog();
-    this.toast('✅ 저장 완료! (#'+entry.no+')','success');
-
-    setTimeout(function(){document.getElementById('secLog').scrollIntoView({behavior:'smooth',block:'start'});},400);
+    this.toast('✅ 저장! #'+entry.no+' ('+dateStr+')','success');
+    setTimeout(function(){document.getElementById('secLog').scrollIntoView({behavior:'smooth'});},400);
   },
 
   // ═══ 새로입력 ═══
-  newEntry: function() {
-    var keepSite=document.getElementById('fSite').value;
-    var ids=['fDong','fHo','fWork','fType','fComp','fMemo'];
+  newEntry: function(){
+    var ids=['fDong','fHo','fLoc','fWork','fType','fComp','fMemo'];
     for(var i=0;i<ids.length;i++) document.getElementById(ids[i]).value='';
-    document.getElementById('fLoc').value='';
-    document.getElementById('fDate').valueAsDate=new Date();
     this.photos={before:'',after:'',confirm:''};
     var t=['before','after','confirm'];
     for(var j=0;j<t.length;j++) this.updateSlot(t[j],'');
     document.getElementById('matchInfo').className='match-info';
     document.getElementById('matchInfo').style.display='none';
-    this.matchedIdx=-1;
-    this.currentMatches=[];
+    this.matchedRow=null;
     document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
     document.getElementById('fDong').focus();
     this.toast('새 작업 입력 (현장명 유지)','info');
   },
 
-  // ═══ 로그 렌더링 ═══
-  renderLog: function() {
+  // ═══ 로그 ═══
+  renderLog: function(){
     var c=this.savedLog.length;
     document.getElementById('logCount').textContent='('+c+'건)';
     if(!c){document.getElementById('logBody').innerHTML='<tr><td colspan="14" class="log-empty">저장된 항목이 없습니다</td></tr>';return;}
-
     var html='';
     for(var i=0;i<c;i++){
       var it=this.savedLog[i];
@@ -675,91 +537,71 @@ var App = {
         +'<td>'+(it.work||'-')+'</td>'
         +'<td>'+(it.type||'-')+'</td>'
         +'<td>'+(it.comp||'-')+'</td>'
-        +'<td style="text-align:left;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(it.memo||'-')+'</td>'
+        +'<td style="text-align:left;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(it.memo||'-')+'</td>'
         +'<td>'+(it.before?'<img src="'+it.before+'" class="thumb">':'-')+'</td>'
         +'<td>'+(it.after?'<img src="'+it.after+'" class="thumb">':'-')+'</td>'
         +'<td>'+(it.confirm?'<img src="'+it.confirm+'" class="thumb">':'-')+'</td>'
-        +'<td style="font-size:.5rem;">'+(it.date||'-')+'</td>'
-        +'<td><button class="btn-del-log" onclick="App.deleteItem('+i+')">삭제</button></td>'
+        +'<td style="font-size:.48rem">'+it.date+'</td>'
+        +'<td><button class="btn-del-log" onclick="App.delItem('+i+')">삭제</button></td>'
         +'</tr>';
     }
     document.getElementById('logBody').innerHTML=html;
   },
 
-  deleteItem: function(idx) {
-    if(!confirm('#'+this.savedLog[idx].no+' 삭제하시겠습니까?'))return;
+  delItem: function(idx){
+    if(!confirm('#'+this.savedLog[idx].no+' 삭제?'))return;
     this.savedLog.splice(idx,1);
     for(var i=0;i<this.savedLog.length;i++) this.savedLog[i].no=i+1;
-    this.saveLog();this.renderLog();this.toast('삭제 완료','info');
+    this.saveLog();this.renderLog();this.toast('삭제','info');
   },
-
-  clearLog: function() {
+  clearLog: function(){
     if(!this.savedLog.length){this.toast('삭제할 항목 없음','error');return;}
-    if(!confirm('전체 '+this.savedLog.length+'건을 삭제하시겠습니까?'))return;
-    this.savedLog=[];this.saveLog();this.renderLog();this.toast('전체 삭제 완료','info');
+    if(!confirm('전체 '+this.savedLog.length+'건 삭제?'))return;
+    this.savedLog=[];this.saveLog();this.renderLog();this.toast('전체 삭제','info');
   },
 
-  // ═══ 엑셀 내보내기 (사진 셀 삽입) ═══
-  exportExcel: function() {
-    if(!this.savedLog.length){this.toast('전송할 데이터가 없습니다','error');return;}
+  // ═══ 엑셀 내보내기 ═══
+  exportExcel: function(){
+    if(!this.savedLog.length){this.toast('전송할 데이터 없음','error');return;}
     var self=this;
-    document.getElementById('loaderText').textContent='엑셀 생성 중... (사진 삽입)';
+    document.getElementById('loaderText').textContent='엑셀 생성 중...';
     document.getElementById('loader').style.display='flex';
-
     setTimeout(function(){
       try{
-        var wb=new ExcelJS.Workbook();
-        wb.creator='(주)메트로 R & S AI'; wb.created=new Date();
-        var ws=wb.addWorksheet('작업완료 리스트',{views:[{state:'frozen',ySplit:1}]});
-
-        var headers=['No','현장명','동','호','위치','공종','유형','시공업체','하자내용','수리전','수리후','완료확인서','완료일'];
-        ws.addRow(headers);
-
-        var hr=ws.getRow(1); hr.height=28;
-        hr.eachCell(function(cell){
-          cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF0C1929'}};
-          cell.font={color:{argb:'FFC8A45E'},bold:true,size:10};
-          cell.alignment={horizontal:'center',vertical:'middle',wrapText:true};
-          cell.border={top:{style:'thin',color:{argb:'FF2A2A2A'}},bottom:{style:'thin',color:{argb:'FF2A2A2A'}},left:{style:'thin',color:{argb:'FF2A2A2A'}},right:{style:'thin',color:{argb:'FF2A2A2A'}}};
-        });
-
+        var wb=new ExcelJS.Workbook();wb.creator='(주)메트로 R&S AI';
+        var ws=wb.addWorksheet('작업완료',{views:[{state:'frozen',ySplit:1}]});
+        ws.addRow(['No','현장명','동','호','위치','공종','유형','시공업체','하자내용','수리전','수리후','완료확인서','완료일']);
+        var hr=ws.getRow(1);hr.height=28;
+        hr.eachCell(function(c){c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FF0C1929'}};c.font={color:{argb:'FFC8A45E'},bold:true,size:10};c.alignment={horizontal:'center',vertical:'middle',wrapText:true};c.border={top:{style:'thin',color:{argb:'FF2A2A2A'}},bottom:{style:'thin',color:{argb:'FF2A2A2A'}},left:{style:'thin',color:{argb:'FF2A2A2A'}},right:{style:'thin',color:{argb:'FF2A2A2A'}}};});
         ws.columns=[{width:5},{width:14},{width:6},{width:6},{width:9},{width:12},{width:10},{width:12},{width:25},{width:18},{width:18},{width:18},{width:12}];
 
         for(var i=0;i<self.savedLog.length;i++){
-          var it=self.savedLog[i]; var rn=i+2;
+          var it=self.savedLog[i],rn=i+2;
           ws.addRow([it.no,it.site||'',it.dong||'',it.ho||'',it.loc||'',it.work||'',it.type||'',it.comp||'',it.memo||'','','','',it.date||'']);
           ws.getRow(rn).height=120;
-
           var dr=ws.getRow(rn);
-          dr.eachCell(function(cell){
-            cell.alignment={horizontal:'center',vertical:'middle',wrapText:true};cell.font={size:9};
-            cell.border={top:{style:'thin',color:{argb:'FFDDDDDD'}},bottom:{style:'thin',color:{argb:'FFDDDDDD'}},left:{style:'thin',color:{argb:'FFDDDDDD'}},right:{style:'thin',color:{argb:'FFDDDDDD'}}};
-          });
-          if(i%2===1) dr.eachCell(function(cell){cell.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFF8F5ED'}};});
+          dr.eachCell(function(c){c.alignment={horizontal:'center',vertical:'middle',wrapText:true};c.font={size:9};c.border={top:{style:'thin',color:{argb:'FFDDDDDD'}},bottom:{style:'thin',color:{argb:'FFDDDDDD'}},left:{style:'thin',color:{argb:'FFDDDDDD'}},right:{style:'thin',color:{argb:'FFDDDDDD'}}};});
+          if(i%2===1) dr.eachCell(function(c){c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFF8F5ED'}};});
           dr.getCell(9).alignment={horizontal:'left',vertical:'middle',wrapText:true};
 
-          var pm=[{key:'before',col:9},{key:'after',col:10},{key:'confirm',col:11}];
+          var pm=[{k:'before',c:9},{k:'after',c:10},{k:'confirm',c:11}];
           for(var p=0;p<pm.length;p++){
-            var pd=it[pm[p].key];
+            var pd=it[pm[p].k];
             if(pd&&pd.indexOf('data:image')===0){
-              try{
-                var b64=pd.split(',')[1];var ext=pd.indexOf('png')>=0?'png':'jpeg';
-                var imgId=wb.addImage({base64:b64,extension:ext});
-                ws.addImage(imgId,{tl:{col:pm[p].col,row:rn-1},br:{col:pm[p].col+1,row:rn},editAs:'oneCell'});
-              }catch(ie){dr.getCell(pm[p].col+1).value='(실패)';}
-            }else{dr.getCell(pm[p].col+1).value='-';dr.getCell(pm[p].col+1).font={size:9,color:{argb:'FF999999'}};}
+              try{var b64=pd.split(',')[1];var ext=pd.indexOf('png')>=0?'png':'jpeg';var imgId=wb.addImage({base64:b64,extension:ext});ws.addImage(imgId,{tl:{col:pm[p].c,row:rn-1},br:{col:pm[p].c+1,row:rn},editAs:'oneCell'});}
+              catch(ie){dr.getCell(pm[p].c+1).value='(실패)';}
+            }else{dr.getCell(pm[p].c+1).value='-';dr.getCell(pm[p].c+1).font={size:9,color:{argb:'FF999999'}};}
           }
         }
-
         wb.xlsx.writeBuffer().then(function(buf){
           var blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
           var fn='메트로_작업완료_'+new Date().toISOString().slice(0,10)+'.xlsx';
           if(typeof saveAs!=='undefined')saveAs(blob,fn);
           else{var u=URL.createObjectURL(blob);var a=document.createElement('a');a.href=u;a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}
           document.getElementById('loader').style.display='none';
-          self.toast('✅ 사진 포함 엑셀 전송 완료! ('+self.savedLog.length+'건)','success',4000);
-        }).catch(function(err){document.getElementById('loader').style.display='none';self.toast('❌ '+err.message,'error',4000);});
-      }catch(e){document.getElementById('loader').style.display='none';self.toast('❌ '+e.message,'error',4000);}
+          self.toast('✅ 엑셀 전송! ('+self.savedLog.length+'건)','success',4000);
+        }).catch(function(err){document.getElementById('loader').style.display='none';self.toast('❌ '+err.message,'error');});
+      }catch(e){document.getElementById('loader').style.display='none';self.toast('❌ '+e.message,'error');}
     },100);
   },
 
@@ -767,73 +609,42 @@ var App = {
   saveLog: function(){
     try{localStorage.setItem(STORAGE.LOG,JSON.stringify(this.savedLog));}
     catch(e){
-      try{
-        var slim=[];
-        for(var i=0;i<this.savedLog.length;i++){
-          var c={};var keys=Object.keys(this.savedLog[i]);
-          for(var j=0;j<keys.length;j++){var k=keys[j];c[k]=(k==='before'||k==='after'||k==='confirm')?(this.savedLog[i][k]?'(사진)':''):this.savedLog[i][k];}
-          slim.push(c);
-        }
-        localStorage.setItem(STORAGE.LOG,JSON.stringify(slim));
-        this.toast('⚠️ 용량 초과 → 사진 데이터 축소 저장','error',4000);
-      }catch(e2){this.toast('❌ 저장 실패','error',4000);}
+      try{var s=[];for(var i=0;i<this.savedLog.length;i++){var c={};var ks=Object.keys(this.savedLog[i]);for(var j=0;j<ks.length;j++){var k=ks[j];c[k]=(k==='before'||k==='after'||k==='confirm')?(this.savedLog[i][k]?'📷':''):this.savedLog[i][k];}s.push(c);}localStorage.setItem(STORAGE.LOG,JSON.stringify(s));self.toast('⚠️ 용량초과→사진축소','error');}catch(e2){}
     }
   },
   loadLog: function(){try{this.savedLog=JSON.parse(localStorage.getItem(STORAGE.LOG)||'[]');}catch(e){this.savedLog=[];}},
-
   saveSource: function(){
-    try{
-      var slim=[];
-      for(var i=0;i<this.sourceData.length;i++){var c={};var keys=Object.keys(this.sourceData[i]);for(var j=0;j<keys.length;j++)c[keys[j]]=this.sourceData[i][keys[j]];slim.push(c);}
-      localStorage.setItem(STORAGE.SOURCE,JSON.stringify({data:slim}));
-    }catch(e){}
+    try{var s=[];for(var i=0;i<this.sourceData.length;i++){var c={};var ks=Object.keys(this.sourceData[i]);for(var j=0;j<ks.length;j++)c[ks[j]]=this.sourceData[i][ks[j]];s.push(c);}localStorage.setItem(STORAGE.SOURCE,JSON.stringify({data:s}));}catch(e){}
   },
   loadSource: function(){
     try{
       var s=JSON.parse(localStorage.getItem(STORAGE.SOURCE)||'null');
       if(s&&s.data&&s.data.length){
-        this.sourceData=[];
-        for(var i=0;i<s.data.length;i++){s.data[i]._idx=i;this.sourceData.push(s.data[i]);}
-        // 항상 컬럼 재감지 (이전 매핑 신뢰하지 않음)
+        this.sourceData=[];for(var i=0;i<s.data.length;i++){s.data[i]._idx=i;this.sourceData.push(s.data[i]);}
         this.detectCols(s.data[0]);
         document.getElementById('uploadArea').classList.add('loaded');
         document.getElementById('loadedFileName').textContent='이전 데이터';
         document.getElementById('loadedRowCount').textContent=this.sourceData.length;
       }
-    }catch(e){ console.warn('소스 로드 실패:', e); }
+    }catch(e){}
   },
 
   // ═══ 샘플 ═══
   loadSample: function(){
-    var sample=[];
+    var sample=[],locs=['거실','발코니1','안방','침실1','침실2','알파룸','다용도','발코니2'];
     var works=['PL창호공사','도배공사','타일공사','바닥공사','설비공사'];
     var types=['균열','누수','들뜸','파손','변색','결로'];
     var comps=['진흥건업(주)','대림산업','현대건설','삼성물산'];
-    var memos=['창문 틈새 보수','벽지 들뜸 수리','타일 깨짐 교체','바닥 긁힘 보수','배수 불량 수리','도배 곰팡이','문짝 경첩 교체','실리콘 재시공'];
-
-    for(var d=101;d<=103;d++){
-      for(var h=101;h<=106;h++){
-        var cnt=1+Math.floor(Math.random()*2);
-        for(var c=0;c<cnt;c++){
-          sample.push({
-            '현장명':'원주혁신C4BL','하자No':'H'+String(sample.length+1).padStart(4,'0'),
-            '동':String(d),'호':String(h),
-            '위치':VALID_LOCATIONS[Math.floor(Math.random()*VALID_LOCATIONS.length)],
-            '공종':works[Math.floor(Math.random()*works.length)],
-            '유형':types[Math.floor(Math.random()*types.length)],
-            '시공업체':comps[Math.floor(Math.random()*comps.length)],
-            '하자내용':memos[Math.floor(Math.random()*memos.length)],
-            '접수일':'2025-02-09'
-          });
-        }
-      }
-    }
+    var memos=['창문 틈새 보수','벽지 들뜸 수리','타일 깨짐 교체','바닥 긁힘 보수','배수 불량','도배 곰팡이','실리콘 재시공'];
+    for(var d=101;d<=103;d++){for(var h=101;h<=106;h++){var n=1+Math.floor(Math.random()*2);for(var c=0;c<n;c++){
+      sample.push({'현장명':'원주혁신C4BL','하자No':'H'+String(sample.length+1).padStart(4,'0'),'동':String(d),'호':String(h),'위치':locs[Math.floor(Math.random()*locs.length)],'공종':works[Math.floor(Math.random()*works.length)],'유형':types[Math.floor(Math.random()*types.length)],'시공업체':comps[Math.floor(Math.random()*comps.length)],'하자내용':memos[Math.floor(Math.random()*memos.length)],'접수일':'2025-02-09'});
+    }}}
     this.sourceData=[];for(var i=0;i<sample.length;i++){sample[i]._idx=i;this.sourceData.push(sample[i]);}
     this.detectCols(sample[0]);this.saveSource();
     document.getElementById('uploadArea').classList.add('loaded');
     document.getElementById('loadedFileName').textContent='샘플';
     document.getElementById('loadedRowCount').textContent=sample.length;
-    this.toast('✅ 샘플 '+sample.length+'건 로드! 동/호 입력 시 자동매칭','success',4000);
+    this.toast('✅ 샘플 '+sample.length+'건! 동/호 입력해보세요','success',4000);
   }
 };
 
