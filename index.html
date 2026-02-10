@@ -260,12 +260,12 @@
 
   <footer>
     <button class="btn-send" onclick="App.exportExcel()">📤 파일전송</button>
-    <button class="btn-new" onclick="App.save()">💾 저장</button>
+    <button class="btn-new" onclick="App.newEntry()">🔄 새로입력</button>
   </footer>
 </div>
 
 <div class="hidden-inputs">
-  <input type="file" id="fCapture" accept="image/*" capture="environment" onchange="App.onPhoto(this)">
+  <input type="file" id="fCapture" accept="image/*" onchange="App.onPhoto(this)">
 </div>
 
 <script>
@@ -456,12 +456,18 @@ var App = {
         var b=c.toDataURL('image/jpeg',0.8);
         self.photos[type]=b;self.updateSlot(type,b);
         self.toast('✅ 사진 저장','success',1500);
+        // ★ 사진 입력 후 자동 저장
+        self.autoSave();
       };
       img.src=e.target.result;
     };
     reader.readAsDataURL(file);
   },
-  delPhoto: function(type){this.photos[type]='';this.updateSlot(type,'');},
+  delPhoto: function(type){
+    this.photos[type]='';this.updateSlot(type,'');
+    // 삭제 후에도 리스트 업데이트
+    this.autoSave();
+  },
   updateSlot: function(type,src){
     var id=type==='before'?'imgBefore':type==='after'?'imgAfter':'imgConfirm';
     var el=document.getElementById(id),slot=el.closest('.photo-slot');
@@ -469,39 +475,65 @@ var App = {
     else{el.src='';el.style.display='none';slot.classList.remove('filled');}
   },
 
-  // ═══ 저장 (완료일 = 오늘 자동) ═══
-  save: function(){
+  // ═══ 자동 저장 (사진 입력 시 자동 호출) ═══
+  autoSave: function(){
     var site=document.getElementById('fSite').value.trim();
     var dong=document.getElementById('fDong').value.trim();
     var ho=document.getElementById('fHo').value.trim();
-    if(!site){this.toast('현장명을 입력하세요','error');return;}
-    if(!dong){this.toast('동을 입력하세요','error');return;}
-    if(!ho){this.toast('호를 입력하세요','error');return;}
 
-    // 완료일 = 오늘 자동
+    // 최소 동/호 입력되어야 저장
+    if(!dong||!ho) return;
+    if(!site) site='-';
+
     var today=new Date();
     var dateStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
 
-    var entry={
-      no:this.savedLog.length+1,
-      site:site,
-      dong:dong,
-      ho:ho,
-      loc:document.getElementById('fLoc').value.trim(),
-      work:document.getElementById('fWork').value.trim(),
-      type:document.getElementById('fType').value.trim(),
-      comp:document.getElementById('fComp').value.trim(),
-      memo:document.getElementById('fMemo').value.trim(),
-      before:this.photos.before||'',
-      after:this.photos.after||'',
-      confirm:this.photos.confirm||'',
-      date:dateStr
-    };
+    var loc=document.getElementById('fLoc').value.trim();
+    var work=document.getElementById('fWork').value.trim();
+    var type=document.getElementById('fType').value.trim();
+    var comp=document.getElementById('fComp').value.trim();
+    var memo=document.getElementById('fMemo').value.trim();
 
-    this.savedLog.push(entry);
+    // 동일 동+호+위치 항목이 있으면 업데이트, 없으면 새로 추가
+    var existIdx=-1;
+    for(var i=0;i<this.savedLog.length;i++){
+      var it=this.savedLog[i];
+      if(it.dong===dong && it.ho===ho && it.loc===loc){existIdx=i;break;}
+    }
+
+    if(existIdx>=0){
+      // 기존 항목 업데이트
+      var ex=this.savedLog[existIdx];
+      ex.site=site; ex.work=work; ex.type=type; ex.comp=comp; ex.memo=memo;
+      ex.before=this.photos.before||ex.before;
+      ex.after=this.photos.after||ex.after;
+      ex.confirm=this.photos.confirm||ex.confirm;
+      ex.date=dateStr;
+    }else{
+      // 새 항목 추가
+      this.savedLog.push({
+        no:this.savedLog.length+1,
+        site:site, dong:dong, ho:ho, loc:loc,
+        work:work, type:type, comp:comp, memo:memo,
+        before:this.photos.before||'',
+        after:this.photos.after||'',
+        confirm:this.photos.confirm||'',
+        date:dateStr
+      });
+    }
+
     this.saveLog();
     this.renderLog();
-    this.toast('✅ 저장! #'+entry.no+' ('+dateStr+')','success');
+  },
+
+  // ═══ 수동 저장 (새로입력 전 확인용) ═══
+  save: function(){
+    var dong=document.getElementById('fDong').value.trim();
+    var ho=document.getElementById('fHo').value.trim();
+    if(!dong){this.toast('동을 입력하세요','error');return;}
+    if(!ho){this.toast('호를 입력하세요','error');return;}
+    this.autoSave();
+    this.toast('✅ 저장 완료!','success');
     setTimeout(function(){document.getElementById('secLog').scrollIntoView({behavior:'smooth'});},400);
   },
 
