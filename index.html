@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v6.7</title>
+  <title>(주)메트로 R & S AI v6.8</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -22,18 +22,16 @@
       --r:8px;--r-sm:5px;
     }
     *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-    body,html{height:100vh;overflow:hidden;background:#e8e3d8}
+    body,html{height:100%;background:#e8e3d8;overflow:hidden}
     body{font-family:'Noto Sans KR','Outfit',sans-serif;color:var(--text);-webkit-font-smoothing:antialiased}
-    .app{max-width:520px;margin:0 auto;height:100%;display:flex;flex-direction:column;background:var(--cream);box-shadow:var(--shadow-lg)}
+    .app{max-width:520px;margin:0 auto;height:100%;background:var(--cream);box-shadow:var(--shadow-lg);overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .app::-webkit-scrollbar{width:3px}
+    .app::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
-    header{background:var(--navy);color:var(--cream);text-align:center;padding:11px 16px;position:relative;flex-shrink:0}
+    header{background:var(--navy);color:var(--cream);text-align:center;padding:11px 16px;position:relative}
     header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
     header h1{font-family:'Outfit';font-size:1.05rem;font-weight:800;letter-spacing:2.5px;text-transform:uppercase}
     header .ver{font-family:'JetBrains Mono';font-size:.53rem;color:var(--gold);letter-spacing:3px;margin-top:1px}
-
-    .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:20px}
-    .content::-webkit-scrollbar{width:3px}
-    .content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
     .sec{padding:12px 16px;border-bottom:1px solid var(--border-light)}
     .sec-head{display:flex;align-items:center;gap:7px;margin-bottom:10px}
@@ -120,7 +118,7 @@
     .log-head h3{font-size:.76rem;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:6px}
     .log-count{font-size:.56rem;font-weight:400;color:var(--text-dim)}
     .btn-log-clear{padding:5px 10px;border:none;border-radius:var(--r-sm);font-size:.56rem;font-weight:800;cursor:pointer;font-family:'Noto Sans KR';background:var(--red);color:white}
-    .table-wrap{width:100%;overflow-x:auto;border:1px solid var(--border);border-radius:var(--r);background:var(--white);-webkit-overflow-scrolling:touch;max-height:500px;overflow-y:auto;box-shadow:var(--shadow)}
+    .table-wrap{width:100%;overflow-x:auto;border:1px solid var(--border);border-radius:var(--r);background:var(--white);-webkit-overflow-scrolling:touch;box-shadow:var(--shadow)}
     .log-table{width:100%;border-collapse:collapse;font-size:.5rem;min-width:1050px}
     .log-table th{background:var(--navy);color:var(--gold);padding:6px 3px;border:1px solid var(--navy-light);font-weight:700;white-space:nowrap;position:sticky;top:0;z-index:10;font-size:.48rem}
     .log-table td{padding:4px 3px;border:1px solid #eee;text-align:center;vertical-align:middle;font-size:.5rem}
@@ -156,7 +154,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 6.7 · FIELD WORK SYSTEM</div>
+    <div class="ver">VER 6.8 · FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">⚙️</button>
   </header>
 
@@ -172,7 +170,7 @@
     <div id="connStatus" style="margin-top:4px;font-size:.52rem;color:var(--gold-dim);text-align:center"></div>
   </div>
 
-  <main class="content">
+  <div class="content">
 
     <!-- ① 하자 리스트 불러오기 -->
     <div class="sec">
@@ -269,7 +267,7 @@
       </div>
     </div>
 
-  </main>
+  </div>
 </div>
 
 <div class="hidden-inputs"><input type="file" id="fCapture" accept="image/*" onchange="App.onPhoto(this)"></div>
@@ -515,7 +513,7 @@ var App={
     var t=['before','after','confirm'];for(var j=0;j<t.length;j++)this.updateSlot(t[j],'');
     document.getElementById('defectChart').classList.remove('visible');
     this.currentMatches=[];
-    document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
+    document.querySelector('.app').scrollTo({top:0,behavior:'smooth'});
     document.getElementById('fDong').focus();
     this.toast('새 작업 (현장명 유지)','info');
   },
