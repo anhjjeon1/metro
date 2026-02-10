@@ -279,6 +279,7 @@ var App = {
   pendingType: '',
   matchedRow: null,
   siteLocked: false,
+  currentEditIdx: -1,  // 현재 편집 중인 저장 항목 인덱스
 
   init: function() {
     this.loadSource();
@@ -477,68 +478,94 @@ var App = {
 
   // ═══ 자동 저장 (사진 입력 시 자동 호출) ═══
   autoSave: function(){
-    var site=document.getElementById('fSite').value.trim();
+    var site=document.getElementById('fSite').value.trim()||'-';
     var dong=document.getElementById('fDong').value.trim();
     var ho=document.getElementById('fHo').value.trim();
+    var loc=document.getElementById('fLoc').value.trim();
+    var work=document.getElementById('fWork').value.trim();
+    var ftype=document.getElementById('fType').value.trim();
+    var comp=document.getElementById('fComp').value.trim();
+    var memo=document.getElementById('fMemo').value.trim();
 
-    // 최소 동/호 입력되어야 저장
-    if(!dong||!ho) return;
-    if(!site) site='-';
+    // 사진이 하나도 없으면 저장 안함
+    if(!this.photos.before && !this.photos.after && !this.photos.confirm) return;
 
     var today=new Date();
     var dateStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
 
-    var loc=document.getElementById('fLoc').value.trim();
-    var work=document.getElementById('fWork').value.trim();
-    var type=document.getElementById('fType').value.trim();
-    var comp=document.getElementById('fComp').value.trim();
-    var memo=document.getElementById('fMemo').value.trim();
-
-    // 동일 동+호+위치 항목이 있으면 업데이트, 없으면 새로 추가
-    var existIdx=-1;
-    for(var i=0;i<this.savedLog.length;i++){
-      var it=this.savedLog[i];
-      if(it.dong===dong && it.ho===ho && it.loc===loc){existIdx=i;break;}
-    }
-
-    if(existIdx>=0){
+    // 현재 편집 중인 항목 찾기 (currentEditIdx로 추적)
+    if(this.currentEditIdx>=0 && this.currentEditIdx<this.savedLog.length){
       // 기존 항목 업데이트
-      var ex=this.savedLog[existIdx];
-      ex.site=site; ex.work=work; ex.type=type; ex.comp=comp; ex.memo=memo;
-      ex.before=this.photos.before||ex.before;
-      ex.after=this.photos.after||ex.after;
-      ex.confirm=this.photos.confirm||ex.confirm;
+      var ex=this.savedLog[this.currentEditIdx];
+      ex.site=site; ex.dong=dong; ex.ho=ho; ex.loc=loc;
+      ex.work=work; ex.type=ftype; ex.comp=comp; ex.memo=memo;
+      ex.before=this.photos.before||'';
+      ex.after=this.photos.after||'';
+      ex.confirm=this.photos.confirm||'';
       ex.date=dateStr;
     }else{
-      // 새 항목 추가
+      // 새 항목 추가 - No 자동생성 (H0001 형식)
+      var nextNum=this.savedLog.length+1;
+      var autoNo='H'+String(nextNum).padStart(4,'0');
+
       this.savedLog.push({
-        no:this.savedLog.length+1,
+        no:autoNo,
         site:site, dong:dong, ho:ho, loc:loc,
-        work:work, type:type, comp:comp, memo:memo,
+        work:work, type:ftype, comp:comp, memo:memo,
         before:this.photos.before||'',
         after:this.photos.after||'',
         confirm:this.photos.confirm||'',
         date:dateStr
       });
+      // 방금 추가한 항목을 현재 편집 항목으로 설정
+      this.currentEditIdx=this.savedLog.length-1;
     }
 
     this.saveLog();
     this.renderLog();
   },
 
-  // ═══ 수동 저장 (새로입력 전 확인용) ═══
+  // ═══ 수동 저장 (폼 내용 강제 저장) ═══
   save: function(){
+    // 사진 없어도 폼 내용 그대로 저장
+    var site=document.getElementById('fSite').value.trim()||'-';
     var dong=document.getElementById('fDong').value.trim();
     var ho=document.getElementById('fHo').value.trim();
-    if(!dong){this.toast('동을 입력하세요','error');return;}
-    if(!ho){this.toast('호를 입력하세요','error');return;}
-    this.autoSave();
+    var loc=document.getElementById('fLoc').value.trim();
+    var work=document.getElementById('fWork').value.trim();
+    var ftype=document.getElementById('fType').value.trim();
+    var comp=document.getElementById('fComp').value.trim();
+    var memo=document.getElementById('fMemo').value.trim();
+
+    var today=new Date();
+    var dateStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+
+    if(this.currentEditIdx>=0 && this.currentEditIdx<this.savedLog.length){
+      var ex=this.savedLog[this.currentEditIdx];
+      ex.site=site;ex.dong=dong;ex.ho=ho;ex.loc=loc;
+      ex.work=work;ex.type=ftype;ex.comp=comp;ex.memo=memo;
+      ex.before=this.photos.before||'';ex.after=this.photos.after||'';ex.confirm=this.photos.confirm||'';
+      ex.date=dateStr;
+    }else{
+      var nextNum=this.savedLog.length+1;
+      this.savedLog.push({
+        no:'H'+String(nextNum).padStart(4,'0'),
+        site:site,dong:dong,ho:ho,loc:loc,
+        work:work,type:ftype,comp:comp,memo:memo,
+        before:this.photos.before||'',after:this.photos.after||'',confirm:this.photos.confirm||'',
+        date:dateStr
+      });
+      this.currentEditIdx=this.savedLog.length-1;
+    }
+    this.saveLog();this.renderLog();
     this.toast('✅ 저장 완료!','success');
     setTimeout(function(){document.getElementById('secLog').scrollIntoView({behavior:'smooth'});},400);
   },
 
   // ═══ 새로입력 ═══
   newEntry: function(){
+    // 현재 편집 항목 마무리 → 새 항목 준비
+    this.currentEditIdx=-1;
     var ids=['fDong','fHo','fLoc','fWork','fType','fComp','fMemo'];
     for(var i=0;i<ids.length;i++) document.getElementById(ids[i]).value='';
     this.photos={before:'',after:'',confirm:''};
@@ -581,15 +608,18 @@ var App = {
   },
 
   delItem: function(idx){
-    if(!confirm('#'+this.savedLog[idx].no+' 삭제?'))return;
+    if(!confirm(this.savedLog[idx].no+' 삭제?'))return;
     this.savedLog.splice(idx,1);
-    for(var i=0;i<this.savedLog.length;i++) this.savedLog[i].no=i+1;
+    for(var i=0;i<this.savedLog.length;i++) this.savedLog[i].no='H'+String(i+1).padStart(4,'0');
+    // 현재 편집 인덱스 조정
+    if(this.currentEditIdx===idx) this.currentEditIdx=-1;
+    else if(this.currentEditIdx>idx) this.currentEditIdx--;
     this.saveLog();this.renderLog();this.toast('삭제','info');
   },
   clearLog: function(){
     if(!this.savedLog.length){this.toast('삭제할 항목 없음','error');return;}
     if(!confirm('전체 '+this.savedLog.length+'건 삭제?'))return;
-    this.savedLog=[];this.saveLog();this.renderLog();this.toast('전체 삭제','info');
+    this.savedLog=[];this.currentEditIdx=-1;this.saveLog();this.renderLog();this.toast('전체 삭제','info');
   },
 
   // ═══ 엑셀 내보내기 ═══
