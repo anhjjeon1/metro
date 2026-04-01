@@ -307,6 +307,9 @@
       <button class="btn-send" onclick="App.exportExcel()">&#128228; 엑셀저장</button>
       <button class="btn-new" onclick="App.newEntry()">&#128260; 새로입력</button>
     </div>
+    <div style="margin-top:6px;text-align:center">
+      <button onclick="App.resetAll()" style="background:none;border:none;color:var(--gold-dim);font-size:.5rem;font-family:'Noto Sans KR';cursor:pointer;text-decoration:underline">전체 초기화 (새 현장)</button>
+    </div>
   </div>
 </div>
 
@@ -383,10 +386,10 @@ var App={
         document.getElementById('uploadArea').classList.add('loaded');
         document.getElementById('loadedFileName').textContent=file.name;
         document.getElementById('loadedRowCount').textContent=json.length;
-        // 시트 이름을 현장명에 자동 입력
-        if(sheetName&&!document.getElementById('fSite').value.trim()){
+        // 시트 이름을 현장명에 자동 입력 (새 파일이면 항상 덮어쓰기)
+        if(sheetName){
           document.getElementById('fSite').value=sheetName;
-          self.lockSite();
+          localStorage.setItem('METRO_SITE',sheetName);
         }
         self.toast(json.length+'건 로드! (현장: '+sheetName+')','success',3000);
       }catch(err){self.toast('오류: '+err.message,'error');}
@@ -730,6 +733,20 @@ var App={
     document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
     document.getElementById('fDong').focus();
     this.toast('새 작업 (현장명 유지)','info');
+  },
+
+  // === 전체 초기화 ===
+  resetAll:function(){
+    if(!confirm('모든 데이터를 초기화하시겠습니까?\n(하자리스트, 저장로그, 현장명 모두 삭제)')) return;
+    localStorage.removeItem(STORAGE.LOG);
+    localStorage.removeItem(STORAGE.SOURCE);
+    localStorage.removeItem('METRO_SITE');
+    this.sourceData=[];this.savedLog=[];this.originalWB=null;this.originalFileName='';this.sourceSheetName='';
+    this.currentMatches=[];this.checkedIdxes=[];this.workQueue=[];this.workIdx=-1;this.isWorking=false;
+    document.getElementById('fSite').value='';
+    document.getElementById('uploadArea').classList.remove('loaded');
+    this.newEntry();this.renderLog();
+    this.toast('전체 초기화 완료. 새 파일을 업로드하세요','success');
   },
 
   // === 로그 ===
