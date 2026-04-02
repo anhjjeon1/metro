@@ -204,17 +204,19 @@
         <span class="sec-title">하자 리스트 불러오기</span>
       </div>
       <div id="uploadArea">
-        <div class="loaded-info" id="loadedInfo" style="display:none;font-size:.66rem;font-weight:700;color:var(--green);text-align:center;padding:8px;border:1.5px solid var(--green);border-radius:var(--r-sm);background:var(--green-light)">&#10004; <span id="loadedFileName"></span> &middot; <span id="loadedRowCount"></span>건</div>
+        <div class="loaded-info" id="loadedInfo" onclick="document.getElementById('uploadControls').style.display='block'" style="display:none;font-size:.66rem;font-weight:700;color:var(--green);text-align:center;padding:8px;border:1.5px solid var(--green);border-radius:var(--r-sm);background:var(--green-light);cursor:pointer">&#10004; <span id="loadedFileName"></span> &middot; <span id="loadedRowCount"></span>건 <span style="font-size:.5rem;color:var(--text-dim)">(탭하여 다시 불러오기)</span></div>
       </div>
-      <div class="url-row">
-        <input type="text" id="urlInput" placeholder="OneDrive 공유 링크 붙여넣기" class="url-input">
-        <button onclick="App.loadFromUrl()" class="url-btn">불러오기</button>
+      <div id="uploadControls">
+        <div class="url-row">
+          <input type="text" id="urlInput" placeholder="OneDrive 공유 링크 붙여넣기" class="url-input">
+          <button onclick="App.loadFromUrl()" class="url-btn">불러오기</button>
+        </div>
+        <div id="urlSaved" style="display:none">
+          <button onclick="App.loadSavedUrl()" class="url-saved-btn">⚡ 저장된 링크로 다시 불러오기</button>
+        </div>
+        <div class="url-toggle" onclick="document.getElementById('fileInput').click()">또는 <b>파일 직접 선택</b>하여 불러오기</div>
+        <input type="file" id="fileInput" accept="*/*" hidden onchange="App.loadFile(this)">
       </div>
-      <div id="urlSaved" style="display:none">
-        <button onclick="App.loadSavedUrl()" class="url-saved-btn">⚡ 저장된 링크로 다시 불러오기</button>
-      </div>
-      <div class="url-toggle" onclick="document.getElementById('fileInput').click()">또는 <b>파일 직접 선택</b>하여 불러오기</div>
-      <input type="file" id="fileInput" accept="*/*" hidden onchange="App.loadFile(this)">
     </div>
 
     <!-- 2. 현장 입력 -->
@@ -411,7 +413,7 @@ var App={
       this.sourceSheetName=sheetName;
       this.originalFileName='OneDrive_'+sheetName+'.xlsx';
       this.saveSource();
-      document.getElementById('loadedInfo').style.display='block';
+      document.getElementById('loadedInfo').style.display='block';document.getElementById('uploadControls').style.display='none';
       document.getElementById('loadedFileName').textContent='OneDrive 링크';
       document.getElementById('loadedRowCount').textContent=json.length;
       if(sheetName){document.getElementById('fSite').value=sheetName;localStorage.setItem('METRO_SITE',sheetName);this.lockSite();}
@@ -465,7 +467,7 @@ var App={
         self.detectCols(json[0]);
         self.sourceSheetName=sheetName; // 시트명 저장
         self.saveSource();
-        document.getElementById('loadedInfo').style.display='block';
+        document.getElementById('loadedInfo').style.display='block';document.getElementById('uploadControls').style.display='none';
         document.getElementById('loadedFileName').textContent=file.name;
         document.getElementById('loadedRowCount').textContent=json.length;
         // 시트 이름을 현장명에 자동 입력 (새 파일이면 항상 덮어쓰기)
@@ -826,7 +828,7 @@ var App={
     this.sourceData=[];this.savedLog=[];this.originalWB=null;this.originalFileName='';this.sourceSheetName='';
     this.currentMatches=[];this.checkedIdxes=[];this.workQueue=[];this.workIdx=-1;this.isWorking=false;
     document.getElementById('fSite').value='';
-    document.getElementById('loadedInfo').style.display='none';
+    document.getElementById('loadedInfo').style.display='none';document.getElementById('uploadControls').style.display='block';
     this.newEntry();this.renderLog();
     this.toast('전체 초기화 완료. 새 파일을 업로드하세요','success');
   },
@@ -1057,7 +1059,7 @@ var App={
         for(var i=0;i<s.data.length;i++){s.data[i]._idx=i;s.data[i]._rowNum=i+2;this.sourceData.push(s.data[i]);}
         this.detectCols(s.data[0]);
         this.sourceSheetName=s.sheetName||'';
-        document.getElementById('loadedInfo').style.display='block';
+        document.getElementById('loadedInfo').style.display='block';document.getElementById('uploadControls').style.display='none';
         document.getElementById('loadedFileName').textContent='이전 데이터';
         document.getElementById('loadedRowCount').textContent=this.sourceData.length;
         // 시트명으로 현장명 복원
@@ -1094,7 +1096,7 @@ var App={
     this.sourceData=[];
     for(var i=0;i<sample.length;i++){sample[i]._idx=i;sample[i]._rowNum=i+2;this.sourceData.push(sample[i]);}
     this.detectCols(sample[0]);this.saveSource();
-    document.getElementById('loadedInfo').style.display='block';
+    document.getElementById('loadedInfo').style.display='block';document.getElementById('uploadControls').style.display='none';
     document.getElementById('loadedFileName').textContent='샘플 데이터';
     document.getElementById('loadedRowCount').textContent=sample.length;
     this.toast(sample.length+'건 로드! 동/호를 입력하세요','success',3000);
