@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v7.4</title>
+  <title>(주)메트로 R & S AI v7.5</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -142,7 +142,7 @@
     .log-head h3{font-size:.76rem;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:6px}
     .log-count{font-size:.56rem;font-weight:400;color:var(--text-dim)}
     .btn-log-clear{padding:5px 10px;border:none;border-radius:var(--r-sm);font-size:.56rem;font-weight:800;cursor:pointer;font-family:'Noto Sans KR';background:var(--red);color:white}
-    .table-wrap{width:100%;overflow-x:auto;border:1px solid var(--border);border-radius:var(--r);background:var(--white);-webkit-overflow-scrolling:touch;box-shadow:var(--shadow)}
+    .table-wrap{width:100%;overflow-x:auto;overflow-y:auto;max-height:280px;border:1px solid var(--border);border-radius:var(--r);background:var(--white);-webkit-overflow-scrolling:touch;box-shadow:var(--shadow)}
     .log-table{width:100%;border-collapse:collapse;font-size:.5rem;table-layout:fixed}
     .log-table th{background:var(--navy);color:var(--gold);padding:4px 2px;border:1px solid var(--navy-light);font-weight:700;white-space:nowrap;position:sticky;top:0;z-index:10;font-size:.46rem}
     .log-table td{padding:3px 2px;border:1px solid #eee;text-align:center;vertical-align:middle;font-size:.48rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -179,7 +179,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 7.4 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 7.5 &middot; FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
   </header>
 
@@ -877,9 +877,7 @@ var App={
     document.getElementById('logCount').textContent='('+filtered.length+'/'+this.sourceData.length+'건)';
     if(!filtered.length){document.getElementById('logBody').innerHTML='<tr><td colspan="7" class="log-empty">해당 동/호 데이터 없음</td></tr>';return;}
     var html='';
-    var limit=this._logShowAll?filtered.length:10;
-    var showing=Math.min(limit,filtered.length);
-    for(var j=0;j<showing;j++){var r=filtered[j];
+    for(var j=0;j<filtered.length;j++){var r=filtered[j];
       var no=this.gv(r,'no')||j+1;
       var dh=this.parseDH(r);
       var loc=this.gv(r,'loc')||'-';
@@ -896,9 +894,6 @@ var App={
         +'<td style="text-align:left;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+memo+'</td>'
         +'<td>'+(isDone?'&#10004;':'')+'</td>'
       +'</tr>';
-    }
-    if(filtered.length>10){
-      html+='<tr><td colspan="7" style="text-align:center;padding:6px;cursor:pointer;color:var(--blue);font-size:.55rem;font-weight:700" onclick="App._logShowAll=!App._logShowAll;App.renderLog()">'+(this._logShowAll?'△ 접기':'▽ 나머지 '+(filtered.length-10)+'건 더보기')+'</td></tr>';
     }
     document.getElementById('logBody').innerHTML=html;
   },
