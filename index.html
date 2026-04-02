@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v7.5</title>
+  <title>(주)메트로 R & S AI v7.6</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -131,8 +131,11 @@
     .photo-slot.filled{border-style:solid;border-color:var(--green)}
     .photo-slot .ps-icon{font-size:16px}
     .photo-slot .ps-sub{font-size:.42rem;color:var(--text-muted)}
+    .photo-slot .ps-btns{display:flex;flex-direction:column;gap:4px;align-items:center}
+    .photo-slot .ps-btn{font-size:.42rem;color:var(--text-sub);cursor:pointer;padding:2px 6px;border:1px solid var(--border);border-radius:3px;background:var(--white);font-weight:600}
+    .photo-slot .ps-btn:active{background:var(--gold-pale)}
     .photo-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;z-index:5}
-    .photo-slot.filled .ps-icon,.photo-slot.filled .ps-sub{display:none}
+    .photo-slot.filled .ps-btns{display:none}
     .photo-slot.filled img{display:block}
     .photo-del{display:none;position:absolute;top:2px;right:2px;width:16px;height:16px;border-radius:50%;background:var(--red);color:white;border:none;font-size:9px;font-weight:900;cursor:pointer;z-index:10;align-items:center;justify-content:center}
     .photo-slot.filled .photo-del{display:flex}
@@ -179,7 +182,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 7.5 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 7.6 &middot; FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
   </header>
 
@@ -295,9 +298,9 @@
             <div class="photo-section">
               <div class="photo-section-label">&#128248; 사진 입력</div>
               <div class="photo-strip">
-                <div class="photo-item"><div class="photo-item-label">수리 전</div><div class="photo-slot" onclick="App.takePhoto('before')"><span class="ps-icon">&#128247;</span><span class="ps-sub">촬영</span><img id="imgBefore"><button class="photo-del" onclick="event.stopPropagation();App.delPhoto('before')">&#10005;</button></div></div>
-                <div class="photo-item"><div class="photo-item-label">수리 후</div><div class="photo-slot" onclick="App.takePhoto('after')"><span class="ps-icon">&#128247;</span><span class="ps-sub">촬영</span><img id="imgAfter"><button class="photo-del" onclick="event.stopPropagation();App.delPhoto('after')">&#10005;</button></div></div>
-                <div class="photo-item"><div class="photo-item-label">완료확인서</div><div class="photo-slot" onclick="App.takePhoto('confirm')"><span class="ps-icon">&#128203;</span><span class="ps-sub">촬영</span><img id="imgConfirm"><button class="photo-del" onclick="event.stopPropagation();App.delPhoto('confirm')">&#10005;</button></div></div>
+                <div class="photo-item"><div class="photo-item-label">수리 전</div><div class="photo-slot"><img id="imgBefore"><div class="ps-btns"><span onclick="App.takePhoto('before')" class="ps-btn">&#128247; 촬영</span><span onclick="App.pickPhoto('before')" class="ps-btn">&#128444; 갤러리</span></div><button class="photo-del" onclick="event.stopPropagation();App.delPhoto('before')">&#10005;</button></div></div>
+                <div class="photo-item"><div class="photo-item-label">수리 후</div><div class="photo-slot"><img id="imgAfter"><div class="ps-btns"><span onclick="App.takePhoto('after')" class="ps-btn">&#128247; 촬영</span><span onclick="App.pickPhoto('after')" class="ps-btn">&#128444; 갤러리</span></div><button class="photo-del" onclick="event.stopPropagation();App.delPhoto('after')">&#10005;</button></div></div>
+                <div class="photo-item"><div class="photo-item-label">완료확인서</div><div class="photo-slot"><img id="imgConfirm"><div class="ps-btns"><span onclick="App.takePhoto('confirm')" class="ps-btn">&#128247; 촬영</span><span onclick="App.pickPhoto('confirm')" class="ps-btn">&#128444; 갤러리</span></div><button class="photo-del" onclick="event.stopPropagation();App.delPhoto('confirm')">&#10005;</button></div></div>
               </div>
             </div>
 
@@ -341,7 +344,7 @@
   </div>
 </div>
 
-<div class="hidden-inputs"><input type="file" id="fCapture" accept="image/*" capture="environment" onchange="App.onPhoto(this)"></div>
+<div class="hidden-inputs"><input type="file" id="fCapture" accept="image/*" capture="environment" onchange="App.onPhoto(this)"><input type="file" id="fGallery" accept="image/*" onchange="App.onPhoto(this)"></div>
 
 <script>
 var STORAGE={LOG:'METRO_V70_LOG',SOURCE:'METRO_V70_SRC'};
@@ -801,6 +804,7 @@ var App={
 
   // === 사진 ===
   takePhoto:function(type){this.pendingType=type;var f=document.getElementById('fCapture');f.value='';f.click();},
+  pickPhoto:function(type){this.pendingType=type;var f=document.getElementById('fGallery');f.value='';f.click();},
   onPhoto:function(input){
     var file=input.files&&input.files[0];if(!file||!this.pendingType)return;
     var type=this.pendingType,self=this;
