@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v9.9</title>
+  <title>(주)메트로 R & S AI v10.0</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -220,7 +220,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 9.9 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 10.0 &middot; FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
   </header>
 
@@ -317,10 +317,12 @@
 
   <!-- 하단 버튼 -->
   <div class="bottom-bar">
-    <div class="btn-row" style="grid-template-columns:1fr 1fr 1fr">
-      <button class="btn-send" onclick="App.syncAllToSheet()">&#128202; 구글시트저장</button>
-      <button class="btn-new" onclick="App.newEntry()">&#128260; 새로입력</button>
-      <button onclick="App.resetAll()" style="padding:12px 0;border:1.5px solid var(--red);border-radius:var(--r);background:var(--red-light);color:var(--red);font-size:.7rem;font-weight:800;font-family:'Noto Sans KR';cursor:pointer">초기화(현장변경)</button>
+    <div class="btn-row" style="display:flex;gap:8px">
+      <button class="btn-send" onclick="App.syncAllToSheet()" style="flex:1">&#128202; 구글시트저장</button>
+      <button class="btn-new" onclick="App.newEntry()" style="flex:1">&#128260; 새로입력</button>
+    </div>
+    <div style="text-align:center;margin-top:8px">
+      <button onclick="App.resetAll()" style="padding:8px 24px;border:1.5px solid var(--red);border-radius:var(--r);background:var(--red-light);color:var(--red);font-size:.62rem;font-weight:800;font-family:'Noto Sans KR';cursor:pointer">초기화</button>
     </div>
   </div>
 </div>
