@@ -292,20 +292,18 @@
       </div>
     </div>
 
-    <!-- 3. 저장 완료 리스트 -->
+    <!-- 3. 하자 리스트 -->
     <div class="sec" id="secLog">
       <div class="log-head">
-        <h3><span class="sec-num" style="background:var(--green)">3</span> 저장 완료 <span class="log-count" id="logCount">(0건)</span></h3>
+        <h3><span class="sec-num" style="background:var(--green)">3</span> 하자 리스트 <span class="log-count" id="logCount">(0건)</span></h3>
         <button class="btn-log-clear" onclick="App.clearLog()">&#128465; 전체삭제</button>
       </div>
       <div class="table-wrap">
         <table class="log-table">
           <thead><tr>
-            <th>No</th><th>현장명</th><th>동</th><th>호</th><th>위치</th><th>상세분류</th>
-            <th>유형</th><th>하자내용</th>
-            <th>수리전</th><th>수리후</th><th>확인서</th><th>완료일</th><th>삭제</th>
+            <th>No</th><th>동</th><th>호</th><th>위치</th><th>유형</th><th>하자내용</th><th>완료</th>
           </tr></thead>
-          <tbody id="logBody"><tr><td colspan="13" class="log-empty">저장된 항목이 없습니다</td></tr></tbody>
+          <tbody id="logBody"><tr><td colspan="7" class="log-empty">파일을 불러오면 하자 리스트가 표시됩니다</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -529,6 +527,7 @@ var App={
       chart.classList.remove('visible');
       this.currentMatches=[];this.checkedIdxes=[];
       document.getElementById('dcToolbar').style.display='none';
+      this.renderLog();
       return;
     }
 
@@ -564,6 +563,7 @@ var App={
       var sv=this.gv(matches[0],'site')||'';
       if(sv){document.getElementById('fSite').value=sv;this.lockSite();}
     }
+    this.renderLog();
   },
 
   renderDefectList:function(){
@@ -839,24 +839,40 @@ var App={
 
   // === 로그 ===
   renderLog:function(){
-    var c=this.savedLog.length;document.getElementById('logCount').textContent='('+c+'건)';
-    if(!c){document.getElementById('logBody').innerHTML='<tr><td colspan="13" class="log-empty">저장된 항목이 없습니다</td></tr>';return;}
+    if(!this.sourceData.length){document.getElementById('logCount').textContent='(0건)';document.getElementById('logBody').innerHTML='<tr><td colspan="7" class="log-empty">파일을 불러오면 하자 리스트가 표시됩니다</td></tr>';return;}
+    var qD=document.getElementById('fDong').value.trim();
+    var qH=document.getElementById('fHo').value.trim();
+    var nD=qD.replace(/^0+/,'')||'0';
+    var nH=qH.replace(/^0+/,'')||'0';
+    var filtered=[];
+    for(var i=0;i<this.sourceData.length;i++){
+      var row=this.sourceData[i];
+      var dh=this.parseDH(row);
+      var rD=dh.dong.replace(/^0+/,'')||'0';
+      var rH=dh.ho.replace(/^0+/,'')||'0';
+      if(qD&&rD!==nD)continue;
+      if(qH&&rH!==nH)continue;
+      filtered.push(row);
+    }
+    document.getElementById('logCount').textContent='('+filtered.length+'/'+this.sourceData.length+'건)';
+    if(!filtered.length){document.getElementById('logBody').innerHTML='<tr><td colspan="7" class="log-empty">해당 동/호 데이터 없음</td></tr>';return;}
     var html='';
-    for(var i=0;i<c;i++){var it=this.savedLog[i];
-      html+='<tr>'
-        +'<td class="order-num">'+it.no+'</td>'
-        +'<td>'+(it.site||'-')+'</td>'
-        +'<td>'+(it.dong||'-')+'</td>'
-        +'<td>'+(it.ho||'-')+'</td>'
-        +'<td>'+(it.loc||'-')+'</td>'
-        +'<td>'+(it.work||'-')+'</td>'
-        +'<td>'+(it.type||'-')+'</td>'
-        +'<td style="text-align:left;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(it.memo||'-')+'</td>'
-        +'<td>'+(it.before?'<img src="'+it.before+'" class="thumb">':'-')+'</td>'
-        +'<td>'+(it.after?'<img src="'+it.after+'" class="thumb">':'-')+'</td>'
-        +'<td>'+(it.confirm?'<img src="'+it.confirm+'" class="thumb">':'-')+'</td>'
-        +'<td style="font-size:.45rem">'+it.date+'</td>'
-        +'<td><button class="btn-del-log" onclick="App.delItem('+i+')">삭제</button></td>'
+    for(var j=0;j<filtered.length;j++){var r=filtered[j];
+      var no=this.gv(r,'no')||j+1;
+      var dh=this.parseDH(r);
+      var loc=this.gv(r,'loc')||'-';
+      var tp=this.gv(r,'type')||'-';
+      var memo=this.gv(r,'memo')||'-';
+      var done=this.gv(r,'done')||'';
+      var isDone=done&&done!=='미완료'&&done!=='N';
+      html+='<tr style="'+(isDone?'background:var(--green-light);opacity:.6':'')+'">'
+        +'<td>'+no+'</td>'
+        +'<td>'+dh.dong+'</td>'
+        +'<td>'+dh.ho+'</td>'
+        +'<td>'+loc+'</td>'
+        +'<td>'+tp+'</td>'
+        +'<td style="text-align:left;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+memo+'</td>'
+        +'<td style="font-size:.5rem">'+(isDone?'&#10004;':'')+'</td>'
       +'</tr>';
     }
     document.getElementById('logBody').innerHTML=html;
