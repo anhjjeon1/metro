@@ -207,14 +207,9 @@
         <div class="loaded-info" id="loadedInfo" onclick="document.getElementById('uploadControls').style.display='block'" style="display:none;font-size:.66rem;font-weight:700;color:var(--green);text-align:center;padding:8px;border:1.5px solid var(--green);border-radius:var(--r-sm);background:var(--green-light);cursor:pointer">&#10004; <span id="loadedFileName"></span> &middot; <span id="loadedRowCount"></span>건 <span style="font-size:.5rem;color:var(--text-dim)">(탭하여 다시 불러오기)</span></div>
       </div>
       <div id="uploadControls">
-        <div class="url-row">
-          <input type="text" id="urlInput" placeholder="OneDrive 공유 링크 붙여넣기" class="url-input">
-          <button onclick="App.loadFromUrl()" class="url-btn">불러오기</button>
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()" style="border:2px dashed var(--border);border-radius:var(--r);padding:14px;text-align:center;cursor:pointer;background:var(--white)">
+          <div style="font-size:.68rem;color:var(--text-sub);font-weight:600">폰의 내파일 &gt; 내장 저장공간 &gt; Download에서<br>파일을 선택하여 불러오기</div>
         </div>
-        <div id="urlSaved" style="display:none">
-          <button onclick="App.loadSavedUrl()" class="url-saved-btn">⚡ 저장된 링크로 다시 불러오기</button>
-        </div>
-        <div class="url-toggle" onclick="document.getElementById('fileInput').click()">또는 <b>파일 직접 선택</b>하여 불러오기</div>
         <input type="file" id="fileInput" accept="*/*" hidden onchange="App.loadFile(this)">
       </div>
     </div>
