@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v9.6</title>
+  <title>(주)메트로 R & S AI v9.7</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -150,7 +150,7 @@
     .log-table{width:100%;border-collapse:collapse;font-size:.68rem}
     .log-table th{background:var(--navy);color:var(--gold);padding:4px 1px;border:1px solid var(--navy-light);font-weight:700;white-space:nowrap;position:sticky;top:0;z-index:10;font-size:.56rem}
     .log-table td{padding:3px 1px;border:1px solid #eee;text-align:center;vertical-align:middle;font-size:.65rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .log-table td.td-type{white-space:normal;word-break:keep-all;line-height:1.2;font-size:.6rem}
+    .log-table td.td-type{white-space:normal;word-break:break-all;line-height:1.2;font-size:.6rem;max-width:36px}
     .log-table td.td-memo{text-align:left;white-space:normal;line-height:1.3;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;max-height:4.2em;word-break:break-all;font-weight:700;cursor:pointer;font-size:.68rem}
     .photo-cell{padding:0!important;width:48px;height:48px;position:relative;cursor:pointer;background:var(--cream)}
     .photo-cell img{width:100%;height:100%;object-fit:cover;display:block}
@@ -213,7 +213,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 9.6 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 9.7 &middot; FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
   </header>
 
