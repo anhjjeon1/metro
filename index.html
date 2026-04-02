@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v9.1</title>
+  <title>(주)메트로 R & S AI v9.2</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -145,10 +145,11 @@
     .log-head h3{font-size:.76rem;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:6px}
     .log-count{font-size:.56rem;font-weight:400;color:var(--text-dim)}
     .btn-log-clear{padding:5px 10px;border:none;border-radius:var(--r-sm);font-size:.56rem;font-weight:800;cursor:pointer;font-family:'Noto Sans KR';background:var(--red);color:white}
-    .table-wrap{width:100%;overflow-x:auto;overflow-y:auto;max-height:280px;border:1px solid var(--border);border-radius:var(--r);background:var(--white);-webkit-overflow-scrolling:touch;box-shadow:var(--shadow)}
-    .log-table{width:100%;border-collapse:collapse;font-size:.5rem}
-    .log-table th{background:var(--navy);color:var(--gold);padding:4px 2px;border:1px solid var(--navy-light);font-weight:700;white-space:nowrap;position:sticky;top:0;z-index:10;font-size:.44rem}
-    .log-table td{padding:2px 1px;border:1px solid #eee;text-align:center;vertical-align:middle;font-size:.46rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .table-wrap{width:100%;overflow-x:auto;overflow-y:auto;max-height:400px;border:1px solid var(--border);border-radius:var(--r);background:var(--white);-webkit-overflow-scrolling:touch;box-shadow:var(--shadow)}
+    .log-table{width:100%;border-collapse:collapse;font-size:.58rem}
+    .log-table th{background:var(--navy);color:var(--gold);padding:5px 3px;border:1px solid var(--navy-light);font-weight:700;white-space:nowrap;position:sticky;top:0;z-index:10;font-size:.52rem}
+    .log-table td{padding:3px 2px;border:1px solid #eee;text-align:center;vertical-align:middle;font-size:.55rem}
+    .log-table td.td-memo{text-align:left;white-space:normal;line-height:1.3;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;max-height:3.9em;word-break:break-all}
     .photo-cell{padding:0!important;width:56px;height:56px;position:relative;cursor:pointer;background:var(--cream)}
     .photo-cell img{width:100%;height:100%;object-fit:cover;display:block}
     .photo-cell .pc-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:56px;font-size:16px;color:var(--text-muted)}
@@ -189,7 +190,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 9.1 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 9.2 &middot; FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
   </header>
 
@@ -925,12 +926,12 @@ var App={
       var isDone=done&&done!=='미완료'&&done!=='N';
       var ph=this.rowPhotos[rn]||{};
       html+='<tr style="'+(isDone?'background:var(--green-light)':'')+'">'
-        +'<td style="font-size:.42rem">'+no+'</td>'
+        +'<td>'+no+'</td>'
         +'<td>'+dh.dong+'</td>'
         +'<td>'+dh.ho+'</td>'
-        +'<td style="font-size:.42rem">'+loc+'</td>'
-        +'<td style="font-size:.42rem">'+tp+'</td>'
-        +'<td style="text-align:left;font-size:.42rem;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+memo+'</td>'
+        +'<td>'+loc+'</td>'
+        +'<td>'+tp+'</td>'
+        +'<td class="td-memo">'+memo+'</td>'
         +this._photoCell(rn,'before',ph.before)
         +this._photoCell(rn,'after',ph.after)
         +this._photoCell(rn,'confirm',ph.confirm)
