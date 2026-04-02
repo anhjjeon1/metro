@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v9.7</title>
+  <title>(주)메트로 R & S AI v9.8</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -63,12 +63,19 @@
     .form-row.c2{grid-template-columns:1fr 1fr}
     .form-row.c2-1{grid-template-columns:2fr 1fr}
 
+    .field{position:relative}
     .field label{display:block;font-size:.5rem;font-weight:700;color:var(--gold-dim);margin-bottom:2px;letter-spacing:.5px}
     .field input,.field textarea{
       width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--r-sm);
       font-size:.78rem;font-family:'Noto Sans KR';font-weight:600;background:var(--white);
       color:var(--text);outline:none;transition:border-color .2s;
     }
+    .field-inline{position:relative}
+    .field-inline label{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:.42rem;font-weight:700;color:var(--gold-dim);letter-spacing:.5px;pointer-events:none;margin:0}
+    .field-inline input{width:100%;padding:9px 28px 9px 10px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:.85rem;font-family:'Noto Sans KR';font-weight:800;background:var(--white);color:var(--text);outline:none;transition:border-color .2s}
+    .field-inline input:focus{border-color:var(--navy)}
+    .field-inline input::placeholder{color:var(--text-muted);font-weight:400;font-size:.7rem}
+    .field-inline.locked input{background:#e8f5e9;border-color:#4caf50}
     .field input:focus,.field textarea:focus{border-color:var(--navy)}
     .field input::placeholder,.field textarea::placeholder{color:var(--text-muted);font-weight:400}
     .field textarea{height:45px;resize:none;line-height:1.3;font-size:.7rem}
@@ -213,7 +220,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 9.7 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 9.8 &middot; FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
   </header>
 
@@ -285,9 +292,9 @@
         <span class="sec-sub">동/호 입력 &rarr; 하자리스트 표시</span>
       </div>
       <div class="form-row" style="grid-template-columns:2fr 1fr 1fr;gap:6px;display:grid">
-        <div class="field" id="siteField"><label>현장명 <span id="siteLock" style="display:none;color:var(--green);font-size:.42rem">&#128274;</span></label><input type="text" id="fSite" placeholder="구글시트 로드 시 자동입력" readonly style="background:#e8f5e9;border-color:#4caf50;font-size:.7rem"></div>
-        <div class="field"><label>동</label><input type="text" id="fDong" placeholder="101" inputmode="numeric" oninput="App.doMatch()"></div>
-        <div class="field"><label>호</label><input type="text" id="fHo" placeholder="0210" inputmode="numeric" oninput="App.doMatch()"></div>
+        <div class="field-inline locked" id="siteField"><input type="text" id="fSite" placeholder="자동입력" readonly><label>현장명 <span id="siteLock" style="display:none;color:var(--green)">&#128274;</span></label></div>
+        <div class="field-inline"><input type="text" id="fDong" placeholder="101" inputmode="numeric" oninput="App.doMatch()"><label>동</label></div>
+        <div class="field-inline"><input type="text" id="fHo" placeholder="0210" inputmode="numeric" oninput="App.doMatch()"><label>호</label></div>
       </div>
     </div>
 
