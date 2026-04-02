@@ -214,7 +214,7 @@
         <button onclick="App.loadSavedUrl()" class="url-saved-btn">⚡ 저장된 링크로 다시 불러오기</button>
       </div>
       <div class="url-toggle" onclick="document.getElementById('fileInput').click()">또는 <b>파일 직접 선택</b>하여 불러오기</div>
-      <input type="file" id="fileInput" accept=".xlsx,.xls,.xlsm,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden onchange="App.loadFile(this)">
+      <input type="file" id="fileInput" accept="*/*" hidden onchange="App.loadFile(this)">
     </div>
 
     <!-- 2. 현장 입력 -->
