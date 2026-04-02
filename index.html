@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v9.2</title>
+  <title>(주)메트로 R & S AI v9.3</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -36,6 +36,7 @@
 
     .content{flex:1;overflow-y:auto}
     .sec{padding:12px 16px;border-bottom:1px solid var(--border-light)}
+    .sec.sec-tight{padding:8px 4px;border-bottom:none}
     .sec-head{display:flex;align-items:center;gap:7px;margin-bottom:10px}
     .sec-num{width:22px;height:22px;border-radius:50%;background:var(--navy);color:var(--gold);font-family:'Outfit';font-size:.65rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
     .sec-title{font-size:.78rem;font-weight:800;color:var(--navy)}
@@ -146,13 +147,13 @@
     .log-count{font-size:.56rem;font-weight:400;color:var(--text-dim)}
     .btn-log-clear{padding:5px 10px;border:none;border-radius:var(--r-sm);font-size:.56rem;font-weight:800;cursor:pointer;font-family:'Noto Sans KR';background:var(--red);color:white}
     .table-wrap{width:100%;overflow-x:auto;overflow-y:auto;max-height:400px;border:1px solid var(--border);border-radius:var(--r);background:var(--white);-webkit-overflow-scrolling:touch;box-shadow:var(--shadow)}
-    .log-table{width:100%;border-collapse:collapse;font-size:.58rem}
-    .log-table th{background:var(--navy);color:var(--gold);padding:5px 3px;border:1px solid var(--navy-light);font-weight:700;white-space:nowrap;position:sticky;top:0;z-index:10;font-size:.52rem}
-    .log-table td{padding:3px 2px;border:1px solid #eee;text-align:center;vertical-align:middle;font-size:.55rem}
-    .log-table td.td-memo{text-align:left;white-space:normal;line-height:1.3;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;max-height:3.9em;word-break:break-all}
-    .photo-cell{padding:0!important;width:56px;height:56px;position:relative;cursor:pointer;background:var(--cream)}
+    .log-table{width:100%;border-collapse:collapse;font-size:.6rem}
+    .log-table th{background:var(--navy);color:var(--gold);padding:4px 1px;border:1px solid var(--navy-light);font-weight:700;white-space:nowrap;position:sticky;top:0;z-index:10;font-size:.52rem}
+    .log-table td{padding:3px 1px;border:1px solid #eee;text-align:center;vertical-align:middle;font-size:.58rem;font-weight:700}
+    .log-table td.td-memo{text-align:left;white-space:normal;line-height:1.3;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;max-height:3.9em;word-break:break-all;font-weight:700}
+    .photo-cell{padding:0!important;width:48px;height:48px;position:relative;cursor:pointer;background:var(--cream)}
     .photo-cell img{width:100%;height:100%;object-fit:cover;display:block}
-    .photo-cell .pc-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:56px;font-size:16px;color:var(--text-muted)}
+    .photo-cell .pc-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:48px;font-size:14px;color:var(--text-muted)}
     .photo-cell .pc-empty span{font-size:.38rem;color:var(--text-muted)}
     .photo-cell.has-photo .pc-empty{display:none}
     .photo-cell .pc-del{position:absolute;top:0;right:0;width:16px;height:16px;background:var(--red);color:white;border:none;border-radius:0 0 0 4px;font-size:9px;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:5}
@@ -190,7 +191,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 9.2 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 9.3 &middot; FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
   </header>
 
@@ -269,14 +270,14 @@
     </div>
 
     <!-- 3. 하자 리스트 (사진 촬영 포함) -->
-    <div class="sec" id="secLog">
+    <div class="sec sec-tight" id="secLog">
       <div class="log-head">
         <h3><span class="sec-num" style="background:var(--green)">3</span> 하자 리스트 <span class="log-count" id="logCount">(0건)</span></h3>
       </div>
       <div class="table-wrap">
         <table class="log-table">
           <thead><tr>
-            <th style="width:28px">No</th><th style="width:32px">동</th><th style="width:38px">호</th><th style="width:42px">위치</th><th style="width:42px">유형</th><th>하자내용</th><th style="width:56px">수리전</th><th style="width:56px">수리후</th><th style="width:56px">확인서</th>
+            <th style="width:22px">No</th><th style="width:26px">동</th><th style="width:32px">호</th><th style="width:34px">위치</th><th style="width:30px">유형</th><th>하자내용</th><th style="width:48px">수리전</th><th style="width:48px">수리후</th><th style="width:48px">확인서</th>
           </tr></thead>
           <tbody id="logBody"><tr><td colspan="9" class="log-empty">구글시트에서 불러오면 하자 리스트가 표시됩니다</td></tr></tbody>
         </table>
