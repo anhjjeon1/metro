@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v9.8</title>
+  <title>(주)메트로 R & S AI v9.9</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -220,7 +220,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 9.8 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 9.9 &middot; FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
   </header>
 
@@ -995,9 +995,39 @@ var App={
         if(!self.rowPhotos[rn]) self.rowPhotos[rn]={};
         self.rowPhotos[rn][type]=b;
         self.renderLog();
-        self.toast('사진 저장 (행 '+rn+')','success',1200);
+        self.toast('사진 저장 → 구글시트 전송 중...','info',2000);
+        self.syncOnePhoto(rn,type,b);
       };img.src=e.target.result;
     };reader.readAsDataURL(file);
+  },
+  syncOnePhoto:function(rn,type,dataUrl){
+    var scriptUrl=localStorage.getItem('METRO_SCRIPT_URL')||DEFAULT_SCRIPT_URL;
+    var sheetId=localStorage.getItem('METRO_SHEET_ID')||DEFAULT_SHEET_ID;
+    var sheetName=localStorage.getItem('METRO_SHEET_NAME')||DEFAULT_SHEET_NAME;
+    if(!scriptUrl||!sheetId){this.toast('설정에서 스프레드시트 ID를 확인하세요','error');return;}
+    var self=this;
+    var today=new Date();
+    var dateStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    var ph=this.rowPhotos[rn]||{};
+    Promise.all([
+      self.shrinkPhoto(ph.before||'',200,0.3),
+      self.shrinkPhoto(ph.after||'',200,0.3),
+      self.shrinkPhoto(ph.confirm||'',200,0.3)
+    ]).then(function(photos){
+      return fetch(scriptUrl,{
+        method:'POST',
+        headers:{'Content-Type':'text/plain'},
+        body:JSON.stringify({
+          action:'sync',sheetId:sheetId,sheetName:sheetName,
+          items:[{_rowNum:parseInt(rn),before:photos[0],after:photos[1],confirm:photos[2],date:dateStr}]
+        })
+      });
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.status==='ok') self.toast('구글시트 자동 저장 완료','success',2000);
+      else self.toast('동기화 오류: '+d.message,'error',3000);
+    }).catch(function(err){
+      self.toast('자동 저장 실패: '+err.message,'error',3000);
+    });
   },
   delRowPhoto:function(rn,type){
     if(this.rowPhotos[rn]) this.rowPhotos[rn][type]='';
