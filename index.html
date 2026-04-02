@@ -42,15 +42,19 @@
     .sec-sub{font-size:.55rem;color:var(--text-dim);margin-left:4px}
 
     /* UPLOAD */
-    .upload-area{border:2px dashed var(--border);border-radius:var(--r);padding:12px;text-align:center;cursor:pointer;background:var(--white);transition:all .2s}
-    .upload-area:active{background:var(--gold-pale);border-color:var(--gold)}
-    .upload-area.loaded{border-style:solid;border-color:var(--green);background:var(--green-light);padding:8px}
-    .upload-icon{font-size:20px;margin-bottom:2px}
-    .upload-text{font-size:.68rem;color:var(--text-sub);font-weight:600}
-    .upload-hint{font-size:.54rem;color:var(--text-dim);margin-top:1px}
-    .loaded-info{display:none;font-size:.66rem;font-weight:700;color:var(--green)}
-    .upload-area.loaded .loaded-info{display:block}
-    .upload-area.loaded .upload-icon,.upload-area.loaded .upload-text,.upload-area.loaded .upload-hint{display:none}
+
+    /* URL LOAD */
+    .url-toggle{text-align:center;padding:8px 0 2px;font-size:.56rem;color:var(--text-dim);cursor:pointer}
+    .url-toggle b{color:var(--blue);font-weight:700}
+    .url-panel{margin-top:6px}
+    .url-row{display:flex;gap:5px}
+    .url-input{flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:.7rem;font-family:'Noto Sans KR';background:var(--white);color:var(--text);outline:none}
+    .url-input:focus{border-color:var(--blue)}
+    .url-input::placeholder{color:var(--text-muted);font-size:.6rem}
+    .url-btn{padding:8px 14px;border:none;border-radius:var(--r-sm);background:var(--blue);color:white;font-size:.65rem;font-weight:700;font-family:'Noto Sans KR';cursor:pointer;white-space:nowrap}
+    .url-btn:active{opacity:.8}
+    .url-saved-btn{width:100%;margin-top:6px;padding:9px;border:1.5px solid var(--green);border-radius:var(--r-sm);background:var(--green-light);color:var(--green);font-size:.62rem;font-weight:700;font-family:'Noto Sans KR';cursor:pointer;text-align:center}
+    .url-saved-btn:active{background:var(--green);color:white}
 
     /* FORM */
     .form-grid{display:flex;flex-direction:column;gap:6px}
@@ -199,12 +203,17 @@
         <span class="sec-num">1</span>
         <span class="sec-title">하자 리스트 불러오기</span>
       </div>
-      <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-        <div class="upload-icon">&#128194;</div>
-        <div class="upload-text">터치하여 파일 선택</div>
-        <div class="upload-hint">OneDrive &middot; Google Drive &middot; 내 파일에서 엑셀 선택</div>
-        <div class="loaded-info" id="loadedInfo">&#10004; <span id="loadedFileName"></span> &middot; <span id="loadedRowCount"></span>건</div>
+      <div id="uploadArea">
+        <div class="loaded-info" id="loadedInfo" style="display:none;font-size:.66rem;font-weight:700;color:var(--green);text-align:center;padding:8px;border:1.5px solid var(--green);border-radius:var(--r-sm);background:var(--green-light)">&#10004; <span id="loadedFileName"></span> &middot; <span id="loadedRowCount"></span>건</div>
       </div>
+      <div class="url-row">
+        <input type="text" id="urlInput" placeholder="OneDrive 공유 링크 붙여넣기" class="url-input">
+        <button onclick="App.loadFromUrl()" class="url-btn">불러오기</button>
+      </div>
+      <div id="urlSaved" style="display:none">
+        <button onclick="App.loadSavedUrl()" class="url-saved-btn">⚡ 저장된 링크로 다시 불러오기</button>
+      </div>
+      <div class="url-toggle" onclick="document.getElementById('fileInput').click()">또는 <b>파일 직접 선택</b>하여 불러오기</div>
       <input type="file" id="fileInput" accept=".xlsx,.xls,.xlsm,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" hidden onchange="App.loadFile(this)">
     </div>
 
@@ -339,9 +348,69 @@ var App={
     if(s){document.getElementById('fSite').value=s;this.lockSite();}
     var url=localStorage.getItem('METRO_SCRIPT_URL')||DEFAULT_SCRIPT_URL;
     if(url) document.getElementById('cfgUrl').value=url;
+    // 저장된 OneDrive URL 있으면 표시
+    var savedFileUrl=localStorage.getItem('METRO_FILE_URL');
+    if(savedFileUrl){
+      document.getElementById('urlInput').value=savedFileUrl;
+      document.getElementById('urlSaved').style.display='block';
+    }
   },
 
   toast:function(m,t,d){t=t||'info';d=d||2500;var e=document.getElementById('toast');e.textContent=m;e.className='toast '+t+' show';clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show');},d);},
+
+  // === OneDrive URL 불러오기 ===
+  toggleUrlInput:function(){
+    var p=document.getElementById('urlPanel');
+    p.style.display=p.style.display==='none'?'block':'none';
+  },
+  encodeShareUrl:function(url){
+    var b=btoa(url).replace(/\//g,'_').replace(/\+/g,'-').replace(/=+$/,'');
+    return 'u!'+b;
+  },
+  loadFromUrl:function(){
+    var url=document.getElementById('urlInput').value.trim();
+    if(!url){this.toast('URL을 입력하세요','error');return;}
+    var dlUrl;
+    if(url.indexOf('1drv.ms')>=0||url.indexOf('onedrive.live.com')>=0||url.indexOf('sharepoint.com')>=0){
+      dlUrl='https://api.onedrive.com/v1.0/shares/'+this.encodeShareUrl(url)+'/root/content';
+    }else{
+      dlUrl=url;
+    }
+    var self=this;
+    document.getElementById('loaderText').textContent='URL에서 다운로드 중...';
+    document.getElementById('loader').style.display='flex';
+    fetch(dlUrl).then(function(r){
+      if(!r.ok) throw new Error('다운로드 실패 ('+r.status+')');
+      return r.arrayBuffer();
+    }).then(function(buf){
+      localStorage.setItem('METRO_FILE_URL',url);
+      self.originalWB=buf;
+      var wb=XLSX.read(new Uint8Array(buf),{type:'array'});
+      var sheetName=wb.SheetNames[0];
+      var json=XLSX.utils.sheet_to_json(wb.Sheets[sheetName],{defval:''});
+      if(!json.length) throw new Error('빈 파일');
+      self.sourceData=[];
+      for(var i=0;i<json.length;i++){json[i]._idx=i;json[i]._rowNum=i+2;self.sourceData.push(json[i]);}
+      self.detectCols(json[0]);
+      self.sourceSheetName=sheetName;
+      self.originalFileName='OneDrive_'+sheetName+'.xlsx';
+      self.saveSource();
+      document.getElementById('loadedInfo').style.display='block';
+      document.getElementById('loadedFileName').textContent='OneDrive 링크';
+      document.getElementById('loadedRowCount').textContent=json.length;
+      if(sheetName){document.getElementById('fSite').value=sheetName;localStorage.setItem('METRO_SITE',sheetName);}
+      document.getElementById('urlSaved').style.display='block';
+      self.toast(json.length+'건 로드! (현장: '+sheetName+')','success',3000);
+      document.getElementById('loader').style.display='none';
+    }).catch(function(err){
+      self.toast('URL 오류: '+err.message,'error',4000);
+      document.getElementById('loader').style.display='none';
+    });
+  },
+  loadSavedUrl:function(){
+    var url=localStorage.getItem('METRO_FILE_URL');
+    if(url){document.getElementById('urlInput').value=url;this.loadFromUrl();}
+  },
 
   // === 설정 ===
   toggleSettings:function(){var p=document.getElementById('settingsPanel');p.style.display=p.style.display==='none'?'block':'none';},
@@ -383,7 +452,7 @@ var App={
         self.detectCols(json[0]);
         self.sourceSheetName=sheetName; // 시트명 저장
         self.saveSource();
-        document.getElementById('uploadArea').classList.add('loaded');
+        document.getElementById('loadedInfo').style.display='block';
         document.getElementById('loadedFileName').textContent=file.name;
         document.getElementById('loadedRowCount').textContent=json.length;
         // 시트 이름을 현장명에 자동 입력 (새 파일이면 항상 덮어쓰기)
@@ -744,7 +813,7 @@ var App={
     this.sourceData=[];this.savedLog=[];this.originalWB=null;this.originalFileName='';this.sourceSheetName='';
     this.currentMatches=[];this.checkedIdxes=[];this.workQueue=[];this.workIdx=-1;this.isWorking=false;
     document.getElementById('fSite').value='';
-    document.getElementById('uploadArea').classList.remove('loaded');
+    document.getElementById('loadedInfo').style.display='none';
     this.newEntry();this.renderLog();
     this.toast('전체 초기화 완료. 새 파일을 업로드하세요','success');
   },
@@ -975,7 +1044,7 @@ var App={
         for(var i=0;i<s.data.length;i++){s.data[i]._idx=i;s.data[i]._rowNum=i+2;this.sourceData.push(s.data[i]);}
         this.detectCols(s.data[0]);
         this.sourceSheetName=s.sheetName||'';
-        document.getElementById('uploadArea').classList.add('loaded');
+        document.getElementById('loadedInfo').style.display='block';
         document.getElementById('loadedFileName').textContent='이전 데이터';
         document.getElementById('loadedRowCount').textContent=this.sourceData.length;
         // 시트명으로 현장명 복원
@@ -1012,7 +1081,7 @@ var App={
     this.sourceData=[];
     for(var i=0;i<sample.length;i++){sample[i]._idx=i;sample[i]._rowNum=i+2;this.sourceData.push(sample[i]);}
     this.detectCols(sample[0]);this.saveSource();
-    document.getElementById('uploadArea').classList.add('loaded');
+    document.getElementById('loadedInfo').style.display='block';
     document.getElementById('loadedFileName').textContent='샘플 데이터';
     document.getElementById('loadedRowCount').textContent=sample.length;
     this.toast(sample.length+'건 로드! 동/호를 입력하세요','success',3000);
