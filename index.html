@@ -533,11 +533,15 @@ var App={
     }
 
     var matches=[];
+    var nD=qD.replace(/^0+/,'')||'0';
+    var nH=qH.replace(/^0+/,'')||'0';
     for(var i=0;i<this.sourceData.length;i++){
       var row=this.sourceData[i];
       var dh=this.parseDH(row);
-      if(dh.dong!==qD)continue;
-      if(qH&&dh.ho!==qH)continue;
+      var rD=dh.dong.replace(/^0+/,'')||'0';
+      var rH=dh.ho.replace(/^0+/,'')||'0';
+      if(rD!==nD)continue;
+      if(qH&&rH!==nH)continue;
       matches.push(row);
     }
 
