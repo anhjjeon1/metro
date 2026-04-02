@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v7.8</title>
+  <title>(주)메트로 R & S AI v7.9</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -182,7 +182,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 7.8 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 7.9 &middot; FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
   </header>
 
@@ -438,6 +438,7 @@ var App={
       if(sheetName){document.getElementById('fSite').value=sheetName;localStorage.setItem('METRO_SITE',sheetName);this.lockSite();}
       document.getElementById('urlSaved').style.display='block';
       this.toast(json.length+'건 로드! (현장: '+sheetName+')','success',3000);
+      this.renderLog();
     }catch(err){this.toast('파일 처리 오류: '+err.message,'error',4000);}
     document.getElementById('loader').style.display='none';
   },
@@ -495,6 +496,7 @@ var App={
           localStorage.setItem('METRO_SITE',sheetName);
         }
         self.toast(json.length+'건 로드! (현장: '+sheetName+')','success',3000);
+        self.renderLog();
       }catch(err){self.toast('오류: '+err.message,'error');}
       document.getElementById('loader').style.display='none';
     };
@@ -1109,6 +1111,7 @@ var App={
           document.getElementById('fSite').value=this.sourceSheetName;
           this.lockSite();
         }
+        this.renderLog();
       }
     }catch(e){}
   },
