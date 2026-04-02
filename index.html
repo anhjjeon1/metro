@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v9.3</title>
+  <title>(주)메트로 R & S AI v9.4</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -150,7 +150,7 @@
     .log-table{width:100%;border-collapse:collapse;font-size:.6rem}
     .log-table th{background:var(--navy);color:var(--gold);padding:4px 1px;border:1px solid var(--navy-light);font-weight:700;white-space:nowrap;position:sticky;top:0;z-index:10;font-size:.52rem}
     .log-table td{padding:3px 1px;border:1px solid #eee;text-align:center;vertical-align:middle;font-size:.58rem;font-weight:700}
-    .log-table td.td-memo{text-align:left;white-space:normal;line-height:1.3;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;max-height:3.9em;word-break:break-all;font-weight:700}
+    .log-table td.td-memo{text-align:left;white-space:normal;line-height:1.3;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;max-height:3.9em;word-break:break-all;font-weight:700;cursor:pointer}
     .photo-cell{padding:0!important;width:48px;height:48px;position:relative;cursor:pointer;background:var(--cream)}
     .photo-cell img{width:100%;height:100%;object-fit:cover;display:block}
     .photo-cell .pc-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:48px;font-size:14px;color:var(--text-muted)}
@@ -181,6 +181,16 @@
     @keyframes spin{to{transform:rotate(360deg)}}
     #loader p{margin-top:10px;font-weight:700;font-size:.8rem;color:var(--gold)}
     .hidden-inputs{position:absolute;width:0;height:0;overflow:hidden}
+
+    /* 하자내용 팝업 */
+    .memo-popup-overlay{position:fixed;inset:0;background:rgba(12,25,41,.7);z-index:9998;display:none;align-items:center;justify-content:center;padding:20px}
+    .memo-popup-overlay.show{display:flex}
+    .memo-popup{background:var(--white);border-radius:var(--r);max-width:460px;width:100%;padding:16px 18px;box-shadow:var(--shadow-lg);position:relative}
+    .memo-popup-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1.5px solid var(--border)}
+    .memo-popup-head .mp-title{font-size:.7rem;font-weight:800;color:var(--navy)}
+    .memo-popup-head .mp-loc{font-size:.58rem;color:var(--text-sub);font-weight:600}
+    .memo-popup-close{width:28px;height:28px;border:none;border-radius:50%;background:var(--red);color:white;font-size:14px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .memo-popup-body{font-size:1rem;font-weight:700;color:var(--text);line-height:1.6;word-break:break-all}
   </style>
 </head>
 <body>
@@ -188,10 +198,21 @@
 <div id="loader"><div class="spinner"></div><p id="loaderText">처리 중...</p></div>
 <div class="toast" id="toast"></div>
 
+<!-- 하자내용 팝업 -->
+<div class="memo-popup-overlay" id="memoPopup" onclick="App.closeMemoPopup(event)">
+  <div class="memo-popup" onclick="event.stopPropagation()">
+    <div class="memo-popup-head">
+      <div><div class="mp-title" id="mpTitle"></div><div class="mp-loc" id="mpLoc"></div></div>
+      <button class="memo-popup-close" onclick="App.closeMemoPopup()">&#10005;</button>
+    </div>
+    <div class="memo-popup-body" id="mpBody"></div>
+  </div>
+</div>
+
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 9.3 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 9.4 &middot; FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
   </header>
 
@@ -932,7 +953,7 @@ var App={
         +'<td>'+dh.ho+'</td>'
         +'<td>'+loc+'</td>'
         +'<td>'+tp+'</td>'
-        +'<td class="td-memo">'+memo+'</td>'
+        +'<td class="td-memo" onclick="App.showMemo('+no+',\''+loc.replace(/'/g,"\\'")+'\',\''+tp.replace(/'/g,"\\'")+'\',this.textContent)">'+memo+'</td>'
         +this._photoCell(rn,'before',ph.before)
         +this._photoCell(rn,'after',ph.after)
         +this._photoCell(rn,'confirm',ph.confirm)
@@ -973,6 +994,16 @@ var App={
   delRowPhoto:function(rn,type){
     if(this.rowPhotos[rn]) this.rowPhotos[rn][type]='';
     this.renderLog();
+  },
+  showMemo:function(no,loc,tp,memo){
+    document.getElementById('mpTitle').textContent='No.'+no+' 하자내용';
+    document.getElementById('mpLoc').textContent=loc+' / '+tp;
+    document.getElementById('mpBody').textContent=memo;
+    document.getElementById('memoPopup').classList.add('show');
+  },
+  closeMemoPopup:function(e){
+    if(e&&e.target!==document.getElementById('memoPopup'))return;
+    document.getElementById('memoPopup').classList.remove('show');
   },
   delItem:function(idx){if(!confirm(this.savedLog[idx].no+' 삭제?'))return;this.savedLog.splice(idx,1);for(var i=0;i<this.savedLog.length;i++)this.savedLog[i].no='H'+String(i+1).padStart(4,'0');this.saveLog();this.renderLog();this.doMatch();this.toast('삭제 완료','info');},
   clearLog:function(){if(!this.savedLog.length){this.toast('삭제할 항목 없음','error');return;}if(!confirm('전체 '+this.savedLog.length+'건 삭제?'))return;this.savedLog=[];this.saveLog();this.renderLog();this.doMatch();this.toast('전체 삭제 완료','info');},
