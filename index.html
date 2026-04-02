@@ -370,6 +370,8 @@ var App={
   loadFromUrl:function(){
     var url=document.getElementById('urlInput').value.trim();
     if(!url){this.toast('URL을 입력하세요','error');return;}
+    var scriptUrl=localStorage.getItem('METRO_SCRIPT_URL')||DEFAULT_SCRIPT_URL;
+    if(!scriptUrl){this.toast('설정에서 구글스크립트 URL을 먼저 등록하세요','error',4000);return;}
     var self=this;
     var apiUrl;
     if(url.indexOf('1drv.ms')>=0||url.indexOf('onedrive.live.com')>=0||url.indexOf('sharepoint.com')>=0){
@@ -377,36 +379,22 @@ var App={
     }else{
       apiUrl=url;
     }
-    document.getElementById('loaderText').textContent='다운로드 중...';
+    document.getElementById('loaderText').textContent='구글 프록시로 다운로드 중...';
     document.getElementById('loader').style.display='flex';
-    // 1차: 직접 시도 → 2차: CORS 프록시 우회
-    fetch(apiUrl).then(function(r){
-      if(!r.ok) throw new Error(r.status);
-      return r.arrayBuffer();
-    }).then(function(buf){
-      self._processUrlFile(buf,url);
-    }).catch(function(){
-      // CORS 차단 → 프록시 우회
-      document.getElementById('loaderText').textContent='프록시 우회 중...';
-      var proxy='https://api.allorigins.win/raw?url='+encodeURIComponent(apiUrl);
-      fetch(proxy).then(function(r){
-        if(!r.ok) throw new Error(r.status);
-        return r.arrayBuffer();
-      }).then(function(buf){
-        self._processUrlFile(buf,url);
-      }).catch(function(){
-        // 2차 프록시
-        var proxy2='https://corsproxy.io/?'+encodeURIComponent(apiUrl);
-        fetch(proxy2).then(function(r){
-          if(!r.ok) throw new Error(r.status);
-          return r.arrayBuffer();
-        }).then(function(buf){
-          self._processUrlFile(buf,url);
-        }).catch(function(err){
-          document.getElementById('loader').style.display='none';
-          self.toast('CORS 차단. 파일 직접 선택을 이용하세요','error',5000);
-        });
-      });
+    var proxyUrl=scriptUrl+'?action=proxy&url='+encodeURIComponent(apiUrl);
+    fetch(proxyUrl).then(function(r){
+      if(!r.ok) throw new Error('서버 오류 ('+r.status+')');
+      return r.json();
+    }).then(function(d){
+      if(d.status!=='ok') throw new Error(d.message||'프록시 오류');
+      // base64 → ArrayBuffer
+      var bin=atob(d.data);
+      var buf=new Uint8Array(bin.length);
+      for(var i=0;i<bin.length;i++) buf[i]=bin.charCodeAt(i);
+      self._processUrlFile(buf.buffer,url);
+    }).catch(function(err){
+      document.getElementById('loader').style.display='none';
+      self.toast('오류: '+err.message,'error',5000);
     });
   },
   _processUrlFile:function(buf,origUrl){
