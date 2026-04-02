@@ -370,42 +370,67 @@ var App={
   loadFromUrl:function(){
     var url=document.getElementById('urlInput').value.trim();
     if(!url){this.toast('URL을 입력하세요','error');return;}
-    var dlUrl;
-    if(url.indexOf('1drv.ms')>=0||url.indexOf('onedrive.live.com')>=0||url.indexOf('sharepoint.com')>=0){
-      dlUrl='https://api.onedrive.com/v1.0/shares/'+this.encodeShareUrl(url)+'/root/content';
-    }else{
-      dlUrl=url;
-    }
     var self=this;
-    document.getElementById('loaderText').textContent='URL에서 다운로드 중...';
+    var apiUrl;
+    if(url.indexOf('1drv.ms')>=0||url.indexOf('onedrive.live.com')>=0||url.indexOf('sharepoint.com')>=0){
+      apiUrl='https://api.onedrive.com/v1.0/shares/'+this.encodeShareUrl(url)+'/root/content';
+    }else{
+      apiUrl=url;
+    }
+    document.getElementById('loaderText').textContent='다운로드 중...';
     document.getElementById('loader').style.display='flex';
-    fetch(dlUrl).then(function(r){
-      if(!r.ok) throw new Error('다운로드 실패 ('+r.status+')');
+    // 1차: 직접 시도 → 2차: CORS 프록시 우회
+    fetch(apiUrl).then(function(r){
+      if(!r.ok) throw new Error(r.status);
       return r.arrayBuffer();
     }).then(function(buf){
-      localStorage.setItem('METRO_FILE_URL',url);
-      self.originalWB=buf;
+      self._processUrlFile(buf,url);
+    }).catch(function(){
+      // CORS 차단 → 프록시 우회
+      document.getElementById('loaderText').textContent='프록시 우회 중...';
+      var proxy='https://api.allorigins.win/raw?url='+encodeURIComponent(apiUrl);
+      fetch(proxy).then(function(r){
+        if(!r.ok) throw new Error(r.status);
+        return r.arrayBuffer();
+      }).then(function(buf){
+        self._processUrlFile(buf,url);
+      }).catch(function(){
+        // 2차 프록시
+        var proxy2='https://corsproxy.io/?'+encodeURIComponent(apiUrl);
+        fetch(proxy2).then(function(r){
+          if(!r.ok) throw new Error(r.status);
+          return r.arrayBuffer();
+        }).then(function(buf){
+          self._processUrlFile(buf,url);
+        }).catch(function(err){
+          document.getElementById('loader').style.display='none';
+          self.toast('CORS 차단. 파일 직접 선택을 이용하세요','error',5000);
+        });
+      });
+    });
+  },
+  _processUrlFile:function(buf,origUrl){
+    try{
+      localStorage.setItem('METRO_FILE_URL',origUrl);
+      this.originalWB=buf;
       var wb=XLSX.read(new Uint8Array(buf),{type:'array'});
       var sheetName=wb.SheetNames[0];
       var json=XLSX.utils.sheet_to_json(wb.Sheets[sheetName],{defval:''});
       if(!json.length) throw new Error('빈 파일');
-      self.sourceData=[];
-      for(var i=0;i<json.length;i++){json[i]._idx=i;json[i]._rowNum=i+2;self.sourceData.push(json[i]);}
-      self.detectCols(json[0]);
-      self.sourceSheetName=sheetName;
-      self.originalFileName='OneDrive_'+sheetName+'.xlsx';
-      self.saveSource();
+      this.sourceData=[];
+      for(var i=0;i<json.length;i++){json[i]._idx=i;json[i]._rowNum=i+2;this.sourceData.push(json[i]);}
+      this.detectCols(json[0]);
+      this.sourceSheetName=sheetName;
+      this.originalFileName='OneDrive_'+sheetName+'.xlsx';
+      this.saveSource();
       document.getElementById('loadedInfo').style.display='block';
       document.getElementById('loadedFileName').textContent='OneDrive 링크';
       document.getElementById('loadedRowCount').textContent=json.length;
-      if(sheetName){document.getElementById('fSite').value=sheetName;localStorage.setItem('METRO_SITE',sheetName);}
+      if(sheetName){document.getElementById('fSite').value=sheetName;localStorage.setItem('METRO_SITE',sheetName);this.lockSite();}
       document.getElementById('urlSaved').style.display='block';
-      self.toast(json.length+'건 로드! (현장: '+sheetName+')','success',3000);
-      document.getElementById('loader').style.display='none';
-    }).catch(function(err){
-      self.toast('URL 오류: '+err.message,'error',4000);
-      document.getElementById('loader').style.display='none';
-    });
+      this.toast(json.length+'건 로드! (현장: '+sheetName+')','success',3000);
+    }catch(err){this.toast('파일 처리 오류: '+err.message,'error',4000);}
+    document.getElementById('loader').style.display='none';
   },
   loadSavedUrl:function(){
     var url=localStorage.getItem('METRO_FILE_URL');
