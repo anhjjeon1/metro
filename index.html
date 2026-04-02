@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v10.2</title>
+  <title>(주)메트로 R & S AI v10.3</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -220,7 +220,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 10.2 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 10.3 &middot; FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
   </header>
 
@@ -328,7 +328,7 @@
 
 <script>
 var STORAGE={LOG:'METRO_V70_LOG',SOURCE:'METRO_V70_SRC'};
-var DEFAULT_SCRIPT_URL='https://script.google.com/macros/s/AKfycbznXmgrwHjFMjUceQVUq4PuYh8Ox8u5BhnUUJuyV7K-By_5zbhEUIVVkmr7mCO7z20a3w/exec';
+var DEFAULT_SCRIPT_URL='https://script.google.com/macros/s/AKfycbxH6-ivs2Gu26geJGtEEOr4B3D7_SGMH-pJkZy9CVpcpH5nTetRjwiIJJzzrlsp3OiGFw/exec';
 var DEFAULT_SHEET_ID='1RzeZJAQh0ACC3YzkEJ5L21ak06wDp-MTHc3M5QFnlsg';
 var DEFAULT_SHEET_NAME='하남강일';
 
@@ -353,7 +353,7 @@ var App={
     if(s){document.getElementById('fSite').value=s;this.lockSite();}
     // 이전 URL 자동 마이그레이션
     var oldUrl=localStorage.getItem('METRO_SCRIPT_URL')||'';
-    if(oldUrl&&oldUrl.indexOf('AKfycbznXmgrwHjFMj')<0){localStorage.removeItem('METRO_SCRIPT_URL');oldUrl='';}
+    if(oldUrl&&oldUrl.indexOf('AKfycbxH6-ivs2Gu26')<0){localStorage.removeItem('METRO_SCRIPT_URL');oldUrl='';}
     var url=oldUrl||DEFAULT_SCRIPT_URL;
     if(url) document.getElementById('cfgUrl').value=url;
     var sheetId=localStorage.getItem('METRO_SHEET_ID')||DEFAULT_SHEET_ID;
