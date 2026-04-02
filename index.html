@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v8.2</title>
+  <title>(주)메트로 R & S AI v8.3</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -182,7 +182,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 8.2 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 8.3 &middot; FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
   </header>
 
@@ -843,6 +843,22 @@ var App={
     this.syncToSheet(entry);
   },
 
+  // === 사진 축소 (구글시트용) ===
+  shrinkPhoto:function(dataUrl,maxW,quality){
+    return new Promise(function(resolve){
+      if(!dataUrl||dataUrl.indexOf('data:image')<0){resolve('');return;}
+      var img=new Image();
+      img.onload=function(){
+        var sc=img.width>maxW?maxW/img.width:1;
+        var c=document.createElement('canvas');c.width=img.width*sc;c.height=img.height*sc;
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        resolve(c.toDataURL('image/jpeg',quality));
+      };
+      img.onerror=function(){resolve('');};
+      img.src=dataUrl;
+    });
+  },
+
   // === 구글시트 동기화 ===
   syncToSheet:function(entry){
     var scriptUrl=localStorage.getItem('METRO_SCRIPT_URL')||DEFAULT_SCRIPT_URL;
@@ -850,21 +866,19 @@ var App={
     var sheetName=localStorage.getItem('METRO_SHEET_NAME')||DEFAULT_SHEET_NAME;
     if(!scriptUrl||!sheetId||!entry._rowNum) return;
     var self=this;
-    fetch(scriptUrl,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({
-        action:'sync',
-        sheetId:sheetId,
-        sheetName:sheetName,
-        items:[{
-          _rowNum:entry._rowNum,
-          before:entry.before||'',
-          after:entry.after||'',
-          confirm:entry.confirm||'',
-          date:entry.date||''
-        }]
-      })
+    Promise.all([
+      self.shrinkPhoto(entry.before,200,0.3),
+      self.shrinkPhoto(entry.after,200,0.3),
+      self.shrinkPhoto(entry.confirm,200,0.3)
+    ]).then(function(photos){
+      return fetch(scriptUrl,{
+        method:'POST',
+        headers:{'Content-Type':'text/plain'},
+        body:JSON.stringify({
+          action:'sync',sheetId:sheetId,sheetName:sheetName,
+          items:[{_rowNum:entry._rowNum,before:photos[0],after:photos[1],confirm:photos[2],date:entry.date||''}]
+        })
+      });
     }).then(function(r){return r.json();}).then(function(d){
       if(d.status==='ok') self.toast('구글시트 동기화 완료','success',2000);
       else self.toast('동기화 오류: '+d.message,'error',3000);
@@ -878,20 +892,34 @@ var App={
     var sheetId=localStorage.getItem('METRO_SHEET_ID')||DEFAULT_SHEET_ID;
     var sheetName=localStorage.getItem('METRO_SHEET_NAME')||DEFAULT_SHEET_NAME;
     if(!scriptUrl||!sheetId){this.toast('설정에서 스프레드시트 ID를 확인하세요','error');return;}
-    var items=[];
+    var logs=[];
     for(var i=0;i<this.savedLog.length;i++){
       var it=this.savedLog[i];
       if(!it._rowNum) continue;
-      items.push({_rowNum:it._rowNum,before:it.before||'',after:it.after||'',confirm:it.confirm||'',date:it.date||''});
+      logs.push(it);
     }
-    if(!items.length){this.toast('동기화할 항목이 없습니다 (_rowNum 없음)','error');return;}
+    if(!logs.length){this.toast('동기화할 항목이 없습니다','error');return;}
     var self=this;
-    document.getElementById('loaderText').textContent='구글시트 동기화 중...';
+    document.getElementById('loaderText').textContent='사진 축소 중...';
     document.getElementById('loader').style.display='flex';
-    fetch(scriptUrl,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({action:'sync',sheetId:sheetId,sheetName:sheetName,items:items})
+    // 모든 사진 축소
+    var promises=[];
+    for(var j=0;j<logs.length;j++){
+      (function(log){
+        promises.push(Promise.all([
+          self.shrinkPhoto(log.before,200,0.3),
+          self.shrinkPhoto(log.after,200,0.3),
+          self.shrinkPhoto(log.confirm,200,0.3)
+        ]).then(function(p){return{_rowNum:log._rowNum,before:p[0],after:p[1],confirm:p[2],date:log.date||''};}));
+      })(logs[j]);
+    }
+    Promise.all(promises).then(function(items){
+      document.getElementById('loaderText').textContent='구글시트 동기화 중...';
+      return fetch(scriptUrl,{
+        method:'POST',
+        headers:{'Content-Type':'text/plain'},
+        body:JSON.stringify({action:'sync',sheetId:sheetId,sheetName:sheetName,items:items})
+      });
     }).then(function(r){return r.json();}).then(function(d){
       if(d.status==='ok') self.toast(d.updated+'건 구글시트 동기화 완료!','success',3000);
       else self.toast('동기화 오류: '+d.message,'error',3000);
