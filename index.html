@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v10.1</title>
+  <title>(주)메트로 R & S AI v10.2</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -220,7 +220,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 10.1 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 10.2 &middot; FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
   </header>
 
@@ -253,26 +253,25 @@
         <span onclick="document.getElementById('appGuide').style.display=document.getElementById('appGuide').style.display==='none'?'block':'none'" style="font-size:.5rem;color:var(--blue);font-weight:700;cursor:pointer;border:1px solid var(--blue);border-radius:3px;padding:2px 6px">앱 사용설명서</span>
       </div>
       <div id="appGuide" style="display:none;margin-bottom:8px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--white);font-size:.58rem;line-height:1.6;color:var(--text-sub)">
-        <div style="font-weight:800;color:var(--navy);margin-bottom:6px;font-size:.65rem">📋 메트로 R&S AI 사용설명서</div>
+        <div style="font-weight:800;color:var(--navy);margin-bottom:6px;font-size:.65rem">📋 메트로 R&S AI v10 사용설명서</div>
         <b>1단계: 하자 리스트 불러오기</b><br>
         &middot; '구글시트에서 불러오기' 버튼 탭 → 자동 로드<br>
         &middot; ⚙️ 설정에서 스프레드시트 ID/시트명 변경 가능<br><br>
         <b>2단계: 현장 입력</b><br>
-        &middot; 현장명: 파일 로드 시 자동 입력됨<br>
-        &middot; 동/호 입력 → 해당 하자 목록 자동 표시<br>
-        &middot; 체크박스로 작업할 항목 선택 → 작업시작<br>
-        &middot; 수리전/수리후/완료확인서 사진 촬영<br>
-        &middot; 저장&다음으로 순차 작업<br><br>
-        <b>3단계: 하자 리스트 확인</b><br>
-        &middot; 전체 하자 목록 표시 (동/호 입력 시 필터링)<br>
-        &middot; 완료 항목은 녹색 + ✔ 표시<br><br>
-        <b>4단계: 구글시트 저장</b><br>
-        &middot; 작업 완료 시 자동으로 구글시트에 동기화<br>
-        &middot; 수리전/수리후/완료확인서/완료일 자동 반영<br><br>
-        <b>기타</b><br>
+        &middot; 현장명: 구글시트 로드 시 자동 입력됨<br>
+        &middot; 동/호 입력 → 해당 하자 목록 자동 필터링<br><br>
+        <b>3단계: 하자 리스트 + 사진 촬영</b><br>
+        &middot; 하자 목록이 테이블로 표시됨<br>
+        &middot; 하자내용 탭 → 전체 내용 팝업으로 확인<br>
+        &middot; 수리전/수리후/확인서 📷 탭 → 사진 촬영<br>
+        &middot; 촬영 즉시 구글시트에 자동 저장됨<br>
+        &middot; 사진은 Google Drive에 저장 + 시트에 IMAGE 수식 삽입<br><br>
+        <b>하단 버튼</b><br>
+        &middot; 구글시트저장: 전체 사진 일괄 동기화<br>
         &middot; 새로입력: 동/호 초기화 (데이터 유지)<br>
-        &middot; 전체 초기화: 새 현장 전환 시 모든 데이터 삭제<br>
-        &middot; ⚙️ 설정: 구글 스프레드시트 연동 URL
+        &middot; 초기화: 새 현장 전환 시 모든 데이터 삭제<br><br>
+        <b>기타</b><br>
+        &middot; ⚙️ 설정: 구글 스프레드시트 연동 URL/ID/시트명
       </div>
       <div id="uploadArea">
         <div class="loaded-info" id="loadedInfo" onclick="document.getElementById('uploadControls').style.display='block'" style="display:none;font-size:.66rem;font-weight:700;color:var(--green);text-align:center;padding:8px;border:1.5px solid var(--green);border-radius:var(--r-sm);background:var(--green-light);cursor:pointer">&#10004; <span id="loadedFileName"></span> &middot; <span id="loadedRowCount"></span>건 <span style="font-size:.5rem;color:var(--text-dim)">(탭하여 다시 불러오기)</span></div>
