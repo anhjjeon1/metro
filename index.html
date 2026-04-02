@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v8.1</title>
+  <title>(주)메트로 R & S AI v8.2</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -182,7 +182,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 8.1 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 8.2 &middot; FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
   </header>
 
@@ -340,7 +340,7 @@
   <!-- 하단 버튼 -->
   <div class="bottom-bar">
     <div class="btn-row" style="grid-template-columns:1fr 1fr 1fr">
-      <button class="btn-send" onclick="App.exportExcel()">&#128228; 엑셀저장</button>
+      <button class="btn-send" onclick="App.syncAllToSheet()">&#128202; 구글시트저장</button>
       <button class="btn-new" onclick="App.newEntry()">&#128260; 새로입력</button>
       <button onclick="App.resetAll()" style="padding:12px 0;border:1.5px solid var(--red);border-radius:var(--r);background:var(--red-light);color:var(--red);font-size:.7rem;font-weight:800;font-family:'Noto Sans KR';cursor:pointer">초기화(현장변경)</button>
     </div>
@@ -870,6 +870,35 @@ var App={
       else self.toast('동기화 오류: '+d.message,'error',3000);
     }).catch(function(err){
       self.toast('동기화 실패: '+err.message,'error',3000);
+    });
+  },
+  syncAllToSheet:function(){
+    if(!this.savedLog.length){this.toast('저장된 완료 항목이 없습니다','error');return;}
+    var scriptUrl=localStorage.getItem('METRO_SCRIPT_URL')||DEFAULT_SCRIPT_URL;
+    var sheetId=localStorage.getItem('METRO_SHEET_ID')||DEFAULT_SHEET_ID;
+    var sheetName=localStorage.getItem('METRO_SHEET_NAME')||DEFAULT_SHEET_NAME;
+    if(!scriptUrl||!sheetId){this.toast('설정에서 스프레드시트 ID를 확인하세요','error');return;}
+    var items=[];
+    for(var i=0;i<this.savedLog.length;i++){
+      var it=this.savedLog[i];
+      if(!it._rowNum) continue;
+      items.push({_rowNum:it._rowNum,before:it.before||'',after:it.after||'',confirm:it.confirm||'',date:it.date||''});
+    }
+    if(!items.length){this.toast('동기화할 항목이 없습니다 (_rowNum 없음)','error');return;}
+    var self=this;
+    document.getElementById('loaderText').textContent='구글시트 동기화 중...';
+    document.getElementById('loader').style.display='flex';
+    fetch(scriptUrl,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'sync',sheetId:sheetId,sheetName:sheetName,items:items})
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.status==='ok') self.toast(d.updated+'건 구글시트 동기화 완료!','success',3000);
+      else self.toast('동기화 오류: '+d.message,'error',3000);
+    }).catch(function(err){
+      self.toast('동기화 실패: '+err.message,'error',3000);
+    }).finally(function(){
+      document.getElementById('loader').style.display='none';
     });
   },
 
