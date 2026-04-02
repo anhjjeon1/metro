@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v7.9</title>
+  <title>(주)메트로 R & S AI v8.0</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -182,15 +182,20 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 7.9 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 8.0 &middot; FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
   </header>
 
   <!-- 설정 패널 -->
   <div id="settingsPanel" style="display:none;padding:10px 16px;background:var(--navy-light);border-bottom:1px solid var(--navy-mid)">
     <div style="font-size:.55rem;font-weight:700;color:var(--gold-dim);margin-bottom:3px">&#128225; 구글 스프레드시트 연동</div>
-    <div style="font-size:.5rem;color:var(--gold-dim);margin-bottom:6px;line-height:1.4">Apps Script 웹앱 URL을 입력하면<br>파일전송 시 구글시트에 자동 저장됩니다</div>
-    <input type="text" id="cfgUrl" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%;padding:7px 10px;border:1px solid var(--navy-mid);border-radius:4px;background:var(--navy);color:var(--cream);font-size:.65rem;font-family:'JetBrains Mono';outline:none;margin-bottom:6px">
+    <div style="font-size:.5rem;color:var(--gold-dim);margin-bottom:6px;line-height:1.4">스프레드시트 ID와 시트명을 설정하면<br>구글시트에서 직접 불러오기/저장 가능</div>
+    <div style="font-size:.45rem;color:var(--gold-dim);margin-bottom:2px">Apps Script URL</div>
+    <input type="text" id="cfgUrl" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%;padding:7px 10px;border:1px solid var(--navy-mid);border-radius:4px;background:var(--navy);color:var(--cream);font-size:.6rem;font-family:'JetBrains Mono';outline:none;margin-bottom:4px">
+    <div style="font-size:.45rem;color:var(--gold-dim);margin-bottom:2px">스프레드시트 ID</div>
+    <input type="text" id="cfgSheetId" placeholder="1RzeZJAQh0ACC3YzkEJ5L21ak06wDp-MTHc3M5QFnlsg" style="width:100%;padding:7px 10px;border:1px solid var(--navy-mid);border-radius:4px;background:var(--navy);color:var(--cream);font-size:.6rem;font-family:'JetBrains Mono';outline:none;margin-bottom:4px">
+    <div style="font-size:.45rem;color:var(--gold-dim);margin-bottom:2px">시트명</div>
+    <input type="text" id="cfgSheetName" placeholder="하남강일" style="width:100%;padding:7px 10px;border:1px solid var(--navy-mid);border-radius:4px;background:var(--navy);color:var(--cream);font-size:.6rem;font-family:'Noto Sans KR';outline:none;margin-bottom:6px">
     <div style="display:flex;gap:6px">
       <button onclick="App.saveSettings()" style="flex:1;padding:7px;border:none;border-radius:4px;background:var(--gold);color:var(--navy);font-size:.6rem;font-weight:800;cursor:pointer;font-family:'Noto Sans KR'">&#128190; 설정 저장</button>
       <button onclick="App.testConnection()" style="flex:1;padding:7px;border:none;border-radius:4px;background:var(--navy-mid);color:var(--gold);font-size:.6rem;font-weight:800;cursor:pointer;font-family:'Noto Sans KR'">&#128279; 연결 테스트</button>
@@ -212,8 +217,8 @@
       <div id="appGuide" style="display:none;margin-bottom:8px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--white);font-size:.58rem;line-height:1.6;color:var(--text-sub)">
         <div style="font-weight:800;color:var(--navy);margin-bottom:6px;font-size:.65rem">📋 메트로 R&S AI 사용설명서</div>
         <b>1단계: 하자 리스트 불러오기</b><br>
-        &middot; OneDrive에서 엑셀 파일 다운로드<br>
-        &middot; 안내 영역 탭 → 내파일 → 내장저장공간 → Download → 파일 선택<br><br>
+        &middot; '구글시트에서 불러오기' 버튼 탭 → 자동 로드<br>
+        &middot; ⚙️ 설정에서 스프레드시트 ID/시트명 변경 가능<br><br>
         <b>2단계: 현장 입력</b><br>
         &middot; 현장명: 파일 로드 시 자동 입력됨<br>
         &middot; 동/호 입력 → 해당 하자 목록 자동 표시<br>
@@ -223,8 +228,9 @@
         <b>3단계: 하자 리스트 확인</b><br>
         &middot; 전체 하자 목록 표시 (동/호 입력 시 필터링)<br>
         &middot; 완료 항목은 녹색 + ✔ 표시<br><br>
-        <b>4단계: 엑셀 저장</b><br>
-        &middot; 하단 '엑셀저장' 탭 → 원본 엑셀에 사진/완료일 반영하여 다운로드<br><br>
+        <b>4단계: 구글시트 저장</b><br>
+        &middot; 작업 완료 시 자동으로 구글시트에 동기화<br>
+        &middot; 수리전/수리후/완료확인서/완료일 자동 반영<br><br>
         <b>기타</b><br>
         &middot; 새로입력: 동/호 초기화 (데이터 유지)<br>
         &middot; 전체 초기화: 새 현장 전환 시 모든 데이터 삭제<br>
@@ -234,9 +240,8 @@
         <div class="loaded-info" id="loadedInfo" onclick="document.getElementById('uploadControls').style.display='block'" style="display:none;font-size:.66rem;font-weight:700;color:var(--green);text-align:center;padding:8px;border:1.5px solid var(--green);border-radius:var(--r-sm);background:var(--green-light);cursor:pointer">&#10004; <span id="loadedFileName"></span> &middot; <span id="loadedRowCount"></span>건 <span style="font-size:.5rem;color:var(--text-dim)">(탭하여 다시 불러오기)</span></div>
       </div>
       <div id="uploadControls">
-        <div class="upload-area" onclick="document.getElementById('fileInput').click()" style="border:2px dashed var(--border);border-radius:var(--r);padding:14px;text-align:center;cursor:pointer;background:var(--white)">
-          <div style="font-size:.68rem;color:var(--text-sub);font-weight:600">폰의 OneDrive 파일을 다운로드한 후<br>내파일 &gt; 내장저장공간 &gt; Download에서 선택</div>
-        </div>
+        <button onclick="App.loadFromSheet()" style="width:100%;padding:14px;border:2px solid var(--blue);border-radius:var(--r);background:var(--blue-light);color:var(--blue);font-size:.72rem;font-weight:800;font-family:'Noto Sans KR';cursor:pointer">&#128202; 구글시트에서 불러오기</button>
+        <div class="url-toggle" onclick="document.getElementById('fileInput').click()" style="margin-top:4px">또는 <b>파일 직접 선택</b>하여 불러오기</div>
         <input type="file" id="fileInput" accept="*/*" hidden onchange="App.loadFile(this)">
       </div>
     </div>
@@ -346,7 +351,9 @@
 
 <script>
 var STORAGE={LOG:'METRO_V70_LOG',SOURCE:'METRO_V70_SRC'};
-var DEFAULT_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzDJt6hZ00LdtEidi52nLDxtzngBjVb3VcTU_bRYY-_Ru94CzRW_omndWLwwwNxiKdu2g/exec';
+var DEFAULT_SCRIPT_URL='https://script.google.com/macros/s/AKfycbwAJop_bCnpzloXb3Gr8M1Rt4llJFX6dPflQM_KGr3-0kFU5hEiX_vo7x1yeB6enIvN/exec';
+var DEFAULT_SHEET_ID='1RzeZJAQh0ACC3YzkEJ5L21ak06wDp-MTHc3M5QFnlsg';
+var DEFAULT_SHEET_NAME='하남강일';
 
 var App={
   sourceData:[],colMap:{},savedLog:[],
@@ -369,15 +376,44 @@ var App={
     if(s){document.getElementById('fSite').value=s;this.lockSite();}
     var url=localStorage.getItem('METRO_SCRIPT_URL')||DEFAULT_SCRIPT_URL;
     if(url) document.getElementById('cfgUrl').value=url;
-    // 저장된 OneDrive URL 있으면 표시
-    var savedFileUrl=localStorage.getItem('METRO_FILE_URL');
-    if(savedFileUrl){
-      document.getElementById('urlInput').value=savedFileUrl;
-      document.getElementById('urlSaved').style.display='block';
-    }
+    var sheetId=localStorage.getItem('METRO_SHEET_ID')||DEFAULT_SHEET_ID;
+    if(sheetId) document.getElementById('cfgSheetId').value=sheetId;
+    var sheetName=localStorage.getItem('METRO_SHEET_NAME')||DEFAULT_SHEET_NAME;
+    if(sheetName) document.getElementById('cfgSheetName').value=sheetName;
   },
 
   toast:function(m,t,d){t=t||'info';d=d||2500;var e=document.getElementById('toast');e.textContent=m;e.className='toast '+t+' show';clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show');},d);},
+
+  // === 구글시트에서 불러오기 ===
+  loadFromSheet:function(){
+    var scriptUrl=localStorage.getItem('METRO_SCRIPT_URL')||DEFAULT_SCRIPT_URL;
+    var sheetId=localStorage.getItem('METRO_SHEET_ID')||DEFAULT_SHEET_ID;
+    var sheetName=localStorage.getItem('METRO_SHEET_NAME')||DEFAULT_SHEET_NAME;
+    if(!scriptUrl||!sheetId){this.toast('설정에서 스프레드시트 ID를 입력하세요','error');return;}
+    var self=this;
+    document.getElementById('loaderText').textContent='구글시트 로드 중...';
+    document.getElementById('loader').style.display='flex';
+    var url=scriptUrl+'?action=read&sheetId='+encodeURIComponent(sheetId)+'&sheetName='+encodeURIComponent(sheetName);
+    fetch(url).then(function(r){return r.json();}).then(function(d){
+      if(d.status!=='ok') throw new Error(d.message||'시트 읽기 실패');
+      if(!d.rows||!d.rows.length) throw new Error('데이터 없음');
+      self.sourceData=[];
+      for(var i=0;i<d.rows.length;i++){d.rows[i]._idx=i;self.sourceData.push(d.rows[i]);}
+      self.detectCols(d.rows[0]);
+      self.sourceSheetName=d.sheetName||sheetName;
+      self.saveSource();
+      document.getElementById('loadedInfo').style.display='block';document.getElementById('uploadControls').style.display='none';
+      document.getElementById('loadedFileName').textContent='구글시트: '+self.sourceSheetName;
+      document.getElementById('loadedRowCount').textContent=d.rows.length;
+      if(self.sourceSheetName){document.getElementById('fSite').value=self.sourceSheetName;localStorage.setItem('METRO_SITE',self.sourceSheetName);self.lockSite();}
+      self.renderLog();
+      self.toast(d.rows.length+'건 로드! (현장: '+self.sourceSheetName+')','success',3000);
+    }).catch(function(err){
+      self.toast('오류: '+err.message,'error',4000);
+    }).finally(function(){
+      document.getElementById('loader').style.display='none';
+    });
+  },
 
   // === OneDrive URL 불러오기 ===
   toggleUrlInput:function(){
@@ -449,7 +485,7 @@ var App={
 
   // === 설정 ===
   toggleSettings:function(){var p=document.getElementById('settingsPanel');p.style.display=p.style.display==='none'?'block':'none';},
-  saveSettings:function(){var url=document.getElementById('cfgUrl').value.trim();localStorage.setItem('METRO_SCRIPT_URL',url);this.toast('설정 저장 완료','success');this.toggleSettings();},
+  saveSettings:function(){var url=document.getElementById('cfgUrl').value.trim();localStorage.setItem('METRO_SCRIPT_URL',url);var sid=document.getElementById('cfgSheetId').value.trim();localStorage.setItem('METRO_SHEET_ID',sid);var sn=document.getElementById('cfgSheetName').value.trim();localStorage.setItem('METRO_SHEET_NAME',sn);this.toast('설정 저장 완료','success');this.toggleSettings();},
   testConnection:function(){
     var url=document.getElementById('cfgUrl').value.trim();
     if(!url){this.toast('URL을 입력하세요','error');return;}
@@ -800,6 +836,38 @@ var App={
       this.savedLog.push(entry);
     }
     this.saveLog();this.renderLog();
+    // 구글시트 자동 동기화
+    this.syncToSheet(entry);
+  },
+
+  // === 구글시트 동기화 ===
+  syncToSheet:function(entry){
+    var scriptUrl=localStorage.getItem('METRO_SCRIPT_URL')||DEFAULT_SCRIPT_URL;
+    var sheetId=localStorage.getItem('METRO_SHEET_ID')||DEFAULT_SHEET_ID;
+    var sheetName=localStorage.getItem('METRO_SHEET_NAME')||DEFAULT_SHEET_NAME;
+    if(!scriptUrl||!sheetId||!entry._rowNum) return;
+    var self=this;
+    fetch(scriptUrl,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({
+        action:'sync',
+        sheetId:sheetId,
+        sheetName:sheetName,
+        items:[{
+          _rowNum:entry._rowNum,
+          before:entry.before||'',
+          after:entry.after||'',
+          confirm:entry.confirm||'',
+          date:entry.date||''
+        }]
+      })
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.status==='ok') self.toast('구글시트 동기화 완료','success',2000);
+      else self.toast('동기화 오류: '+d.message,'error',3000);
+    }).catch(function(err){
+      self.toast('동기화 실패: '+err.message,'error',3000);
+    });
   },
 
   // === 사진 ===
