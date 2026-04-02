@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v8.0</title>
+  <title>(주)메트로 R & S AI v8.1</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -182,7 +182,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 8.0 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 8.1 &middot; FIELD WORK SYSTEM</div>
     <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
   </header>
 
@@ -374,7 +374,10 @@ var App={
     this.loadSource();this.loadLog();this.renderLog();
     var s=localStorage.getItem('METRO_SITE')||'';
     if(s){document.getElementById('fSite').value=s;this.lockSite();}
-    var url=localStorage.getItem('METRO_SCRIPT_URL')||DEFAULT_SCRIPT_URL;
+    // 이전 URL 자동 마이그레이션
+    var oldUrl=localStorage.getItem('METRO_SCRIPT_URL')||'';
+    if(oldUrl&&oldUrl.indexOf('AKfycbwAJop_bCnpz')<0){localStorage.removeItem('METRO_SCRIPT_URL');oldUrl='';}
+    var url=oldUrl||DEFAULT_SCRIPT_URL;
     if(url) document.getElementById('cfgUrl').value=url;
     var sheetId=localStorage.getItem('METRO_SHEET_ID')||DEFAULT_SHEET_ID;
     if(sheetId) document.getElementById('cfgSheetId').value=sheetId;
