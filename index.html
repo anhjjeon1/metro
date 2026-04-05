@@ -231,7 +231,7 @@
         &middot; 촬영 즉시 Google Drive에 저장 + 시트에 반영<br>
         &middot; 다른 작업자도 새로고침 시 사진 확인 가능<br><br>
         <b>하단 버튼</b><br>
-        &middot; 엑셀저장: 사진 포함 엑셀 다운로드 → OneDrive 저장<br>
+        &middot; 엑셀 내보내기: 사진 포함 엑셀 파일 → OneDrive에 저장<br>
         &middot; &#128260; 새로고침: 구글시트에서 최신 데이터 동기화<br>
         &middot; 다음세대: 동/호 초기화 (데이터 유지)<br>
         &middot; 초기화: 모든 데이터 삭제
@@ -285,7 +285,7 @@
   <!-- 하단 버튼 -->
   <div class="bottom-bar">
     <div class="btn-row">
-      <button class="btn-send" onclick="App.saveAndShare()" style="flex:1">&#128229; 엑셀저장</button>
+      <button class="btn-send" onclick="App.saveAndShare()" style="flex:1">&#128229; 엑셀 내보내기</button>
       <button class="btn-refresh" onclick="App.refresh()" style="flex:0 0 auto;padding:0 12px">&#128260;</button>
       <button class="btn-new" onclick="App.newEntry()" style="flex:0 0 auto;padding:0 12px">다음세대</button>
       <button onclick="App.resetAll()" style="flex:0 0 auto;padding:0 12px;border:none;border-radius:var(--r);background:linear-gradient(180deg,#FCA5A5,#FEE2E2);color:#DC2626;font-size:.65rem;font-weight:800;font-family:'Noto Sans KR';cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.06),var(--shadow)">초기화</button>
