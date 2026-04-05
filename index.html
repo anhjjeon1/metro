@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v13.0</title>
+  <title>(주)메트로 R & S AI v14.0</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1F2937">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -200,7 +200,7 @@
     <header>
       <span class="settings-btn" onclick="App.toggleSettings()">&#9881;</span>
       <h1>메트로 현장관리앱</h1>
-      <div class="ver">V13.0</div>
+      <div class="ver">V14.0</div>
     </header>
 
     <!-- 1. 하자 리스트 불러오기 -->
@@ -215,7 +215,7 @@
       </div>
 
       <div id="appGuide" style="display:none;margin-bottom:8px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r);font-size:.58rem;line-height:1.6;color:var(--text-sub)">
-        <div style="font-weight:800;color:var(--primary-dark);margin-bottom:6px;font-size:.65rem">메트로 R&S AI v13.4 사용설명서</div>
+        <div style="font-weight:800;color:var(--primary-dark);margin-bottom:6px;font-size:.65rem">메트로 R&S AI v14.0 사용설명서</div>
         <b>최초 설정 (1회)</b><br>
         &middot; 좌측 상단 &#9881; 설정 버튼 클릭<br>
         &middot; Script URL, Sheet ID, 시트명은 자동 입력됨<br>
@@ -247,7 +247,7 @@
       <!-- 로드 버튼 -->
       <div id="loadControls">
         <button class="btn-cloud" onclick="App.loadFromSheet()">&#9729; 구글시트에서 불러오기</button>
-        <button class="btn-upload-excel" onclick="document.getElementById('fileInput').click()">&#128194; 엑셀 파일 &#8594; 구글시트 업로드 (A 작업자용)</button>
+        <button class="btn-upload-excel" onclick="document.getElementById('fileInput').click()">&#128194; 구글시트 업로드</button>
         <input type="file" id="fileInput" accept=".xlsx,.xlsm,.xls,.csv" hidden onchange="App.uploadExcelToSheet(this)">
       </div>
     </div>
