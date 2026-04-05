@@ -320,10 +320,7 @@ var App={
     this.renderLog();
     var w=this.getSetting('WORKER');
     if(w){document.getElementById('workerBadge').textContent=w;document.getElementById('workerBadge').style.display='inline-flex';}
-    // 설정 미완료시 자동 열기
-    if(!this.getSetting('SCRIPT')||!this.getSetting('SHEET')){
-      setTimeout(function(){App.toggleSettings();},500);
-    }
+    // 기본값이 있으므로 설정 패널 자동 열기 불필요
     // PWA 서비스워커 등록
     if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
   },
@@ -386,7 +383,7 @@ var App={
     var url=this.getSetting('SCRIPT');
     var sid=this.getSetting('SHEET');
     var sn=this.getSetting('SHEET_NAME');
-    if(!url||!sid){this.toast('먼저 설정에서 Script URL과 Sheet ID를 입력하세요','error');this.toggleSettings();return;}
+    if(!url||!sid){this.toast('Script URL 또는 Sheet ID가 없습니다','error');return;}
     var self=this;
     this.showLoader('구글시트 불러오는 중...');
     fetch(url+'?action=read&sheetId='+encodeURIComponent(sid)+'&sheetName='+encodeURIComponent(sn))
@@ -435,7 +432,7 @@ var App={
     var file=input.files&&input.files[0];if(!file)return;
     var url=this.getSetting('SCRIPT');
     var sid=this.getSetting('SHEET');
-    if(!url||!sid){this.toast('먼저 설정을 완료하세요','error');this.toggleSettings();return;}
+    if(!url||!sid){this.toast('Script URL 또는 Sheet ID가 없습니다','error');return;}
     var self=this;
     this.showLoader('엑셀 읽는 중...');
     var r=new FileReader();
