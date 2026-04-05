@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>(주)메트로 R & S AI v10.3</title>
+  <title>(주)메트로 R & S AI v11.0</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
@@ -220,26 +220,8 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 10.3 &middot; FIELD WORK SYSTEM</div>
-    <button style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--gold-dim);font-size:18px;cursor:pointer" onclick="App.toggleSettings()">&#9881;</button>
+    <div class="ver">VER 11.0 &middot; FIELD WORK SYSTEM</div>
   </header>
-
-  <!-- 설정 패널 -->
-  <div id="settingsPanel" style="display:none;padding:10px 16px;background:var(--navy-light);border-bottom:1px solid var(--navy-mid)">
-    <div style="font-size:.55rem;font-weight:700;color:var(--gold-dim);margin-bottom:3px">&#128225; 구글 스프레드시트 연동</div>
-    <div style="font-size:.5rem;color:var(--gold-dim);margin-bottom:6px;line-height:1.4">스프레드시트 ID와 시트명을 설정하면<br>구글시트에서 직접 불러오기/저장 가능</div>
-    <div style="font-size:.45rem;color:var(--gold-dim);margin-bottom:2px">Apps Script URL</div>
-    <input type="text" id="cfgUrl" placeholder="https://script.google.com/macros/s/.../exec" style="width:100%;padding:7px 10px;border:1px solid var(--navy-mid);border-radius:4px;background:var(--navy);color:var(--cream);font-size:.6rem;font-family:'JetBrains Mono';outline:none;margin-bottom:4px">
-    <div style="font-size:.45rem;color:var(--gold-dim);margin-bottom:2px">스프레드시트 ID</div>
-    <input type="text" id="cfgSheetId" placeholder="1RzeZJAQh0ACC3YzkEJ5L21ak06wDp-MTHc3M5QFnlsg" style="width:100%;padding:7px 10px;border:1px solid var(--navy-mid);border-radius:4px;background:var(--navy);color:var(--cream);font-size:.6rem;font-family:'JetBrains Mono';outline:none;margin-bottom:4px">
-    <div style="font-size:.45rem;color:var(--gold-dim);margin-bottom:2px">시트명</div>
-    <input type="text" id="cfgSheetName" placeholder="하남강일" style="width:100%;padding:7px 10px;border:1px solid var(--navy-mid);border-radius:4px;background:var(--navy);color:var(--cream);font-size:.6rem;font-family:'Noto Sans KR';outline:none;margin-bottom:6px">
-    <div style="display:flex;gap:6px">
-      <button onclick="App.saveSettings()" style="flex:1;padding:7px;border:none;border-radius:4px;background:var(--gold);color:var(--navy);font-size:.6rem;font-weight:800;cursor:pointer;font-family:'Noto Sans KR'">&#128190; 설정 저장</button>
-      <button onclick="App.testConnection()" style="flex:1;padding:7px;border:none;border-radius:4px;background:var(--navy-mid);color:var(--gold);font-size:.6rem;font-weight:800;cursor:pointer;font-family:'Noto Sans KR'">&#128279; 연결 테스트</button>
-    </div>
-    <div id="connStatus" style="margin-top:4px;font-size:.52rem;color:var(--gold-dim);text-align:center"></div>
-  </div>
 
   <div class="content">
 
@@ -253,33 +235,29 @@
         <span onclick="document.getElementById('appGuide').style.display=document.getElementById('appGuide').style.display==='none'?'block':'none'" style="font-size:.5rem;color:var(--blue);font-weight:700;cursor:pointer;border:1px solid var(--blue);border-radius:3px;padding:2px 6px">앱 사용설명서</span>
       </div>
       <div id="appGuide" style="display:none;margin-bottom:8px;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--white);font-size:.58rem;line-height:1.6;color:var(--text-sub)">
-        <div style="font-weight:800;color:var(--navy);margin-bottom:6px;font-size:.65rem">📋 메트로 R&S AI v10 사용설명서</div>
+        <div style="font-weight:800;color:var(--navy);margin-bottom:6px;font-size:.65rem">📋 메트로 R&S AI v11 사용설명서</div>
         <b>1단계: 하자 리스트 불러오기</b><br>
-        &middot; '구글시트에서 불러오기' 버튼 탭 → 자동 로드<br>
-        &middot; ⚙️ 설정에서 스프레드시트 ID/시트명 변경 가능<br><br>
+        &middot; '파일 불러오기' 버튼 탭 → .xlsm/.xlsx 파일 선택<br>
+        &middot; 시트 이름이 현장명에 자동 입력됨<br><br>
         <b>2단계: 현장 입력</b><br>
-        &middot; 현장명: 구글시트 로드 시 자동 입력됨<br>
+        &middot; 현장명: 파일 로드 시 자동 입력됨<br>
         &middot; 동/호 입력 → 해당 하자 목록 자동 필터링<br><br>
         <b>3단계: 하자 리스트 + 사진 촬영</b><br>
         &middot; 하자 목록이 테이블로 표시됨<br>
         &middot; 하자내용 탭 → 전체 내용 팝업으로 확인<br>
         &middot; 수리전/수리후/확인서 📷 탭 → 사진 촬영<br>
-        &middot; 촬영 즉시 구글시트에 자동 저장됨<br>
-        &middot; 사진은 Google Drive에 저장 + 시트에 IMAGE 수식 삽입<br><br>
+        &middot; 촬영된 사진은 앱 내부에 임시 저장됨<br><br>
         <b>하단 버튼</b><br>
-        &middot; 구글시트저장: 전체 사진 일괄 동기화<br>
+        &middot; 엑셀파일 저장: 사진을 엑셀에 삽입하여 .xlsx 다운로드<br>
         &middot; 새로입력: 동/호 초기화 (데이터 유지)<br>
-        &middot; 초기화: 새 현장 전환 시 모든 데이터 삭제<br><br>
-        <b>기타</b><br>
-        &middot; ⚙️ 설정: 구글 스프레드시트 연동 URL/ID/시트명
+        &middot; 초기화: 새 현장 전환 시 모든 데이터 삭제
       </div>
       <div id="uploadArea">
         <div class="loaded-info" id="loadedInfo" onclick="document.getElementById('uploadControls').style.display='block'" style="display:none;font-size:.66rem;font-weight:700;color:var(--green);text-align:center;padding:8px;border:1.5px solid var(--green);border-radius:var(--r-sm);background:var(--green-light);cursor:pointer">&#10004; <span id="loadedFileName"></span> &middot; <span id="loadedRowCount"></span>건 <span style="font-size:.5rem;color:var(--text-dim)">(탭하여 다시 불러오기)</span></div>
       </div>
       <div id="uploadControls">
-        <button onclick="App.loadFromSheet()" style="width:100%;padding:14px;border:2px solid var(--blue);border-radius:var(--r);background:var(--blue-light);color:var(--blue);font-size:.72rem;font-weight:800;font-family:'Noto Sans KR';cursor:pointer">&#128202; 구글시트에서 불러오기</button>
-        <div class="url-toggle" onclick="document.getElementById('fileInput').click()" style="margin-top:4px">또는 <b>파일 직접 선택</b>하여 불러오기</div>
-        <input type="file" id="fileInput" accept="*/*" hidden onchange="App.loadFile(this)">
+        <button onclick="document.getElementById('fileInput').click()" style="width:100%;padding:14px;border:2px solid var(--blue);border-radius:var(--r);background:var(--blue-light);color:var(--blue);font-size:.72rem;font-weight:800;font-family:'Noto Sans KR';cursor:pointer">&#128194; 파일 불러오기 (.xlsm / .xlsx)</button>
+        <input type="file" id="fileInput" accept=".xlsx,.xlsm,.xls,.csv" hidden onchange="App.loadFile(this)">
       </div>
     </div>
 
@@ -307,7 +285,7 @@
           <thead><tr>
             <th style="width:20px">No</th><th style="width:24px">동</th><th style="width:30px">호</th><th style="width:30px">위치</th><th style="width:26px">유형</th><th>하자내용</th><th style="width:46px">수리전</th><th style="width:46px">수리후</th><th style="width:46px">확인서</th>
           </tr></thead>
-          <tbody id="logBody"><tr><td colspan="9" class="log-empty">구글시트에서 불러오면 하자 리스트가 표시됩니다</td></tr></tbody>
+          <tbody id="logBody"><tr><td colspan="9" class="log-empty">파일을 불러오면 하자 리스트가 표시됩니다</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -317,7 +295,7 @@
   <!-- 하단 버튼 -->
   <div class="bottom-bar">
     <div class="btn-row" style="display:flex;gap:6px">
-      <button class="btn-send" onclick="App.syncAllToSheet()" style="flex:1">&#128202; 구글시트저장</button>
+      <button class="btn-send" onclick="App.saveAsXlsx()" style="flex:1">&#128229; 엑셀파일 저장</button>
       <button class="btn-new" onclick="App.newEntry()" style="flex:1">&#128260; 새로입력</button>
       <button onclick="App.resetAll()" style="flex:0 0 auto;padding:0 12px;border:1.5px solid var(--red);border-radius:var(--r);background:var(--red-light);color:var(--red);font-size:.65rem;font-weight:800;font-family:'Noto Sans KR';cursor:pointer">초기화</button>
     </div>
@@ -328,9 +306,6 @@
 
 <script>
 var STORAGE={LOG:'METRO_V70_LOG',SOURCE:'METRO_V70_SRC'};
-var DEFAULT_SCRIPT_URL='https://script.google.com/macros/s/AKfycbxH6-ivs2Gu26geJGtEEOr4B3D7_SGMH-pJkZy9CVpcpH5nTetRjwiIJJzzrlsp3OiGFw/exec';
-var DEFAULT_SHEET_ID='1RzeZJAQh0ACC3YzkEJ5L21ak06wDp-MTHc3M5QFnlsg';
-var DEFAULT_SHEET_NAME='하남강일';
 
 var App={
   sourceData:[],colMap:{},savedLog:[],
@@ -351,130 +326,9 @@ var App={
     this.loadSource();this.loadLog();this.renderLog();
     var s=localStorage.getItem('METRO_SITE')||'';
     if(s){document.getElementById('fSite').value=s;this.lockSite();}
-    // 이전 URL 자동 마이그레이션
-    var oldUrl=localStorage.getItem('METRO_SCRIPT_URL')||'';
-    if(oldUrl&&oldUrl.indexOf('AKfycbxH6-ivs2Gu26')<0){localStorage.removeItem('METRO_SCRIPT_URL');oldUrl='';}
-    var url=oldUrl||DEFAULT_SCRIPT_URL;
-    if(url) document.getElementById('cfgUrl').value=url;
-    var sheetId=localStorage.getItem('METRO_SHEET_ID')||DEFAULT_SHEET_ID;
-    if(sheetId) document.getElementById('cfgSheetId').value=sheetId;
-    var sheetName=localStorage.getItem('METRO_SHEET_NAME')||DEFAULT_SHEET_NAME;
-    if(sheetName) document.getElementById('cfgSheetName').value=sheetName;
   },
 
   toast:function(m,t,d){t=t||'info';d=d||2500;var e=document.getElementById('toast');e.textContent=m;e.className='toast '+t+' show';clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show');},d);},
-
-  // === 구글시트에서 불러오기 ===
-  loadFromSheet:function(){
-    var scriptUrl=localStorage.getItem('METRO_SCRIPT_URL')||DEFAULT_SCRIPT_URL;
-    var sheetId=localStorage.getItem('METRO_SHEET_ID')||DEFAULT_SHEET_ID;
-    var sheetName=localStorage.getItem('METRO_SHEET_NAME')||DEFAULT_SHEET_NAME;
-    if(!scriptUrl||!sheetId){this.toast('설정에서 스프레드시트 ID를 입력하세요','error');return;}
-    var self=this;
-    document.getElementById('loaderText').textContent='구글시트 로드 중...';
-    document.getElementById('loader').style.display='flex';
-    var url=scriptUrl+'?action=read&sheetId='+encodeURIComponent(sheetId)+'&sheetName='+encodeURIComponent(sheetName);
-    fetch(url).then(function(r){return r.json();}).then(function(d){
-      if(d.status!=='ok') throw new Error(d.message||'시트 읽기 실패');
-      if(!d.rows||!d.rows.length) throw new Error('데이터 없음');
-      self.sourceData=[];
-      for(var i=0;i<d.rows.length;i++){d.rows[i]._idx=i;self.sourceData.push(d.rows[i]);}
-      self.detectCols(d.rows[0]);
-      self.sourceSheetName=d.sheetName||sheetName;
-      self.saveSource();
-      document.getElementById('loadedInfo').style.display='block';document.getElementById('uploadControls').style.display='none';
-      document.getElementById('loadedFileName').textContent='구글시트: '+self.sourceSheetName;
-      document.getElementById('loadedRowCount').textContent=d.rows.length;
-      if(self.sourceSheetName){document.getElementById('fSite').value=self.sourceSheetName;localStorage.setItem('METRO_SITE',self.sourceSheetName);self.lockSite();}
-      self.renderLog();
-      self.toast(d.rows.length+'건 로드! (현장: '+self.sourceSheetName+')','success',3000);
-    }).catch(function(err){
-      self.toast('오류: '+err.message,'error',4000);
-    }).finally(function(){
-      document.getElementById('loader').style.display='none';
-    });
-  },
-
-  // === OneDrive URL 불러오기 ===
-  toggleUrlInput:function(){
-    var p=document.getElementById('urlPanel');
-    p.style.display=p.style.display==='none'?'block':'none';
-  },
-  encodeShareUrl:function(url){
-    var b=btoa(url).replace(/\//g,'_').replace(/\+/g,'-').replace(/=+$/,'');
-    return 'u!'+b;
-  },
-  loadFromUrl:function(){
-    var url=document.getElementById('urlInput').value.trim();
-    if(!url){this.toast('URL을 입력하세요','error');return;}
-    var scriptUrl=localStorage.getItem('METRO_SCRIPT_URL')||DEFAULT_SCRIPT_URL;
-    if(!scriptUrl){this.toast('설정에서 구글스크립트 URL을 먼저 등록하세요','error',4000);return;}
-    var self=this;
-    var apiUrl;
-    if(url.indexOf('1drv.ms')>=0||url.indexOf('onedrive.live.com')>=0||url.indexOf('sharepoint.com')>=0){
-      apiUrl='https://api.onedrive.com/v1.0/shares/'+this.encodeShareUrl(url)+'/root/content';
-    }else{
-      apiUrl=url;
-    }
-    document.getElementById('loaderText').textContent='구글 프록시로 다운로드 중...';
-    document.getElementById('loader').style.display='flex';
-    var proxyUrl=scriptUrl+'?action=proxy&url='+encodeURIComponent(apiUrl);
-    fetch(proxyUrl).then(function(r){
-      if(!r.ok) throw new Error('서버 오류 ('+r.status+')');
-      return r.json();
-    }).then(function(d){
-      if(d.status!=='ok') throw new Error(d.message||'프록시 오류');
-      // base64 → ArrayBuffer
-      var bin=atob(d.data);
-      var buf=new Uint8Array(bin.length);
-      for(var i=0;i<bin.length;i++) buf[i]=bin.charCodeAt(i);
-      self._processUrlFile(buf.buffer,url);
-    }).catch(function(err){
-      document.getElementById('loader').style.display='none';
-      self.toast('오류: '+err.message,'error',5000);
-    });
-  },
-  _processUrlFile:function(buf,origUrl){
-    try{
-      localStorage.setItem('METRO_FILE_URL',origUrl);
-      this.originalWB=buf;
-      var wb=XLSX.read(new Uint8Array(buf),{type:'array'});
-      var sheetName=wb.SheetNames[0];
-      var json=XLSX.utils.sheet_to_json(wb.Sheets[sheetName],{defval:''});
-      if(!json.length) throw new Error('빈 파일');
-      this.sourceData=[];
-      for(var i=0;i<json.length;i++){json[i]._idx=i;json[i]._rowNum=i+2;this.sourceData.push(json[i]);}
-      this.detectCols(json[0]);
-      this.sourceSheetName=sheetName;
-      this.originalFileName='OneDrive_'+sheetName+'.xlsx';
-      this.saveSource();
-      document.getElementById('loadedInfo').style.display='block';document.getElementById('uploadControls').style.display='none';
-      document.getElementById('loadedFileName').textContent='OneDrive 링크';
-      document.getElementById('loadedRowCount').textContent=json.length;
-      if(sheetName){document.getElementById('fSite').value=sheetName;localStorage.setItem('METRO_SITE',sheetName);this.lockSite();}
-      document.getElementById('urlSaved').style.display='block';
-      this.toast(json.length+'건 로드! (현장: '+sheetName+')','success',3000);
-      this.renderLog();
-    }catch(err){this.toast('파일 처리 오류: '+err.message,'error',4000);}
-    document.getElementById('loader').style.display='none';
-  },
-  loadSavedUrl:function(){
-    var url=localStorage.getItem('METRO_FILE_URL');
-    if(url){document.getElementById('urlInput').value=url;this.loadFromUrl();}
-  },
-
-  // === 설정 ===
-  toggleSettings:function(){var p=document.getElementById('settingsPanel');p.style.display=p.style.display==='none'?'block':'none';},
-  saveSettings:function(){var url=document.getElementById('cfgUrl').value.trim();localStorage.setItem('METRO_SCRIPT_URL',url);var sid=document.getElementById('cfgSheetId').value.trim();localStorage.setItem('METRO_SHEET_ID',sid);var sn=document.getElementById('cfgSheetName').value.trim();localStorage.setItem('METRO_SHEET_NAME',sn);this.toast('설정 저장 완료','success');this.toggleSettings();},
-  testConnection:function(){
-    var url=document.getElementById('cfgUrl').value.trim();
-    if(!url){this.toast('URL을 입력하세요','error');return;}
-    var st=document.getElementById('connStatus');st.textContent='연결 중...';st.style.color='var(--gold)';
-    fetch(url).then(function(r){return r.json();}).then(function(d){
-      if(d.status==='ok'){st.textContent='연결 성공! '+d.message;st.style.color='#5cdb95';}
-      else{st.textContent='실패: '+d.message;st.style.color='#ff6b5e';}
-    }).catch(function(e){st.textContent='연결 실패: '+e.message;st.style.color='#ff6b5e';});
-  },
 
   // === 현장명 ===
   lockSite:function(){var v=document.getElementById('fSite').value.trim();if(!v)return;this.siteLocked=true;document.getElementById('fSite').readOnly=true;document.getElementById('siteField').classList.add('locked');document.getElementById('siteLock').style.display='inline';localStorage.setItem('METRO_SITE',v);},
@@ -545,7 +399,7 @@ var App={
       doneDate:find('완료일'),
       done:find('완료')
     };
-    console.log('컬럼매핑:',JSON.stringify(this.colMap));
+    // console.log('컬럼매핑:',JSON.stringify(this.colMap));
   },
 
   gv:function(row,f){var c=this.colMap[f];return c?String(row[c]||'').trim():'';},
@@ -772,11 +626,9 @@ var App={
       this.savedLog.push(entry);
     }
     this.saveLog();this.renderLog();
-    // 구글시트 자동 동기화
-    this.syncToSheet(entry);
   },
 
-  // === 사진 축소 (구글시트용) ===
+  // === 사진 축소 ===
   shrinkPhoto:function(dataUrl,maxW,quality){
     return new Promise(function(resolve){
       if(!dataUrl||dataUrl.indexOf('data:image')<0){resolve('');return;}
@@ -789,77 +641,6 @@ var App={
       };
       img.onerror=function(){resolve('');};
       img.src=dataUrl;
-    });
-  },
-
-  // === 구글시트 동기화 ===
-  syncToSheet:function(entry){
-    var scriptUrl=localStorage.getItem('METRO_SCRIPT_URL')||DEFAULT_SCRIPT_URL;
-    var sheetId=localStorage.getItem('METRO_SHEET_ID')||DEFAULT_SHEET_ID;
-    var sheetName=localStorage.getItem('METRO_SHEET_NAME')||DEFAULT_SHEET_NAME;
-    if(!scriptUrl||!sheetId||!entry._rowNum) return;
-    var self=this;
-    Promise.all([
-      self.shrinkPhoto(entry.before,200,0.3),
-      self.shrinkPhoto(entry.after,200,0.3),
-      self.shrinkPhoto(entry.confirm,200,0.3)
-    ]).then(function(photos){
-      return fetch(scriptUrl,{
-        method:'POST',
-        headers:{'Content-Type':'text/plain'},
-        body:JSON.stringify({
-          action:'sync',sheetId:sheetId,sheetName:sheetName,
-          items:[{_rowNum:entry._rowNum,before:photos[0],after:photos[1],confirm:photos[2],date:entry.date||''}]
-        })
-      });
-    }).then(function(r){return r.json();}).then(function(d){
-      if(d.status==='ok') self.toast('구글시트 동기화 완료','success',2000);
-      else self.toast('동기화 오류: '+d.message,'error',3000);
-    }).catch(function(err){
-      self.toast('동기화 실패: '+err.message,'error',3000);
-    });
-  },
-  syncAllToSheet:function(){
-    var keys=Object.keys(this.rowPhotos);
-    var hasPhotos=false;
-    for(var k=0;k<keys.length;k++){var p=this.rowPhotos[keys[k]];if(p.before||p.after||p.confirm){hasPhotos=true;break;}}
-    if(!hasPhotos){this.toast('촬영된 사진이 없습니다','error');return;}
-    var scriptUrl=localStorage.getItem('METRO_SCRIPT_URL')||DEFAULT_SCRIPT_URL;
-    var sheetId=localStorage.getItem('METRO_SHEET_ID')||DEFAULT_SHEET_ID;
-    var sheetName=localStorage.getItem('METRO_SHEET_NAME')||DEFAULT_SHEET_NAME;
-    if(!scriptUrl||!sheetId){this.toast('설정에서 스프레드시트 ID를 확인하세요','error');return;}
-    var self=this;
-    var today=new Date();
-    var dateStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
-    document.getElementById('loaderText').textContent='사진 축소 중...';
-    document.getElementById('loader').style.display='flex';
-    // rowPhotos에서 사진 있는 항목만 수집 + 축소
-    var promises=[];
-    for(var rn in this.rowPhotos){
-      var ph=this.rowPhotos[rn];
-      if(!ph.before&&!ph.after&&!ph.confirm) continue;
-      (function(rowNum,photo){
-        promises.push(Promise.all([
-          self.shrinkPhoto(photo.before,200,0.3),
-          self.shrinkPhoto(photo.after,200,0.3),
-          self.shrinkPhoto(photo.confirm,200,0.3)
-        ]).then(function(p){return{_rowNum:parseInt(rowNum),before:p[0],after:p[1],confirm:p[2],date:dateStr};}));
-      })(rn,ph);
-    }
-    Promise.all(promises).then(function(items){
-      document.getElementById('loaderText').textContent='구글시트 동기화 중... ('+items.length+'건)';
-      return fetch(scriptUrl,{
-        method:'POST',
-        headers:{'Content-Type':'text/plain'},
-        body:JSON.stringify({action:'sync',sheetId:sheetId,sheetName:sheetName,items:items})
-      });
-    }).then(function(r){return r.json();}).then(function(d){
-      if(d.status==='ok') self.toast(d.updated+'건 구글시트 저장 완료!','success',3000);
-      else self.toast('동기화 오류: '+d.message,'error',3000);
-    }).catch(function(err){
-      self.toast('동기화 실패: '+err.message,'error',3000);
-    }).finally(function(){
-      document.getElementById('loader').style.display='none';
     });
   },
 
@@ -926,7 +707,7 @@ var App={
   rowPhotos:{}, // {rowNum: {before:'base64',after:'',confirm:''}}
 
   renderLog:function(){
-    if(!this.sourceData.length){document.getElementById('logCount').textContent='(0건)';document.getElementById('logBody').innerHTML='<tr><td colspan="9" class="log-empty">구글시트에서 불러오면 하자 리스트가 표시됩니다</td></tr>';return;}
+    if(!this.sourceData.length){document.getElementById('logCount').textContent='(0건)';document.getElementById('logBody').innerHTML='<tr><td colspan="9" class="log-empty">파일을 불러오면 하자 리스트가 표시됩니다</td></tr>';return;}
     var qD=document.getElementById('fDong').value.trim();
     var qH=document.getElementById('fHo').value.trim();
     var nD=qD.replace(/^0+/,'')||'0';
@@ -994,39 +775,9 @@ var App={
         if(!self.rowPhotos[rn]) self.rowPhotos[rn]={};
         self.rowPhotos[rn][type]=b;
         self.renderLog();
-        self.toast('사진 저장 → 구글시트 전송 중...','info',2000);
-        self.syncOnePhoto(rn,type,b);
+        self.toast('사진 저장 완료','success',1500);
       };img.src=e.target.result;
     };reader.readAsDataURL(file);
-  },
-  syncOnePhoto:function(rn,type,dataUrl){
-    var scriptUrl=localStorage.getItem('METRO_SCRIPT_URL')||DEFAULT_SCRIPT_URL;
-    var sheetId=localStorage.getItem('METRO_SHEET_ID')||DEFAULT_SHEET_ID;
-    var sheetName=localStorage.getItem('METRO_SHEET_NAME')||DEFAULT_SHEET_NAME;
-    if(!scriptUrl||!sheetId){this.toast('설정에서 스프레드시트 ID를 확인하세요','error');return;}
-    var self=this;
-    var today=new Date();
-    var dateStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
-    var ph=this.rowPhotos[rn]||{};
-    Promise.all([
-      self.shrinkPhoto(ph.before||'',200,0.3),
-      self.shrinkPhoto(ph.after||'',200,0.3),
-      self.shrinkPhoto(ph.confirm||'',200,0.3)
-    ]).then(function(photos){
-      return fetch(scriptUrl,{
-        method:'POST',
-        headers:{'Content-Type':'text/plain'},
-        body:JSON.stringify({
-          action:'sync',sheetId:sheetId,sheetName:sheetName,
-          items:[{_rowNum:parseInt(rn),before:photos[0],after:photos[1],confirm:photos[2],date:dateStr}]
-        })
-      });
-    }).then(function(r){return r.json();}).then(function(d){
-      if(d.status==='ok') self.toast('구글시트 자동 저장 완료','success',2000);
-      else self.toast('동기화 오류: '+d.message,'error',3000);
-    }).catch(function(err){
-      self.toast('자동 저장 실패: '+err.message,'error',3000);
-    });
   },
   delRowPhoto:function(rn,type){
     if(this.rowPhotos[rn]) this.rowPhotos[rn][type]='';
@@ -1045,164 +796,113 @@ var App={
   delItem:function(idx){if(!confirm(this.savedLog[idx].no+' 삭제?'))return;this.savedLog.splice(idx,1);for(var i=0;i<this.savedLog.length;i++)this.savedLog[i].no='H'+String(i+1).padStart(4,'0');this.saveLog();this.renderLog();this.doMatch();this.toast('삭제 완료','info');},
   clearLog:function(){if(!this.savedLog.length){this.toast('삭제할 항목 없음','error');return;}if(!confirm('전체 '+this.savedLog.length+'건 삭제?'))return;this.savedLog=[];this.saveLog();this.renderLog();this.doMatch();this.toast('전체 삭제 완료','info');},
 
-  // === 엑셀 내보내기 (원본에 사진/완료 기록) ===
-  // === 엑셀 저장 (원본 엑셀에 수리전/수리후/완료확인서/완료일/완료 반영) ===
-  exportExcel:function(){
-    if(!this.savedLog.length){this.toast('저장된 데이터가 없습니다','error');return;}
-    if(!this.originalWB){this.toast('원본 엑셀이 없습니다. 파일을 다시 업로드하세요','error');return;}
+  // === 엑셀 파일 저장 (rowPhotos 사진을 원본 엑셀에 삽입) ===
+  saveAsXlsx:function(){
+    var keys=Object.keys(this.rowPhotos);
+    var hasPhotos=false;
+    for(var k=0;k<keys.length;k++){var p=this.rowPhotos[keys[k]];if(p.before||p.after||p.confirm){hasPhotos=true;break;}}
+    if(!hasPhotos){this.toast('촬영된 사진이 없습니다','error');return;}
+    if(!this.originalWB){this.toast('원본 엑셀이 없습니다. 파일을 다시 불러오세요','error');return;}
     var self=this;
 
-    document.getElementById('loaderText').textContent='원본 엑셀에 반영 중...';
+    document.getElementById('loaderText').textContent='엑셀 파일 생성 중...';
     document.getElementById('loader').style.display='flex';
 
-    setTimeout(function(){
-      try{
-        var wb=new ExcelJS.Workbook();
-        wb.xlsx.load(self.originalWB).then(function(){
-          var ws=wb.worksheets[0]; // 첫 번째 시트
-
-          // 헤더에서 컬럼 인덱스 찾기 (1-based)
-          var headerRow=ws.getRow(1);
-          var colIdx={};
-          headerRow.eachCell(function(cell,colNumber){
-            var v=String(cell.value||'').replace(/\s/g,'');
-            if(v==='수리전') colIdx.before=colNumber;
-            else if(v==='수리후') colIdx.after=colNumber;
-            else if(v==='완료확인서') colIdx.confirm=colNumber;
-            else if(v==='완료일') colIdx.doneDate=colNumber;
-            else if(v==='완료') colIdx.done=colNumber;
-            else if(v==='동') colIdx.dong=colNumber;
-            else if(v==='호수'||v==='호') colIdx.ho=colNumber;
-            else if(v==='위치') colIdx.loc=colNumber;
-            else if(v==='하자내용'||v==='내용') colIdx.memo=colNumber;
-          });
-
-          console.log('원본 컬럼 인덱스:', JSON.stringify(colIdx));
-
-          // 사진 컬럼이 없으면 에러
-          if(!colIdx.before||!colIdx.after||!colIdx.confirm){
-            self.toast('원본 엑셀에 수리전/수리후/완료확인서 열이 없습니다','error');
-            document.getElementById('loader').style.display='none';
-            return;
-          }
-
-          // savedLog의 각 항목을 원본 행에 매칭하여 반영
-          var updated=0;
-          for(var i=0;i<self.savedLog.length;i++){
-            var log=self.savedLog[i];
-            var targetRow=null;
-
-            // _rowNum이 있으면 직접 사용
-            if(log._rowNum&&log._rowNum>=2){
-              targetRow=ws.getRow(log._rowNum);
-            }else{
-              // 동/호/위치/하자내용으로 매칭 검색
-              for(var r=2;r<=ws.rowCount;r++){
-                var row=ws.getRow(r);
-                var rDong=String(row.getCell(colIdx.dong).value||'').trim();
-                var rHo=String(row.getCell(colIdx.ho).value||'').trim();
-                var rLoc=colIdx.loc?String(row.getCell(colIdx.loc).value||'').trim():'';
-                var rMemo=colIdx.memo?String(row.getCell(colIdx.memo).value||'').trim():'';
-                if(rDong===log.dong&&rHo===log.ho&&rLoc===log.loc&&rMemo===log.memo){
-                  targetRow=row;break;
-                }
-              }
-            }
-
-            if(!targetRow) continue;
-
-            // 행 높이 늘리기 (사진 표시용)
-            targetRow.height=120;
-
-            // 사진 삽입
-            var photoMap=[
-              {key:'before',col:colIdx.before},
-              {key:'after',col:colIdx.after},
-              {key:'confirm',col:colIdx.confirm}
-            ];
-            for(var p=0;p<photoMap.length;p++){
-              var imgData=log[photoMap[p].key];
-              if(imgData&&imgData.indexOf('data:image')===0){
-                try{
-                  var b64=imgData.split(',')[1];
-                  var ext=imgData.indexOf('png')>=0?'png':'jpeg';
-                  var imgId=wb.addImage({base64:b64,extension:ext});
-                  ws.addImage(imgId,{
-                    tl:{col:photoMap[p].col-1,row:targetRow.number-1},
-                    br:{col:photoMap[p].col,row:targetRow.number},
-                    editAs:'oneCell'
-                  });
-                }catch(ie){
-                  targetRow.getCell(photoMap[p].col).value='(이미지실패)';
-                }
-              }
-            }
-
-            // 완료일 기록
-            if(colIdx.doneDate){
-              targetRow.getCell(colIdx.doneDate).value=log.date||'';
-            }
-            // 완료 상태 기록
-            if(colIdx.done){
-              targetRow.getCell(colIdx.done).value='완료';
-              targetRow.getCell(colIdx.done).font={bold:true,color:{argb:'FF1A8A5C'}};
-            }
-
-            // 사진 열 너비 확보
-            ws.getColumn(colIdx.before).width=18;
-            ws.getColumn(colIdx.after).width=18;
-            ws.getColumn(colIdx.confirm).width=18;
-
-            updated++;
-          }
-
-          // 파일명: 원본과 동일 (확장자만 .xlsx)
-          var fn=self.originalFileName?self.originalFileName.replace(/\.[^.]+$/,'')+'_완료.xlsx':'하자관리_완료.xlsx';
-
-          wb.xlsx.writeBuffer().then(function(buf){
-            var blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-            if(typeof saveAs!=='undefined') saveAs(blob,fn);
-            else{var u=URL.createObjectURL(blob);var a=document.createElement('a');a.href=u;a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}
-            document.getElementById('loader').style.display='none';
-            self.toast(updated+'건 반영! 엑셀 다운로드 완료','success',3000);
-          }).catch(function(err){
-            document.getElementById('loader').style.display='none';
-            self.toast('오류: '+err.message,'error');
-          });
-
-        }).catch(function(err){
-          document.getElementById('loader').style.display='none';
-          self.toast('원본 엑셀 읽기 실패: '+err.message,'error');
-        });
-      }catch(e){
-        document.getElementById('loader').style.display='none';
-        self.toast('오류: '+e.message,'error');
-      }
-    },100);
-  },
-
-  // === 구글 스프레드시트 전송 ===
-  sendToGoogleSheet:function(url){
-    var self=this;
-    var rows=[];
-    for(var i=0;i<this.savedLog.length;i++){
-      var it=this.savedLog[i];
-      rows.push({
-        no:it.no, site:it.site, dong:it.dong, ho:it.ho,
-        loc:it.loc, work:it.work, type:it.type,
-        memo:it.memo, date:it.date,
-        before:it.before||'', after:it.after||'', confirm:it.confirm||''
-      });
+    // 사진 축소 후 엑셀에 삽입
+    var shrinkPromises=[];
+    for(var rn in this.rowPhotos){
+      var ph=this.rowPhotos[rn];
+      if(!ph.before&&!ph.after&&!ph.confirm) continue;
+      (function(rowNum,photo){
+        shrinkPromises.push(Promise.all([
+          self.shrinkPhoto(photo.before,400,0.5),
+          self.shrinkPhoto(photo.after,400,0.5),
+          self.shrinkPhoto(photo.confirm,400,0.5)
+        ]).then(function(p){return{_rowNum:parseInt(rowNum),before:p[0],after:p[1],confirm:p[2]};}));
+      })(rn,ph);
     }
-    fetch(url,{
-      method:'POST',
-      headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({action:'sync', rows:rows})
-    }).then(function(r){return r.json();}).then(function(d){
-      if(d.status==='ok') self.toast('구글시트 동기화 완료! ('+d.count+'건)','success',4000);
-      else self.toast('시트 오류: '+d.message,'error',4000);
-    }).catch(function(e){
-      self.toast('구글시트 전송됨 (확인 필요)','info',3000);
+
+    Promise.all(shrinkPromises).then(function(items){
+      document.getElementById('loaderText').textContent='엑셀에 사진 삽입 중... ('+items.length+'건)';
+      var wb=new ExcelJS.Workbook();
+      return wb.xlsx.load(self.originalWB).then(function(){
+        var ws=wb.worksheets[0];
+
+        // 헤더에서 컬럼 인덱스 찾기 (1-based)
+        var headerRow=ws.getRow(1);
+        var colIdx={};
+        headerRow.eachCell(function(cell,colNumber){
+          var v=String(cell.value||'').replace(/\s/g,'');
+          if(v==='수리전') colIdx.before=colNumber;
+          else if(v==='수리후') colIdx.after=colNumber;
+          else if(v==='완료확인서') colIdx.confirm=colNumber;
+          else if(v==='완료일') colIdx.doneDate=colNumber;
+          else if(v==='완료') colIdx.done=colNumber;
+        });
+
+        if(!colIdx.before||!colIdx.after||!colIdx.confirm){
+          throw new Error('원본 엑셀에 수리전/수리후/완료확인서 열이 없습니다');
+        }
+
+        var today=new Date();
+        var dateStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+        var updated=0;
+
+        for(var i=0;i<items.length;i++){
+          var item=items[i];
+          if(!item._rowNum||item._rowNum<2) continue;
+          var targetRow=ws.getRow(item._rowNum);
+          targetRow.height=120;
+
+          var photoMap=[
+            {key:'before',col:colIdx.before},
+            {key:'after',col:colIdx.after},
+            {key:'confirm',col:colIdx.confirm}
+          ];
+          for(var p=0;p<photoMap.length;p++){
+            var imgData=item[photoMap[p].key];
+            if(imgData&&imgData.indexOf('data:image')===0){
+              try{
+                var b64=imgData.split(',')[1];
+                var ext=imgData.indexOf('png')>=0?'png':'jpeg';
+                var imgId=wb.addImage({base64:b64,extension:ext});
+                ws.addImage(imgId,{
+                  tl:{col:photoMap[p].col-1,row:targetRow.number-1},
+                  br:{col:photoMap[p].col,row:targetRow.number},
+                  editAs:'oneCell'
+                });
+              }catch(ie){
+                targetRow.getCell(photoMap[p].col).value='(이미지실패)';
+              }
+            }
+          }
+
+          // 완료일/완료 상태 기록
+          if(colIdx.doneDate) targetRow.getCell(colIdx.doneDate).value=dateStr;
+          if(colIdx.done){
+            targetRow.getCell(colIdx.done).value='완료';
+            targetRow.getCell(colIdx.done).font={bold:true,color:{argb:'FF1A8A5C'}};
+          }
+
+          ws.getColumn(colIdx.before).width=18;
+          ws.getColumn(colIdx.after).width=18;
+          ws.getColumn(colIdx.confirm).width=18;
+          updated++;
+        }
+
+        var fn=self.originalFileName?self.originalFileName.replace(/\.[^.]+$/,'')+'.xlsx':'하자관리_완료.xlsx';
+
+        return wb.xlsx.writeBuffer().then(function(buf){
+          var blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+          if(typeof saveAs!=='undefined') saveAs(blob,fn);
+          else{var u=URL.createObjectURL(blob);var a=document.createElement('a');a.href=u;a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}
+          self.toast(updated+'건 사진 반영! 엑셀 다운로드 완료','success',3000);
+        });
+      });
+    }).catch(function(err){
+      self.toast('오류: '+err.message,'error',4000);
+    }).finally(function(){
+      document.getElementById('loader').style.display='none';
     });
   },
 
