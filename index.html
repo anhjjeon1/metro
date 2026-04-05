@@ -32,10 +32,10 @@
     .app::-webkit-scrollbar{width:3px}
     .app::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
-    header{background:linear-gradient(135deg,#1E40AF,#3B82F6);color:white;text-align:center;padding:14px 16px;position:relative;box-shadow:0 2px 8px rgba(37,99,235,.25)}
-    header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#F59E0B,#FBBF24,#F59E0B)}
-    header h1{font-family:'Outfit';font-size:1.08rem;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,.15)}
-    header .ver{font-family:'JetBrains Mono';font-size:.53rem;color:#93C5FD;letter-spacing:3px;margin-top:2px}
+    header{background:linear-gradient(135deg,#1E40AF,#3B82F6);color:white;padding:8px 16px;position:relative;box-shadow:0 2px 8px rgba(37,99,235,.25);display:flex;align-items:center;justify-content:space-between}
+    header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#F59E0B,#FBBF24,#F59E0B)}
+    header h1{font-family:'Noto Sans KR';font-size:.88rem;font-weight:800;letter-spacing:.5px;text-shadow:0 1px 2px rgba(0,0,0,.15)}
+    header .ver{font-family:'JetBrains Mono';font-size:.6rem;color:#93C5FD;font-weight:600;flex-shrink:0}
 
     .content{flex:1;overflow-y:auto;background:var(--bg)}
     .sec{padding:12px 14px;margin:0}
@@ -224,8 +224,8 @@
 <div class="app">
   <div class="content">
     <header>
-      <h1>(주)메트로 R &amp; S AI</h1>
-      <div class="ver">VER 12.3 &middot; FIELD WORK SYSTEM</div>
+      <h1>메트로 현장관리앱</h1>
+      <div class="ver">V12.4</div>
     </header>
 
     <!-- 1. 하자 리스트 불러오기 -->
