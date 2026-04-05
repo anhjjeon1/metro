@@ -301,6 +301,11 @@
 <script>
 var STORAGE={LOG:'METRO_V70_LOG',SOURCE:'METRO_V70_SRC'};
 var SETTINGS_KEYS={SCRIPT:'METRO_SCRIPT_URL',SHEET:'METRO_SHEET_ID',SHEET_NAME:'METRO_SHEET_NAME',WORKER:'METRO_WORKER'};
+var DEFAULTS={
+  SCRIPT:'https://script.google.com/macros/s/AKfycbxH6-ivs2Gu26geJGtEEOr4B3D7_SGMH-pJkZy9CVpcpH5nTetRjwiIJJzzrlsp3OiGFw/exec',
+  SHEET:'1RzeZJAQh0ACC3YzkEJ5L21ak06wDp-MTHc3M5QFnlsg',
+  SHEET_NAME:'하남강일'
+};
 
 var App={
   sourceData:[],
@@ -328,15 +333,15 @@ var App={
   hideLoader:function(){document.getElementById('loader').style.display='none';},
 
   // === 설정 ===
-  getSetting:function(key){return localStorage.getItem(SETTINGS_KEYS[key])||'';},
+  getSetting:function(key){return localStorage.getItem(SETTINGS_KEYS[key])||(DEFAULTS[key]||'');},
   setSetting:function(key,val){localStorage.setItem(SETTINGS_KEYS[key],val);},
 
   toggleSettings:function(){
     var ov=document.getElementById('settingsOverlay');
     if(ov.classList.contains('show')){this.closeSettings();return;}
-    document.getElementById('setScriptUrl').value=this.getSetting('SCRIPT');
-    document.getElementById('setSheetId').value=this.getSetting('SHEET');
-    document.getElementById('setSheetName').value=this.getSetting('SHEET_NAME');
+    document.getElementById('setScriptUrl').value=this.getSetting('SCRIPT')||DEFAULTS.SCRIPT||'';
+    document.getElementById('setSheetId').value=this.getSetting('SHEET')||DEFAULTS.SHEET||'';
+    document.getElementById('setSheetName').value=this.getSetting('SHEET_NAME')||DEFAULTS.SHEET_NAME||'';
     document.getElementById('setWorker').value=this.getSetting('WORKER');
     document.getElementById('connStatus').style.display='none';
     ov.classList.add('show');
