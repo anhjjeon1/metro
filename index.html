@@ -247,7 +247,6 @@
       <!-- 로드 버튼 -->
       <div id="loadControls">
         <button class="btn-cloud" onclick="App.loadFromSheet()">&#9729; 구글시트에서 불러오기</button>
-        <button class="btn-upload-excel" onclick="document.getElementById('fileInput').click()">&#128194; 구글시트 업로드</button>
         <input type="file" id="fileInput" accept=".xlsx,.xlsm,.xls,.csv" hidden onchange="App.uploadExcelToSheet(this)">
       </div>
     </div>
