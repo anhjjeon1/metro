@@ -220,7 +220,7 @@
 <div class="app">
   <header>
     <h1>(주)메트로 R &amp; S AI</h1>
-    <div class="ver">VER 11.0 &middot; FIELD WORK SYSTEM</div>
+    <div class="ver">VER 11.1 &middot; FIELD WORK SYSTEM</div>
   </header>
 
   <div class="content">
@@ -894,9 +894,24 @@ var App={
 
         return wb.xlsx.writeBuffer().then(function(buf){
           var blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-          if(typeof saveAs!=='undefined') saveAs(blob,fn);
-          else{var u=URL.createObjectURL(blob);var a=document.createElement('a');a.href=u;a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}
-          self.toast(updated+'건 사진 반영! 엑셀 다운로드 완료','success',3000);
+          var file=new File([blob],fn,{type:blob.type});
+
+          // 모바일: 공유 기능으로 OneDrive에 직접 저장
+          if(navigator.canShare&&navigator.canShare({files:[file]})){
+            navigator.share({files:[file],title:fn}).then(function(){
+              self.toast(updated+'건 반영! OneDrive에 저장하세요','success',3000);
+            }).catch(function(e){
+              if(e.name!=='AbortError'){
+                // 공유 취소 시 다운로드로 대체
+                self._downloadBlob(blob,fn);
+                self.toast(updated+'건 반영! 다운로드 완료','success',3000);
+              }
+            });
+          }else{
+            // PC: 일반 다운로드
+            self._downloadBlob(blob,fn);
+            self.toast(updated+'건 반영! 엑셀 다운로드 완료','success',3000);
+          }
         });
       });
     }).catch(function(err){
@@ -904,6 +919,10 @@ var App={
     }).finally(function(){
       document.getElementById('loader').style.display='none';
     });
+  },
+  _downloadBlob:function(blob,fn){
+    if(typeof saveAs!=='undefined') saveAs(blob,fn);
+    else{var u=URL.createObjectURL(blob);var a=document.createElement('a');a.href=u;a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(u);}
   },
 
   // === Storage ===
